@@ -3,7 +3,14 @@ package devcolibri;
 public class Methods {
     public static void main(String[] args) {
 
+        System.out.println(returnText(":"));
         numFibonacci();
+
+    }
+
+    static String returnText(String s) {
+
+        return "Fibonacci numbers" + s;
 
     }
 
