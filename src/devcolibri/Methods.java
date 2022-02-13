@@ -25,10 +25,10 @@ public class Methods {
         int f0 = 0;
         int f1 = 1;
         int fn; // 10
-        System.out.println(f0 + "\n" + f1);
-        for (int i = 2; i < 10; ++i) {
+        System.out.print(f0 + " " + f1 + " ");
+        for (int i = 2; i < 10; i++) {
             fn = f0 + f1;
-            System.out.println(fn);
+            System.out.print(fn + " ");
             f0 = f1;
             f1 = fn;
         }
