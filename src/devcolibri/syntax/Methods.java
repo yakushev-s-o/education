@@ -1,4 +1,4 @@
-package devcolibri;
+package devcolibri.syntax;
 
 public class Methods {
     public static void main(String[] args) {
