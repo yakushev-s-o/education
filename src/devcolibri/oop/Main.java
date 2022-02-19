@@ -5,19 +5,21 @@ import devcolibri.oop.people.People;
 
 public class Main {
 
-    static Cat cat = new Cat();
-    static People people = new People();
+    static Cat cat;
+    static People people;
 
     public static void main(String[] args) {
 
-        cat.setName("Murka");
-        cat.setBreed("persian");
-        cat.setAge(2);
+        cat = new Cat(2, "persian", "Murka");
+//        cat.setName("Murka");
+//        cat.setBreed("persian");
+//        cat.setAge(2);
 
-        people.setName("Gordon");
-        people.setLastName("Freeman");
-        people.setAge(30);
-        people.setCat(cat);
+        people = new People("Gordon", "Freeman", 30, cat);
+//        people.setName("Gordon");
+//        people.setLastName("Freeman");
+//        people.setAge(30);
+//        people.setCat(cat);
 
         System.out.println("Name: " + cat.getName() + "\n" + "Breed: " + cat.getBreed() + "\n" + "Age: " + cat.getAge() + "\n" +
                 cat + "\n" +
