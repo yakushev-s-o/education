@@ -1,5 +1,8 @@
 package devcolibri.oop;
 
+import devcolibri.oop.cat.Cat;
+import devcolibri.oop.people.People;
+
 public class Main {
 
     static Cat cat = new Cat();
@@ -7,23 +10,23 @@ public class Main {
 
     public static void main(String[] args) {
 
-        cat.name = "Murka";
-        cat.breed = "persian";
-        cat.age = 2;
+        cat.setName("Murka");
+        cat.setBreed("persian");
+        cat.setAge(2);
 
-        people.name = "Gordon";
-        people.lastName = "Freeman";
-        people.age = 30;
-        people.cat = cat;
+        people.setName("Gordon");
+        people.setLastName("Freeman");
+        people.setAge(30);
+        people.setCat(cat);
 
-        System.out.println("Name: " + cat.name + "\n" + "Breed: " + cat.breed + "\n" + "Age: " + cat.age + "\n" +
+        System.out.println("Name: " + cat.getName() + "\n" + "Breed: " + cat.getBreed() + "\n" + "Age: " + cat.getAge() + "\n" +
                 cat + "\n" +
-                "Name: " + people.name + "\n" + "Last name: " + people.lastName + "\n" + "Age: " + people.age + "\n" +
+                "Name: " + people.getName() + "\n" + "Last name: " + people.getLastName() + "\n" + "Age: " + people.getAge() + "\n" +
                 people + "\n" +
-                people.cat.name);
+                people.getCat().getName());
 
         cat.say();
-        people.cat.say();
+        people.getCat().say();
 
     }
 
