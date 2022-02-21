@@ -2,6 +2,9 @@ package devcolibri.oop;
 
 import devcolibri.oop.cat.Cat;
 import devcolibri.oop.people.People;
+import devcolibri.oop.professions.Sportsman;
+
+import java.lang.reflect.Array;
 
 public class Main {
 
@@ -29,6 +32,11 @@ public class Main {
 
         cat.say();
         people.getCat().say();
+
+        Sportsman sportsman = new Sportsman("Alex", "Vens", 27, null);
+        sportsman.setTypeSport("gymnast");
+        System.out.println(sportsman.getName() + " " + sportsman.getLastName() + " " +
+                sportsman.getAge() + " " + sportsman.getTypeSport());
 
     }
 
