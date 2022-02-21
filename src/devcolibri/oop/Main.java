@@ -41,6 +41,8 @@ public class Main {
         people.say();
         sportsman.say();
 
+        cat.eat();
+
     }
 
 }

@@ -1,6 +1,6 @@
 package devcolibri.oop.cat;
 
-public class Cat {
+public class Cat extends Animals {
 
     private int age;
     private String breed;
@@ -39,6 +39,11 @@ public class Cat {
 
     public void say() {
         System.out.println("meow");
+    }
+
+    @Override
+    public void eat() {
+        System.out.println("I'm eat!");
     }
 
     @Override
