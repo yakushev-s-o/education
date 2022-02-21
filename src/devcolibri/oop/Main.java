@@ -1,6 +1,8 @@
 package devcolibri.oop;
 
 import devcolibri.oop.cat.Cat;
+import devcolibri.oop.impl.Driver;
+import devcolibri.oop.impl.DriverBus;
 import devcolibri.oop.people.People;
 import devcolibri.oop.professions.Sportsman;
 
@@ -43,6 +45,10 @@ public class Main {
 
         cat.eat();
 
+        DriverBus d = new DriverBus();
+        System.out.print(d.getSpeed() + " km/h - ");
+        d.setCategory("B");
+        d.go();
     }
 
 }
