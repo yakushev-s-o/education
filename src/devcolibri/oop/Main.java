@@ -38,6 +38,9 @@ public class Main {
         System.out.println(sportsman.getName() + " " + sportsman.getLastName() + " " +
                 sportsman.getAge() + " " + sportsman.getTypeSport());
 
+        people.say();
+        sportsman.say();
+
     }
 
 }

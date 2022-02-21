@@ -17,6 +17,10 @@ public class People {
         this.cat = cat;
     }
 
+    public void say() {
+        System.out.println("Hello People");
+    }
+
     public String getName() {
         return name;
     }
