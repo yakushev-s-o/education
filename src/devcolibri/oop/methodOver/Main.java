@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        metExam m = new metExam();
+        MetExam m = new MetExam();
 
         System.out.println(m.get() + "\n" +
                 m.get("World!") + "\n" +

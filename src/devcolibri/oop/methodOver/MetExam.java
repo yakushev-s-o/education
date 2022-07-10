@@ -1,6 +1,6 @@
 package devcolibri.oop.methodOver;
 
-public class metExam {
+public class MetExam {
 
     public String get() {
         return "Hello";
