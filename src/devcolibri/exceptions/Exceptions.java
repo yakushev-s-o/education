@@ -23,5 +23,11 @@ public class Exceptions {
 //            ex.printStackTrace();
             System.out.println("Throwable");
         }
+
+        try {
+            throw new MyException();
+        } catch (MyException e) {
+            e.printStackTrace();
+        }
     }
 }
