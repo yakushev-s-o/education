@@ -1,6 +1,7 @@
 package thinkingInJava;
 
 import java.util.*;
+import static thinkingInJava.util.Print.*;
 
 /** Первая программа.
  * Выводит строку и текущее число.
@@ -15,5 +16,6 @@ public class HelloDate {
     public static void main(String[] args) {
         System.out.println("Привет, сегодня: ");
         System.out.println(new Date());
+        print("Короткие команды!");
     }
 }
