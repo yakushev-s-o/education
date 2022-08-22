@@ -1,6 +1,6 @@
 package thinkingInJava.operators;
 
-public class BitwiseOperators {
+public class E10_BitwiseOperators {
 
     private static void printBinary(String msg, int num) {
         System.out.println(msg + " - " + Integer.toBinaryString(num));

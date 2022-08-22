@@ -1,6 +1,6 @@
 package thinkingInJava.operators;
 
-public class HexAndOctLong {
+public class E08_HexAndOctLong {
     public static void main(String[] args) {
         long hex = 0x2f;
         long oct = 057;

@@ -1,6 +1,6 @@
 package thinkingInJava.operators;
 
-public class MaxMinExponents {
+public class E09_MaxMinExponents {
     public static void main(String[] args) {
         System.out.println("Float.MIN_VALUE = " + Float.MIN_VALUE);
         System.out.println("Float.MAX_VALUE = " + Float.MAX_VALUE);
