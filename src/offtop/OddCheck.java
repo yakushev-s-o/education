@@ -6,13 +6,15 @@ public class OddCheck {
     }
 
     private static boolean checkFast(int num) {
-        return (num & 1) == 0; // Odd ((num & 1) == 0 -> Even)
+        return (num & 1) == 1; // Odd ((num & 1) == 0 -> Even)
     }
 
     public static void main(String[] args) {
+        long nTime = System.nanoTime(); // Start timer
         System.out.println(checkSlow(5));
         System.out.println(checkSlow(-5)); // Wrong
         System.out.println(checkFast(5));
         System.out.println(checkFast(-5));
+        System.out.printf("Time -> %,1.3f ms\n", (System.nanoTime() - nTime)/1_000_000.0); // Stop timer
     }
 }
