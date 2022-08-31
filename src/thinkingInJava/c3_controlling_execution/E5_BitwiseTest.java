@@ -1,4 +1,4 @@
-package thinkingInJava.control;
+package thinkingInJava.c3_controlling_execution;
 
 public class E5_BitwiseTest {
     private static void binaryPrint (int q) {

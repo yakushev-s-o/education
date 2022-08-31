@@ -1,4 +1,4 @@
-package thinkingInJava.control;
+package thinkingInJava.c3_controlling_execution;
 
 public class E4_PrimeNum {
     public static void main(String[] args) {

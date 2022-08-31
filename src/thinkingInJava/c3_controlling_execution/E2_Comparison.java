@@ -1,4 +1,4 @@
-package thinkingInJava.control;
+package thinkingInJava.c3_controlling_execution;
 
 import java.util.Random;
 import static thinkingInJava.util.Print.print;

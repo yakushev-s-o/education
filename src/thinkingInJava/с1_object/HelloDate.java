@@ -1,4 +1,4 @@
-package thinkingInJava.object;
+package thinkingInJava.с1_object;
 
 import java.util.*;
 import static thinkingInJava.util.Print.*;

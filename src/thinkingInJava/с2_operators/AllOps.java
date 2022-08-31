@@ -1,4 +1,4 @@
-package thinkingInJava.operators;
+package thinkingInJava.с2_operators;
 
 public class AllOps {
     // To accept the results of a boolean test:

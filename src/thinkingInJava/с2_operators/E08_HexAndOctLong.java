@@ -1,4 +1,4 @@
-package thinkingInJava.operators;
+package thinkingInJava.с2_operators;
 
 public class E08_HexAndOctLong {
     public static void main(String[] args) {
