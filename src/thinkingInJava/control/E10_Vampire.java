@@ -3,44 +3,47 @@ package thinkingInJava.control;
 import static thinkingInJava.util.Print.*;
 
 public class E10_Vampire {
-    static void vampTest(int min, int max) {
-        int count = 0;
-        for (int i = min; i <= max; i++) {
-            count++;
+    final static int START = 1000, END = 9999;
+    public static int count = 0;
+
+    public static void main(String[] args) {
+        for (int i = START; i <= END; i++) {
             int a, b, c, d;
             a = i / 1000;
             b = (i / 100) % 10;
             c = (i / 10) % 10;
             d = i % 10;
-            String res = count + ": " + i + " =  " + a + "" + b + " * " + c + "" + d;
 
-            if (i == (a*10 + b) * (c*10 + d)) { print(res); }
-            if (i == (a*10 + b) * (d*10 + c)) { print(res); }
-            if (i == (a*10 + c) * (b*10 + d)) { print(res); }
-            if (i == (a*10 + c) * (d*10 + b)) { print(res); }
-            if (i == (a*10 + d) * (c*10 + b)) { print(res); }
-            if (i == (a*10 + d) * (b*10 + c)) { print(res); }
+            if (b + c == 0 || b + d == 0 || c + d == 0) continue;
 
-            if (i == (b*10 + a) * (c*10 + d)) { print(res); }
-            if (i == (b*10 + a) * (d*10 + c)) { print(res); }
-            if (i == (b*10 + c) * (d*10 + a)) { print(res); }
-            if (i == (b*10 + d) * (c*10 + a)) { print(res); }
-
-            if (i == (c*10 + a) * (d*10 + b)) { print(res); }
-            if (i == (c*10 + b) * (d*10 + a)) { print(res); }
+            searchAndPrint(i, a, b, c, d);
+            searchAndPrint(i, a, b, d, c);
+            searchAndPrint(i, a, c, b, d);
+            searchAndPrint(i, a, c, d, b);
+            searchAndPrint(i, a, d, b, c);
+            searchAndPrint(i, a, d, c, b);
+            searchAndPrint(i, b, a, c, d);
+            searchAndPrint(i, b, a, d, c);
+            searchAndPrint(i, b, c, d, a);
+            searchAndPrint(i, b, d, c, a);
+            searchAndPrint(i, c, a, d, b);
+            searchAndPrint(i, c, b, d, a);
         }
     }
 
-    public static void main(String[] args) {
-        vampTest(1000, 9999);
+    static void searchAndPrint(int i, int a, int b, int c, int d) {
+        count++;
+        if ((a * 10 + b) * (c * 10 + d)  == i) {
+            print(i + " = " + (a * 10 + b) + " * " + (c * 10 + d) + "\t" + "(" + count + ")");
+        }
     }
 }
 
-//        261: 1260 =  12 * 60
-//        396: 1395 =  13 * 95
-//        436: 1435 =  14 * 35
-//        531: 1530 =  15 * 30
-//        828: 1827 =  18 * 27
-//        1188: 2187 =  21 * 87
-//        5881: 6880 =  68 * 80
-//        5881: 6880 =  68 * 80
+//        1260 = 21 * 60	(2875)
+//        1395 = 15 * 93	(4482)
+//        1435 = 41 * 35	(4951)
+//        1530 = 51 * 30	(6079)
+//        1827 = 87 * 21	(9610)
+//        2187 = 27 * 81	(13674)
+//        6880 = 86 * 80	(68563)
+//        6880 = 80 * 86	(68566)
