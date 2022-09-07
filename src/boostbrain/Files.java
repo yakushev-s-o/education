@@ -1,8 +1,8 @@
-package offtop;
+package boostbrain;
 
 import java.io.*;
 
-public class FileImportExport {
+public class Files {
     public static void main(String[] args) throws IOException {
 
         // Получить список текущего каталога
