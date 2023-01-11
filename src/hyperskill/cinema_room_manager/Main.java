@@ -8,19 +8,30 @@ public class Main {
     private static final int MAX_SEATS = 60;
     private static final int TICKET_NORMAL_PRICE = 10;
     private static final int TICKET_LOW_PRICE = 8;
+    private static char[][] cinema;
+    private static int tickets;
+    private static float percentage;
+    private static int currentIncome;
+    private static int totalIncome;
+    private static int totalNumOfSeats;
 
-    public static void clearSeats(char[][] field) {
-        for (int i = 1; i < field.length; i++) {
-            for (int j = 1; j < field[i].length; j++) {
-                field[i][j] = SEAT;
+    public static Scanner sc = new Scanner(System.in);
+
+    public static void clearSeats() {
+        for (int i = 1; i < cinema.length; i++) {
+            for (int j = 1; j < cinema[i].length; j++) {
+                cinema[i][j] = SEAT;
             }
         }
+        tickets = 0;
+        percentage = 0.00f;
+        currentIncome = 0;
     }
 
-    public static void printSeats(char[][] field) {
+    public static void printSeats() {
         System.out.println("Cinema:");
-        for (int i = 0; i < field.length; i++) {
-            for (int j = 0; j < field[i].length; j++) {
+        for (int i = 0; i < cinema.length; i++) {
+            for (int j = 0; j < cinema[i].length; j++) {
                 if (i == 0 && j == 0) {
                     System.out.print("  ");
                 } else if (i == 0) {
@@ -28,58 +39,99 @@ public class Main {
                 } else if (j == 0) {
                     System.out.print(i + " ");
                 } else {
-                    System.out.print(field[i][j] + " ");
+                    System.out.print(cinema[i][j] + " ");
                 }
             }
             System.out.println();
         }
     }
 
-    public static void buyTicket(char[][] seats, int row, int seat) {
-        if (seats.length * seats[0].length < MAX_SEATS ||
-                seats.length / 2 > row) {
-            System.out.printf("Ticket price: $%d\n", TICKET_NORMAL_PRICE);
+    public static void buyTicket() {
+        System.out.println("Enter a row number:");
+        int row = sc.nextInt();
+        System.out.println("Enter a seat number in that row:");
+        int seat = sc.nextInt();
+
+        if (row > cinema.length - 1 || row < 0 || seat > cinema[0].length - 1 || seat < 0) {
+            System.out.println("Wrong input!");
+            buyTicket();
+        } else if (cinema[row][seat] == BUSY) {
+            System.out.println("That ticket has already been purchased!");
+            buyTicket();
         } else {
-            System.out.printf("Ticket price: $%d\n", TICKET_LOW_PRICE);
+            if (totalNumOfSeats < MAX_SEATS || cinema.length / 2 > row) {
+                currentIncome = row * seat * TICKET_NORMAL_PRICE;
+                System.out.printf("Ticket price: $%d\n", TICKET_NORMAL_PRICE);
+            } else {
+                currentIncome =  row / 2 * seat * 10 + (row - (row / 2)) * seat * 8;
+                System.out.printf("Ticket price: $%d\n", TICKET_LOW_PRICE);
+            }
+            cinema[row][seat] = BUSY;
+            tickets++;
         }
-        seats[row][seat] = BUSY;
     }
 
-    public static void menu() {
-        Scanner sc = new Scanner(System.in);
+    public static void cancelTicket() {
+        System.out.println("Enter the row number of the seat you would like to cancel:");
+        int row = sc.nextInt();
+        System.out.println("Enter the seat number in that row:");
+        int seat = sc.nextInt();
+        cinema[row][seat] = SEAT;
+    }
+
+    public static void statistics() {
+        percentage = 100f / (float) totalNumOfSeats * (float) tickets;
+
+        System.out.println("Number of purchased tickets: " + tickets);
+        System.out.printf("Percentage: %.2f%%\n", percentage);
+        System.out.println("Current income: $" + currentIncome);
+        System.out.println("Total income: $" + totalIncome);
+    }
+
+    public static void start() {
         System.out.println("Enter the number of rows:");
         int row = sc.nextInt();
         System.out.println("Enter the number of seats in each row:");
         int seat = sc.nextInt();
-        char[][] seats = new char[row + 1][seat + 1];
+        cinema = new char[row + 1][seat + 1];
+        totalNumOfSeats = row * seat;
 
-        clearSeats(seats);
+        for (int i = 1; i < cinema.length; i++) {
+            for (int j = 1; j < cinema[i].length; j++) {
+                if (totalNumOfSeats < MAX_SEATS) {
+                    totalIncome = row * seat * TICKET_NORMAL_PRICE;
+                } else {
+                    totalIncome +=  row / 2 * seat * 10 + (row % 2 == 0 ? row / 2 : row / 2 + 1) * seat * 8;
+                }
+            }
+        }
+    }
+
+    public static void menu() {
+        start();
+        clearSeats();
 
         while (true) {
             System.out.println("""
                     1. Show the seats
                     2. Buy a ticket
-                    3. Cancel ticket purchase
-                    4. Clear Seats
+                    3. Statistics
+                    4. Cancel ticket purchase
+                    5. Clear Seats
                     0. Exit""");
 
             int num = sc.nextInt();
+
             if (num == 1) {
-                printSeats(seats);
+                printSeats();
             } else if (num == 2) {
-                System.out.println("Enter a row number:");
-                row = sc.nextInt();
-                System.out.println("Enter a seat number in that row:");
-                seat = sc.nextInt();
-                buyTicket(seats, row, seat);
+                buyTicket();
             } else if (num == 3) {
-                System.out.println("Enter the row number of the seat you would like to cancel:");
-                row = sc.nextInt();
-                System.out.println("Enter the seat number in that row:");
-                seat = sc.nextInt();
-                seats[row][seat] = SEAT;
+                statistics();
             } else if (num == 4) {
-                clearSeats(seats);
+                cancelTicket();
+            } else if (num == 5) {
+                clearSeats();
             } else if (num == 0) {
                 break;
             }
