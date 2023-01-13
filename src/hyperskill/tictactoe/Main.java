@@ -1,4 +1,4 @@
-package hyperskill.simple_tictactoe;
+package hyperskill.tictactoe;
 
 import java.util.*;
 
@@ -12,11 +12,13 @@ public class Main {
     }
 
     private static void printField(char[][] ch) {
-        System.out.printf("---------\n" +
-                        "| %s %s %s |\n" +
-                        "| %s %s %s |\n" +
-                        "| %s %s %s |\n" +
-                        "---------\n",
+        System.out.printf("""
+                        ---------
+                        | %s %s %s |
+                        | %s %s %s |
+                        | %s %s %s |
+                        ---------
+                        """,
                 ch[0][0], ch[0][1], ch[0][2],
                 ch[1][0], ch[1][1], ch[1][2],
                 ch[2][0], ch[2][1], ch[2][2]);

@@ -1,4 +1,4 @@
-package hyperskill.cinema_room_manager;
+package hyperskill.cinema;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package hyperskill.simple_bot;
+package hyperskill.bot;
 
 import java.util.Scanner;
 
