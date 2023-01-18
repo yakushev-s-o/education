@@ -17,7 +17,8 @@ public class Main {
                 try {
                     String fileContent = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
                     String link = getLinkFromString(fileContent);
-                    replaceStringInFiles(listOfFiles, link, file.getAbsolutePath().replace("\\", "/"));
+                    boolean practice = checkPractice(fileContent);
+                    replaceStringInFiles(listOfFiles, link, file.getAbsolutePath().replace("\\", "/"), practice);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -39,23 +40,39 @@ public class Main {
         return "No link found";
     }
 
-    public static void replaceStringInFiles(File[] listOfFiles, String searchString, String replaceString) {
+    public static boolean checkPractice(String content) {
+        try (Scanner scanner = new Scanner(content)) {
+            for (int i = 0; i < content.length(); i++) {
+                int index = scanner.nextLine().indexOf("url: http");
+                if (index != -1) {
+                    return content.contains("dropdown b-dropdown dd-topic-progress show btn-group");
+                }
+            }
+
+        }
+        return false;
+    }
+
+    public static void replaceStringInFiles(File[] listOfFiles, String searchString, String replaceString, boolean practice) {
+        String oldPractice = "<button data-v-5a34a0c7 click-event-part=main click-event-target=practice click-event-route=/learn/step/15860 type=button aria-pressed=false autocomplete=off class=\"btn ml-2 btn-white\"> Practice </button>";
+        String newPractice = "<a data-v-5a34a0c7=\"\" href=\"file:///"+ replaceString +"\" aria-current=\"page\" class=\"btn router-link-exact-active active-route btn-white active\" click-event-part=\"main\" click-event-target=\"theory\" click-event-route=\"/learn/step/15860\" aria-pressed=\"true\" autocomplete=\"off\" target=\"_self\" data-component-name=\"BLink\"> Practice </a>";
+
         try {
             for (File file : listOfFiles) {
                 String fileContent = new String(Files.readAllBytes(file.toPath()));
                 String[] lines = fileContent.split("\\r?\\n");
                 StringBuilder updatedContent = new StringBuilder();
-
-                String link = getLinkFromString(fileContent);
-
                 int lineNumber = 1;
                 for (String line : lines) {
-                    String searchStringComment = searchString.substring(0, searchString.length() - 8);
-                    String linkUsefulLinks = link.substring(0, link.length() - 12);
+                    String comment = searchString.substring(searchString.length() - 8);
+                    String useful = searchString.substring(searchString.length() - 12);
 
-                    if (searchStringComment.equals(link) || searchStringComment.equals(linkUsefulLinks)) {
+                    if ("#comment".equals(comment)) {
                         line = line.replaceAll("#comment", "file:///" + replaceString);
+                    } else if ("#useful_link".equals(useful)) {
                         line = line.replaceAll("#useful_link", "file:///" + replaceString);
+                    } else if (practice) {
+                        line = line.replaceAll(oldPractice, newPractice);
                     } else if (lineNumber != 3) {
                         line = line.replaceAll(searchString, "file:///" + replaceString);
                     }
