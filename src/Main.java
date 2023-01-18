@@ -54,26 +54,41 @@ public class Main {
     }
 
     public static void replaceStringInFiles(File[] listOfFiles, String searchString, String replaceString, boolean practice) {
-        String oldPractice = "<button data-v-5a34a0c7 click-event-part=main click-event-target=practice click-event-route=/learn/step/15860 type=button aria-pressed=false autocomplete=off class=\"btn ml-2 btn-white\"> Practice </button>";
-        String newPractice = "<a data-v-5a34a0c7=\"\" href=\"file:///"+ replaceString +"\" aria-current=\"page\" class=\"btn router-link-exact-active active-route btn-white active\" click-event-part=\"main\" click-event-target=\"theory\" click-event-route=\"/learn/step/15860\" aria-pressed=\"true\" autocomplete=\"off\" target=\"_self\" data-component-name=\"BLink\"> Practice </a>";
+        String leftOld = "Theory </a><button data-v-5a34a0c7";
+        String rightOld = "Practice </button>";
+        String leftNew = "Theory </a><a data-v-5a34a0c7=\"\" href=\"file:///" + replaceString + "\" class=\"btn router-link-exact-active active-route btn-white active\" ";
+        String rightNew = "Practice </a>";
+        String comment = searchString.substring(searchString.length() - 8);
+        String useful = searchString.substring(searchString.length() - 12);
+        String searchComment = searchString.substring(0, searchString.length() - 8);
+        String searchUseful = searchString.substring(0, searchString.length() - 12);
 
         try {
             for (File file : listOfFiles) {
-                String fileContent = new String(Files.readAllBytes(file.toPath()));
+                String fileContent = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
                 String[] lines = fileContent.split("\\r?\\n");
                 StringBuilder updatedContent = new StringBuilder();
+
+                String link = getLinkFromString(fileContent);
+                String linkComment = link.substring(0, link.length() - 8);
+                String linkUseful = link.substring(0, link.length() - 12);
+
                 int lineNumber = 1;
                 for (String line : lines) {
-                    String comment = searchString.substring(searchString.length() - 8);
-                    String useful = searchString.substring(searchString.length() - 12);
-
-                    if ("#comment".equals(comment)) {
-                        line = line.replaceAll("#comment", "file:///" + replaceString);
-                    } else if ("#useful_link".equals(useful)) {
-                        line = line.replaceAll("#useful_link", "file:///" + replaceString);
-                    } else if (practice) {
-                        line = line.replaceAll(oldPractice, newPractice);
-                    } else if (lineNumber != 3) {
+                    if (searchString.equals(link) || searchString.equals(linkComment) || searchString.equals(linkUseful) ||
+                            searchComment.equals(link) || searchUseful.equals(link)) {
+                        if ("#comment".equals(comment)) {
+                            line = line.replaceAll("#comment", "file:///" + replaceString);
+                        }
+                        if ("#useful_link".equals(useful)) {
+                            line = line.replaceAll("#useful_link", "file:///" + replaceString);
+                        }
+                        if (practice) {
+                            line = line.replaceAll(leftOld, leftNew);
+                            line = line.replaceAll(rightOld, rightNew);
+                        }
+                    }
+                    if (lineNumber != 3) {
                         line = line.replaceAll(searchString, "file:///" + replaceString);
                     }
                     updatedContent.append(line).append("\n");
