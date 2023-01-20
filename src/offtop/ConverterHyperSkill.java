@@ -59,18 +59,20 @@ public class ConverterHyperSkill {
                 for (String line : lines) {
                     if (clearSearchString.equals(clearLink)) {
                         if ("#comment".equals(comment) && lineNumber != 3) {
-                            line = line.replaceAll("#comment", replaceString);
+                            line = line.replace("#comment", replaceString);
                         }
                         if ("#useful_link".equals(useful) && lineNumber != 3) {
-                            line = line.replaceAll("#useful_link", replaceString);
+                            line = line.replace("#useful_link", replaceString);
                         }
                         if (practice) {
-                            line = line.replaceAll(leftOld, leftNew);
-                            line = line.replaceAll(rightOld, rightNew);
+                            line = line.replace(leftOld, leftNew);
+                            line = line.replace(rightOld, rightNew);
                         }
                     }
                     if (lineNumber != 3) {
-                        line = line.replaceAll(searchString, replaceString);
+                        line = line.replace(searchString, replaceString);
+                        line = line.replace("User Name", "Admin Admin");
+                        line = line.replace("> UN <", "> AA <");
                     }
                     updatedContent.append(line).append("\n");
                     lineNumber++;
@@ -97,11 +99,3 @@ public class ConverterHyperSkill {
         }
     }
 }
-
-/*
-<div data-v-cca8e734="" data-v-fde0ce8e="" class="user-avatar"
-data-component-name="UserAvatar"><span data-v-cca8e734="" href="#" target="_self" tabindex="-1"
-aria-disabled="true" class="b-avatar disabled badge-primary rounded-circle" data-tooltip-event-part="user"
-data-component-name="BAvatar" style="width:32px;height:32px;background-color:rgb(0,0,136);font-size:12.8px">
-<span class="b-avatar-custom"> SY </span></span></div>
- */
