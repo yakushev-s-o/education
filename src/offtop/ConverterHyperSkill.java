@@ -31,6 +31,7 @@ public class ConverterHyperSkill {
         String urlLine = lines[2];
         int startIndex = urlLine.indexOf("https://");
         int endIndex = urlLine.indexOf("#");
+
         if (key == 1) {
             if (endIndex == -1) {
                 endIndex = urlLine.length() - 1;
@@ -56,19 +57,19 @@ public class ConverterHyperSkill {
 
                 int lineNumber = 1;
                 for (String line : lines) {
-                    if (clearSearchString.equals(clearLink)) {
-                        if (searchString.contains("#comment") && lineNumber != 3) {
-                            line = line.replace("#comment", replaceString);
-                        }
-                        if (searchString.contains("#useful_link") && lineNumber != 3) {
-                            line = line.replace("#useful_link", replaceString);
-                        }
-                        if (practice) {
-                            line = line.replace(leftOld, leftNew);
-                            line = line.replace(rightOld, rightNew);
-                        }
-                    }
                     if (lineNumber != 3) {
+                        if (clearSearchString.equals(clearLink)) {
+                            if (searchString.contains("#comment")) {
+                                line = line.replace("#comment", replaceString);
+                            }
+                            if (searchString.contains("#useful_link")) {
+                                line = line.replace("#useful_link", replaceString);
+                            }
+                            if (practice) {
+                                line = line.replace(leftOld, leftNew);
+                                line = line.replace(rightOld, rightNew);
+                            }
+                        }
                         if (searchString.contains("knowledge-map/0")) {
                             line = line.replace("https://hyperskill.org/knowledge-map ", replaceString + " ");
                         }
