@@ -43,10 +43,9 @@ public class ConverterHyperSkill {
     public static void replaceStringInFiles(File[] listOfFiles, String searchString, String clearSearchString, String replaceString, boolean practice) {
         String leftOld = "Theory </a><button data-v-5a34a0c7";
         String rightOld = "Practice </button>";
-        String leftNew = "Theory </a><a data-v-5a34a0c7=\"\" href=\"" + replaceString + "\" class=\"btn router-link-exact-active active-route btn-white active\" ";
+        String leftNew = "Theory </a><a data-v-5a34a0c7=\"\" href=\"" + replaceString +
+                "\" class=\"btn router-link-exact-active active-route btn-white active\" ";
         String rightNew = "Practice </a>";
-        String comment = searchString.substring(searchString.length() - 8);
-        String useful = searchString.substring(searchString.length() - 12);
 
         for (File file : listOfFiles) {
             try {
@@ -58,10 +57,10 @@ public class ConverterHyperSkill {
                 int lineNumber = 1;
                 for (String line : lines) {
                     if (clearSearchString.equals(clearLink)) {
-                        if ("#comment".equals(comment) && lineNumber != 3) {
+                        if (searchString.contains("#comment") && lineNumber != 3) {
                             line = line.replace("#comment", replaceString);
                         }
-                        if ("#useful_link".equals(useful) && lineNumber != 3) {
+                        if (searchString.contains("#useful_link") && lineNumber != 3) {
                             line = line.replace("#useful_link", replaceString);
                         }
                         if (practice) {
@@ -70,9 +69,12 @@ public class ConverterHyperSkill {
                         }
                     }
                     if (lineNumber != 3) {
+                        if (searchString.contains("knowledge-map/0")) {
+                            line = line.replace("https://hyperskill.org/knowledge-map ", replaceString + " ");
+                        }
                         line = line.replace(searchString, replaceString);
-                        line = line.replace("User Name", "Admin Admin");
-                        line = line.replace("> UN <", "> AA <");
+                        line = line.replace("Admin Admin", "");
+                        line = line.replace("> AA <", ">  <");
                     }
                     updatedContent.append(line).append("\n");
                     lineNumber++;
