@@ -44,7 +44,7 @@ public class HyperSkillOffline {
     private static String findFirstLink(String fileContent, boolean practice) {
         Matcher matcher = Pattern.compile("https?://\\S+").matcher(fileContent);
         if (matcher.find()) {
-            String link = matcher.group(0);
+            String link = matcher.group();
             if (practice) {
                 link += "practice";
             }
