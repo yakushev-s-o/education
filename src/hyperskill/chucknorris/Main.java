@@ -1,6 +1,6 @@
 package hyperskill.chucknorris;
 
-import java.util.*;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,7 +11,27 @@ public class Main {
 
         System.out.println("The result:");
         for (char c : arr) {
-            System.out.printf("%c = %07d\n", c, Integer.parseInt(Integer.toBinaryString(c)));
+            String binary = Integer.toBinaryString(c);
+
+            int count = 0;
+            for (int i = 1; i < binary.length(); i++) {
+                if (binary.charAt(i) == binary.charAt(i - 1)) {
+                    count++;
+                    if (i != binary.length() - 1) {
+                        continue;
+                    }
+                }
+                System.out.print(binary.charAt(i - 1) == '1' ? "0 " : "00 ");
+                for (int j = 0; j <= count; j++) {
+                    System.out.print("0");
+                }
+                if (i != binary.length() - 1) {
+                    System.out.print(" ");
+                } else {
+                    System.out.print("");
+                }
+                count = 0;
+            }
         }
     }
 }
