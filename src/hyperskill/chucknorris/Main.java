@@ -8,29 +8,29 @@ public class Main {
 
         System.out.println("Input string:");
         char[] arr = sc.nextLine().toCharArray();
+        StringBuilder binary = new StringBuilder();
 
         System.out.println("The result:");
         for (char c : arr) {
-            String binary = Integer.toBinaryString(c);
+            binary.append(String.format("%07d", Integer.parseInt(Integer.toBinaryString(c))));
+        }
 
-            int count = 0;
-            for (int i = 1; i < binary.length(); i++) {
-                if (binary.charAt(i) == binary.charAt(i - 1)) {
-                    count++;
-                    if (i != binary.length() - 1) {
-                        continue;
-                    }
-                }
-                System.out.print(binary.charAt(i - 1) == '1' ? "0 " : "00 ");
-                for (int j = 0; j <= count; j++) {
-                    System.out.print("0");
-                }
-                if (i != binary.length() - 1) {
-                    System.out.print(" ");
-                } else {
-                    System.out.print("");
-                }
-                count = 0;
+        int i = 0;
+        char ch;
+
+        while (i < binary.length()) {
+            ch = binary.charAt(i);
+
+            System.out.print(binary.charAt(i) == '1' ? "0 " : "00 ");
+
+            while (binary.charAt(i) == ch) {
+                System.out.print("0");
+                i++;
+                if (i == binary.length()) break;
+            }
+
+            if (i < binary.length()) {
+                System.out.print(" ");
             }
         }
     }
