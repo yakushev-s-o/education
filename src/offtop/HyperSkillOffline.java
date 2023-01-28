@@ -24,7 +24,7 @@ public class HyperSkillOffline {
                 String newFileName = createNewFileName(link);
                 String newFilePath = createNewFilePath(link);
                 fileContent = replaceLinks(fileContent);
-                fileContent = replaceOther(fileContent, newFilePath);
+                fileContent = replaceOther(fileContent, newFilePath.replace(FOLDER_PATH, ""));
                 writeFile(file, fileContent);
                 File newFile = renameFile(file, newFileName);
                 moveFile(newFile, newFilePath);
@@ -73,17 +73,24 @@ public class HyperSkillOffline {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(fileContent);
         StringBuilder sb = new StringBuilder();
+        int i = 0; // Added counter
         while (matcher.find()) {
+            if (i == 0) { // Skip the first match
+                i++;
+                continue;
+            }
             String link = matcher.group();
-            String newLink = link.replace("https://hyperskill.org", FOLDER_PATH);
+            String newLink = link.replace("https://hyperskill.org", ""); // FOLDER_PATH
             if (!newLink.matches(".*\\.[a-zA-Z]+$") && link.contains("https://hyperskill.org")) {
                 newLink += ".html";
             }
             matcher.appendReplacement(sb, newLink);
+            i++;
         }
         matcher.appendTail(sb);
         return sb.toString();
     }
+
 
     public static String replaceOther(String fileContent, String newFilePath) {
         String condition = "hint.html|practice.html|useful_link.html|comment.html|.html";
