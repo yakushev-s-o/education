@@ -9,7 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HyperSkillOffline {
+public class HyperSkillSave {
 
     private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test";
 
@@ -19,12 +19,12 @@ public class HyperSkillOffline {
         if (files != null) {
             for (File file : files) {
                 String fileContent = readFile(file);
-                boolean practice = fileContent.contains("dropdown b-dropdown dd-topic-progress show btn-group");
-                String link = findFirstLink(fileContent, practice);
+                boolean checkPractice = fileContent.contains("dropdown b-dropdown dd-topic-progress show btn-group");
+                String link = findFirstLink(fileContent, checkPractice);
                 String newFileName = createNewFileName(link);
                 String newFilePath = createNewFilePath(link);
                 fileContent = replaceLinks(fileContent);
-                fileContent = replaceOther(fileContent, newFilePath.replace(FOLDER_PATH, ""));
+                fileContent = replaceOther(fileContent, link, newFilePath.replace(FOLDER_PATH, ""));
                 writeFile(file, fileContent);
                 File newFile = renameFile(file, newFileName);
                 moveFile(newFile, newFilePath);
@@ -69,38 +69,39 @@ public class HyperSkillOffline {
     }
 
     public static String replaceLinks(String fileContent) {
-        String regex = "https://[\\w+-=.#?/]+\\b";
+        String regex = "https://[\\w+-=.#?/]+\\b"; // searches for all links in a file
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(fileContent);
         StringBuilder sb = new StringBuilder();
-        int i = 0; // Added counter
+        int i = 0;
         while (matcher.find()) {
-            if (i == 0) { // Skip the first match
-                i++;
-                continue;
+            if (i != 0) { // skip first match
+                String link = matcher.group();
+                String newLink = link.replace("https://hyperskill.org", ""); // FOLDER_PATH
+                if (!newLink.matches(".*\\.[a-zA-Z]+$") && link.contains("https://hyperskill.org")) { // if the link is without extension
+                    newLink += ".html";
+                }
+                matcher.appendReplacement(sb, newLink);
             }
-            String link = matcher.group();
-            String newLink = link.replace("https://hyperskill.org", ""); // FOLDER_PATH
-            if (!newLink.matches(".*\\.[a-zA-Z]+$") && link.contains("https://hyperskill.org")) {
-                newLink += ".html";
-            }
-            matcher.appendReplacement(sb, newLink);
             i++;
         }
         matcher.appendTail(sb);
         return sb.toString();
     }
 
-
-    public static String replaceOther(String fileContent, String newFilePath) {
+    public static String replaceOther(String fileContent, String link, String newFilePath) {
         String condition = "hint.html|practice.html|useful_link.html|comment.html|.html";
         String leftOld = "Theory </a><button data-v-5a34a0c7";
         String rightOld = "Practice </button>";
         String leftNew = "Theory </a><a data-v-5a34a0c7=\"\" href=\"" +
                 newFilePath.replaceAll(condition, "practice.html") + "\" ";
         String rightNew = "Practice </a>";
+        String data = "saved date: \\w{3} \\w{3} \\d{2} \\d{4} \\d{2}:\\d{2}:\\d{2} GMT[+\\-]\\d{4} \\([^()]*\\)";
 
-        return fileContent.replace("href=#comment", "href=" +
+        Pattern pattern = Pattern.compile(data);
+
+        return pattern.matcher(fileContent).replaceAll("info: " + link)
+                .replace("href=#comment", "href=" +
                         newFilePath.replaceAll(condition, "comment.html"))
                 .replace("href=#useful_link", "href=" +
                         newFilePath.replaceAll(condition, "useful_link.html"))
