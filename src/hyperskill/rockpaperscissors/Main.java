@@ -6,14 +6,26 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        String users = scanner.nextLine();
-        String computer = switch (new Random().nextInt(3)) {
-            case 0 -> "scissors";
-            case 1 -> "rock";
-            default -> "paper";
-        };
+        while (true) {
+            String users = scanner.nextLine();
 
-        checkWin(users, computer);
+            if (users.equals("scissors") || users.equals("rock") || users.equals("paper")) {
+                String computer = switch (new Random().nextInt(3)) {
+                    case 0 -> "scissors";
+                    case 1 -> "rock";
+                    default -> "paper";
+                };
+
+                checkWin(users, computer);
+                System.out.println();
+
+            } else if (users.equals("!exit")) {
+                System.out.println("Bye!");
+                break;
+            } else {
+                System.out.println("Invalid input");
+            }
+        }
     }
 
     private static void checkWin(String users, String computer) {
