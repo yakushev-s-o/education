@@ -2,8 +2,7 @@ package hyperskill.rockpaperscissors;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     private static int money;
@@ -20,38 +19,65 @@ public class Main {
 
         System.out.println("Hello, " + userName);
 
+        String[] options = gameOptions(scanner.nextLine());
+
+        System.out.println("Okay, let's start");
+
         while (true) {
             String users = scanner.nextLine();
 
+            int usersNum = -1;
+            for (int i = 0; i < options.length; i++) {
+                if (options[i].equals(users)) {
+                    usersNum = i;
+                }
+            }
+
             if ("!rating".equals(users)) {
                 System.out.println("Your rating: " + money);
-            } else if (users.equals("scissors") || users.equals("rock") || users.equals("paper")) {
-                String computer = switch (new Random().nextInt(3)) {
-                    case 0 -> "scissors";
-                    case 1 -> "rock";
-                    default -> "paper";
-                };
-                checkWin(users, computer);
             } else if (users.equals("!exit")) {
                 System.out.println("Bye!");
                 break;
-            } else {
+            } else if (usersNum == -1) {
                 System.out.println("Invalid input");
+            } else {
+                int computerNum = new Random().nextInt(options.length);
+                checkWin(usersNum, computerNum, options);
             }
         }
     }
 
-    private static void checkWin(String users, String computer) {
-        if (users.equals(computer)) {
-            System.out.printf("There is a draw (%s)\n", computer);
+    private static void checkWin(int usersNum, int computerNum, String[] options) {
+        int count = options.length / 2;
+        String[] winArr = new String[count];
+        int j = 0;
+        for (int i = usersNum + 1; i < options.length; i++) {
+            winArr[j++] = options[i];
+            count--;
+            if (count == 0) {
+                break;
+            }
+        }
+        for (int i = 0; i < count; i++) {
+            winArr[j++] = options[i];
+        }
+
+        boolean win = true;
+        for (String s : winArr) {
+            if (s.equals(options[computerNum])) {
+                win = false;
+                break;
+            }
+        }
+
+        if (usersNum == computerNum) {
+            System.out.printf("There is a draw (%s)\n", options[computerNum]);
             money += 50;
-        } else if (users.equals("paper") && computer.equals("scissors") ||
-                users.equals("scissors") && computer.equals("rock") ||
-                users.equals("rock") && computer.equals("paper")) {
-            System.out.printf("Sorry, but the computer chose %s\n", computer);
-        } else {
-            System.out.printf("Well done. The computer chose %s and failed\n", computer);
+        } else if (win) {
+            System.out.printf("Well done. The computer chose %s and failed\n", options[computerNum]);
             money += 100;
+        } else {
+            System.out.printf("Sorry, but the computer chose %s\n", options[computerNum]);
         }
     }
 
@@ -67,5 +93,12 @@ public class Main {
             System.out.println("No file found: " + file);
         }
         return 0;
+    }
+
+    private static String[] gameOptions(String options) {
+        if ("".equals(options)) {
+            return new String[]{"scissors", "rock", "paper"};
+        }
+        return options.split(",");
     }
 }
