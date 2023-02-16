@@ -30,7 +30,7 @@ public class Main {
                     if (arr.length == 1) {
                         printFirst(firstNum);
 
-                    } else {
+                    } else if (arr.length == 2) {
                         if (isnNaturalNumbers(arr[1])) {
                             long secondNum = Long.parseLong(arr[1]);
 
@@ -41,12 +41,36 @@ public class Main {
                         } else {
                             System.out.println("The second parameter should be a natural number.");
                         }
+                    } else {
+                        long secondNum = Long.parseLong(arr[1]);
+                        String str = arr[2];
+
+                        if (checkProperty(str)) {
+                            System.out.println(str + " " + secondNum);
+                        } else {
+                            System.out.printf("""
+                                    The property [%s] is wrong.
+                                    Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY]
+                                    """, str);
+                        }
                     }
                 } else {
                     System.out.println("The first parameter should be a natural number or zero.");
                 }
             }
         }
+    }
+
+    private static boolean checkProperty(String str) {
+        String[] property = {"EVEN", "ODD", "BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY"};
+
+        for (String s : property) {
+            if (str.equalsIgnoreCase(s)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static void printSecond(long num) {
@@ -134,6 +158,7 @@ public class Main {
                 - enter two natural numbers to obtain the properties of the list:
                   * the first parameter represents a starting number;
                   * the second parameter shows how many consecutive numbers are to be printed;
+                - two natural numbers and a property to search for;
                 - separate the parameters with one space;
                 - enter 0 to exit.""");
     }
