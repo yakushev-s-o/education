@@ -20,6 +20,7 @@ public class Main {
             } else if (inputStr.equals("0")) {
                 System.out.println("Goodbye!");
                 break;
+
             } else {
                 String[] arr = inputStr.split(" ");
 
@@ -28,6 +29,7 @@ public class Main {
 
                     if (arr.length == 1) {
                         printFirst(firstNum);
+
                     } else {
                         if (isnNaturalNumbers(arr[1])) {
                             long secondNum = Long.parseLong(arr[1]);
@@ -35,6 +37,7 @@ public class Main {
                             for (long i = 0; i < secondNum; i++) {
                                 printSecond(firstNum++);
                             }
+
                         } else {
                             System.out.println("The second parameter should be a natural number.");
                         }
@@ -74,12 +77,13 @@ public class Main {
     private static boolean isGapful(long num) {
         long n = num;
         int count = 0;
+
         while (n > 9) {
             n /= 10;
             count++;
         }
-        long temp = n * 10 + num % 10;
-        return count > 2 && num % temp == 0;
+
+        return count > 2 && num % (n * 10 + num % 10) == 0;
     }
 
     private static boolean isPalindromic(long num) {
@@ -94,25 +98,16 @@ public class Main {
         return num == reversed;
     }
 
-    private static void instructions() {
-        System.out.println("""
-                Supported requests:
-                - enter a natural number to know its properties;
-                - enter two natural numbers to obtain the properties of the list:
-                  * the first parameter represents a starting number;
-                  * the second parameter shows how many consecutive numbers are to be printed;
-                - separate the parameters with one space;
-                - enter 0 to exit.""");
-    }
-
     private static boolean isDuck(long num) {
         long numTrim = num;
-        for (long i = 10; i <= num; i *= 10) {
+
+        for (long i = num; i >= 10; i /= 10) {
             if (numTrim % 10 == 0) {
                 return true;
             }
             numTrim /= 10;
         }
+
         return false;
     }
 
@@ -130,5 +125,16 @@ public class Main {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    private static void instructions() {
+        System.out.println("""
+                Supported requests:
+                - enter a natural number to know its properties;
+                - enter two natural numbers to obtain the properties of the list:
+                  * the first parameter represents a starting number;
+                  * the second parameter shows how many consecutive numbers are to be printed;
+                - separate the parameters with one space;
+                - enter 0 to exit.""");
     }
 }
