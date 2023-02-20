@@ -19,7 +19,7 @@ public class Number {
         this.gapful = isGapful();
     }
 
-    public static boolean isNumbers(long value) {
+    public static boolean isNatural(long value) {
         return value > 0;
     }
 
