@@ -22,24 +22,21 @@ public class Main {
                 case INVALID_THIRD_NUMBER -> System.out.printf("""
                         The property [%s] is wrong.
                         Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY]
-                        """, userInput.split(" ")[2]);
+                        """, userInput.split(" ")[2].toUpperCase());
                 case FIRST_NUMBER -> {
                     long value = Long.parseLong(userInput);
-                    new Number(value).printPropertiesColumn();
+                    Util.print(value);
                 }
                 case SECOND_NUMBER -> {
                     long value = Long.parseLong(userInput.split(" ")[0]);
                     int many = Integer.parseInt(userInput.split(" ")[1]);
-                    for (long i = 0; i < many; i++) {
-                        new Number(value++).printPropertiesRow();
-                    }
+                    Util.print(value, many);
                 }
                 case THIRD_NUMBER -> {
-                    long many = Long.parseLong(userInput.split(" ")[1]);
-                    String str = userInput.split(" ")[2];
-                    if (Util.checkProperty(str)) {
-                        System.out.println(str + " " + many);
-                    }
+                    long value = Long.parseLong(userInput.split(" ")[0]);
+                    int many = Integer.parseInt(userInput.split(" ")[1]);
+                    String property = userInput.split(" ")[2];
+                    Util.print(value, many, property);
                 }
                 case ZERO -> System.out.println("Goodbye!");
             }

@@ -2,6 +2,27 @@ package hyperskill.numbers;
 
 public class Util {
 
+    public static void print(long value, int many, String property) {
+        String print;
+        while (many > 0) {
+            print = new Number(value++).printPropertiesRow();
+            if (print.contains(property)) {
+                System.out.println(print);
+                many--;
+            }
+        }
+    }
+
+    public static void print(long value, int many) {
+        for (long i = 0; i < many; i++) {
+            System.out.println(new Number(value++).printPropertiesRow());
+        }
+    }
+
+    public static void print(long value) {
+        new Number(value).printPropertiesColumn();
+    }
+
     public static Request checkRequest(String userInput) {
         if (userInput.length() == 0) {
             return Request.EMPTY;

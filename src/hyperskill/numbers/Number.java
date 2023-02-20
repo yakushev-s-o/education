@@ -9,6 +9,7 @@ public class Number {
     private final boolean duck;
     private final boolean palindromic;
     private final boolean gapful;
+    private final boolean spy;
 
     public Number(long value) {
         this.value = value;
@@ -17,6 +18,7 @@ public class Number {
         this.duck = isDuck();
         this.palindromic = isPalindromic();
         this.gapful = isGapful();
+        this.spy = isSpy();
     }
 
     public static boolean isNatural(long value) {
@@ -68,14 +70,30 @@ public class Number {
         return count > 2 && value % (n * 10 + value % 10) == 0;
     }
 
-    public void printPropertiesRow() {
+    private boolean isSpy() {
+        long num = value;
+        long sum = 0;
+        long product = 1;
+
+        while(num != 0) {
+            long digit = num % 10;
+            sum += digit;
+            product *= digit;
+            num /= 10;
+        }
+
+        return sum == product;
+    }
+
+    public String printPropertiesRow() {
         String isOdd = odd ? "odd" : "even";
         String isBuzz = buzz ? ", buzz" : "";
         String isDuck = duck ? ", duck" : "";
         String isPalindromic = palindromic ? ", palindromic" : "";
         String isGapful = gapful ? ", gapful" : "";
+        String isSpy = spy ? ", spy" : "";
 
-        System.out.printf(Locale.US, "%d is %s%s%s%s%s\n", value, isOdd, isBuzz, isDuck, isPalindromic, isGapful);
+        return String.format(Locale.US, "%,d is %s%s%s%s%s%s", value, isOdd, isBuzz, isDuck, isPalindromic, isGapful, isSpy);
     }
 
     public void printPropertiesColumn() {
@@ -87,9 +105,10 @@ public class Number {
                                 duck: %b
                          palindromic: %b
                               gapful: %b
+                                 spy: %b
                         """,
                 value, !isOdd(), isOdd(),
                 isBuzzNumber(), isDuck(),
-                isPalindromic(), isGapful());
+                isPalindromic(), isGapful(), isSpy());
     }
 }
