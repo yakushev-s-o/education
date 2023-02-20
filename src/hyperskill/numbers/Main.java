@@ -35,7 +35,7 @@ public class Main {
                 case THIRD_NUMBER -> {
                     long value = Long.parseLong(userInput.split(" ")[0]);
                     int many = Integer.parseInt(userInput.split(" ")[1]);
-                    String property = userInput.split(" ")[2];
+                    String property = userInput.split(" ")[2].toLowerCase();
                     Util.print(value, many, property);
                 }
                 case ZERO -> System.out.println("Goodbye!");
