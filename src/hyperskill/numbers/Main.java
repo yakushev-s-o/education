@@ -19,11 +19,10 @@ public class Main {
                 case EMPTY -> Util.instructions();
                 case INVALID_FIRST_NUMBER -> System.out.println("The first parameter should be a natural number or zero.");
                 case INVALID_SECOND_NUMBER -> System.out.println("The second parameter should be a natural number.");
-                case INVALID_THIRD_NUMBER ->
-                    System.out.printf("""
-                            The property [%s] is wrong.
-                            Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY]
-                            """, userInput.split(" ")[2]);
+                case INVALID_THIRD_NUMBER -> System.out.printf("""
+                        The property [%s] is wrong.
+                        Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY]
+                        """, userInput.split(" ")[2]);
                 case FIRST_NUMBER -> {
                     long value = Long.parseLong(userInput);
                     new Number(value).printPropertiesColumn();
