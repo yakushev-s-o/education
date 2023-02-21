@@ -2,6 +2,7 @@ package hyperskill.numbers;
 
 public class Util {
 
+    // Displays a specific property in a string multiple times with a value change
     public static void print(long value, int many, String property) {
         String print;
         while (many > 0) {
@@ -13,14 +14,16 @@ public class Util {
         }
     }
 
+    // Displays properties in a string multiple times with value change
     public static void print(long value, int many) {
         for (long i = 0; i < many; i++) {
             System.out.println(new Number(value++).printPropertiesRow());
         }
     }
 
+    // Displays properties in a row
     public static void print(long value) {
-        new Number(value).printPropertiesColumn();
+        System.out.println(new Number(value).printPropertiesColumn());
     }
 
     public static Request checkRequest(String userInput) {
@@ -72,17 +75,5 @@ public class Util {
         } catch (NumberFormatException e) {
             return false;
         }
-    }
-
-    public static void instructions() {
-        System.out.println("""
-                Supported requests:
-                - enter a natural number to know its properties;
-                - enter two natural numbers to obtain the properties of the list:
-                  * the first parameter represents a starting number;
-                  * the second parameter shows how many consecutive numbers are to be printed;
-                - two natural numbers and a property to search for;
-                - separate the parameters with one space;
-                - enter 0 to exit.""");
     }
 }

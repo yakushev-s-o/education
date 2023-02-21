@@ -29,10 +29,12 @@ public class Number {
         return (value & 1) == 1;
     }
 
+    // It is a numbers that are either divisible by 7 or end with 7.
     private boolean isBuzzNumber() {
         return value % 7 == 0 || value % 10 == 7;
     }
 
+    // It is a number is a positive number that contains zeros.
     private boolean isDuck() {
         long numTrim = value;
 
@@ -46,6 +48,7 @@ public class Number {
         return false;
     }
 
+    // It is a number is symmetrical, it stays the same regardless of whether we read it from left or right.
     private boolean isPalindromic() {
         long numSrc = value;
         long reversed = 0;
@@ -58,9 +61,10 @@ public class Number {
         return value == reversed;
     }
 
+    // It is a number that contains at least 3 digits and is divisible by the concatenation of its first and last digit without a remainder.
     private boolean isGapful() {
         long n = value;
-        int count = 0;
+        int count = 1;
 
         while (n > 9) {
             n /= 10;
@@ -70,6 +74,7 @@ public class Number {
         return count > 2 && value % (n * 10 + value % 10) == 0;
     }
 
+    // This is a number where the sum of all digits is equal to the product of all digits.
     private boolean isSpy() {
         long num = value;
         long sum = 0;
@@ -96,8 +101,8 @@ public class Number {
         return String.format(Locale.US, "%,d is %s%s%s%s%s%s", value, isOdd, isBuzz, isDuck, isPalindromic, isGapful, isSpy);
     }
 
-    public void printPropertiesColumn() {
-        System.out.printf(Locale.US, """
+    public String printPropertiesColumn() {
+       return String.format(Locale.US, """
                         Properties of %,d
                                 even: %b
                                  odd: %b

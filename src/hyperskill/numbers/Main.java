@@ -6,23 +6,23 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Welcome to Amazing Numbers!");
-        Util.instructions();
+        System.out.println(Messages.GREETING);
+        System.out.println(Messages.INSTRUCTIONS);
         Request request;
 
         do {
-            System.out.println("Enter a request:");
+            System.out.println(Messages.PROMPT);
             String userInput = scanner.nextLine();
             request = Util.checkRequest(userInput);
 
             switch (request) {
-                case EMPTY -> Util.instructions();
-                case INVALID_FIRST_NUMBER -> System.out.println("The first parameter should be a natural number or zero.");
-                case INVALID_SECOND_NUMBER -> System.out.println("The second parameter should be a natural number.");
-                case INVALID_THIRD_NUMBER -> System.out.printf("""
-                        The property [%s] is wrong.
-                        Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY]
-                        """, userInput.split(" ")[2].toUpperCase());
+                case EMPTY -> System.out.println(Messages.INSTRUCTIONS);
+                case INVALID_FIRST_NUMBER -> System.out.println(Messages.FIRST_ERROR);
+                case INVALID_SECOND_NUMBER -> System.out.println(Messages.SECOND_ERROR);
+                case INVALID_THIRD_NUMBER -> {
+                    String property = userInput.split(" ")[2].toUpperCase();
+                    System.out.printf(Messages.THIRD_ERROR.toString(), property);
+                }
                 case FIRST_NUMBER -> {
                     long value = Long.parseLong(userInput);
                     Util.print(value);
@@ -38,7 +38,7 @@ public class Main {
                     String property = userInput.split(" ")[2].toLowerCase();
                     Util.print(value, many, property);
                 }
-                case ZERO -> System.out.println("Goodbye!");
+                case ZERO -> System.out.println(Messages.GOODBYE);
             }
         } while (request != Request.ZERO);
     }
