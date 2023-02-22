@@ -2,28 +2,13 @@ package hyperskill.numbers;
 
 public class Util {
 
-    // Displays a specific property in a string multiple times with a value change
-    public static void print(long value, int many, String property) {
-        String print;
-        while (many > 0) {
-            print = new Number(value++).printPropertiesRow();
-            if (print.contains(property)) {
-                System.out.println(print);
-                many--;
-            }
+    public static boolean isValidNumber(String userInput) {
+        try {
+            Long.parseLong(userInput);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
-    }
-
-    // Displays properties in a string multiple times with value change
-    public static void print(long value, int many) {
-        for (long i = 0; i < many; i++) {
-            System.out.println(new Number(value++).printPropertiesRow());
-        }
-    }
-
-    // Displays properties in a row
-    public static void print(long value) {
-        System.out.println(new Number(value).printPropertiesColumn());
     }
 
     public static Request checkRequest(String userInput) {
@@ -43,11 +28,21 @@ public class Util {
                     } else {
                         return Request.INVALID_SECOND_NUMBER;
                     }
-                } else {
+                } else if (arr.length == 3) {
                     if (checkProperty(arr[2])) {
                         return Request.THIRD_NUMBER;
                     } else {
                         return Request.INVALID_THIRD_NUMBER;
+                    }
+                } else {
+                    if (checkProperty(arr[2]) && checkProperty(arr[3])) {
+                        if (!checkMutuallyExclusive(userInput)) {
+                            return Request.FOURTH_NUMBER;
+                        } else {
+                            return Request.MUTUALLY_EXCLUSIVE;
+                        }
+                    } else {
+                        return Request.INVALID_FOURTH_NUMBER;
                     }
                 }
             } else {
@@ -57,7 +52,7 @@ public class Util {
     }
 
     public static boolean checkProperty(String userInput) {
-        String[] property = {"EVEN", "ODD", "BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY"};
+        String[] property = {"EVEN", "ODD", "BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY"};
 
         for (String s : property) {
             if (userInput.equalsIgnoreCase(s)) {
@@ -68,12 +63,45 @@ public class Util {
         return false;
     }
 
-    public static boolean isValidNumber(String userInput) {
-        try {
-            Long.parseLong(userInput);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
+    // Displays properties in a row.
+    public static void print(long value) {
+        System.out.println(new Number(value).printPropertiesColumn());
+    }
+
+    // Displays properties in a string multiple times with value change.
+    public static void print(long value, int many) {
+        for (long i = 0; i < many; i++) {
+            System.out.println(new Number(value++).printPropertiesRow());
         }
+    }
+
+    // Displays a specific property in a string multiple times with a value change.
+    public static void print(long value, int many, String property) {
+        String print;
+        while (many > 0) {
+            print = new Number(value++).printPropertiesRow();
+            if (print.contains(property.toLowerCase())) {
+                System.out.println(print);
+                many--;
+            }
+        }
+    }
+
+    // Displays multiple specific properties on a row multiple times with value changes.
+    public static void print(long value, int many, String property1, String property2) {
+        String print;
+        while (many > 0) {
+            print = new Number(value++).printPropertiesRow();
+            if (print.contains(property1.toLowerCase()) && print.contains(property2.toLowerCase())) {
+                System.out.println(print);
+                many--;
+            }
+        }
+    }
+
+    public static boolean checkMutuallyExclusive(String userInput) {
+        return userInput.contains("EVEN") && userInput.contains("ODD") ||
+                userInput.contains("DUCK") && userInput.contains("SPY") ||
+                userInput.contains("SQUARE") && userInput.contains("SUNNY");
     }
 }

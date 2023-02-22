@@ -10,6 +10,8 @@ public class Number {
     private final boolean palindromic;
     private final boolean gapful;
     private final boolean spy;
+    private final boolean square;
+    private final boolean sunny;
 
     public Number(long value) {
         this.value = value;
@@ -19,6 +21,8 @@ public class Number {
         this.palindromic = isPalindromic();
         this.gapful = isGapful();
         this.spy = isSpy();
+        this.square = isSquare();
+        this.sunny = isSunny();
     }
 
     public static boolean isNatural(long value) {
@@ -90,6 +94,18 @@ public class Number {
         return sum == product;
     }
 
+    // This is integer that is the square of an integer. // 1 8 square
+    private boolean isSquare() {
+        long sqrt = (long) Math.sqrt(value);
+        return value == sqrt * sqrt;
+    }
+
+    // This is the number next to which there is a perfect square, if N+1 is a perfect square. // 1 7 sunny
+    private boolean isSunny() {
+        long sqrt = (long) Math.sqrt(value + 1);
+        return value + 1 == sqrt * sqrt;
+    }
+
     public String printPropertiesRow() {
         String isOdd = odd ? "odd" : "even";
         String isBuzz = buzz ? ", buzz" : "";
@@ -97,8 +113,11 @@ public class Number {
         String isPalindromic = palindromic ? ", palindromic" : "";
         String isGapful = gapful ? ", gapful" : "";
         String isSpy = spy ? ", spy" : "";
+        String isSquare = square ? ", square" : "";
+        String isSunny = sunny ? ", sunny" : "";
 
-        return String.format(Locale.US, "%,d is %s%s%s%s%s%s", value, isOdd, isBuzz, isDuck, isPalindromic, isGapful, isSpy);
+        return String.format(Locale.US, "%,d is %s%s%s%s%s%s%s%s",
+                value, isOdd, isBuzz, isDuck, isPalindromic, isGapful, isSpy, isSquare, isSunny);
     }
 
     public String printPropertiesColumn() {
@@ -111,9 +130,10 @@ public class Number {
                          palindromic: %b
                               gapful: %b
                                  spy: %b
+                              square: %b
+                               sunny: %b
                         """,
-                value, !isOdd(), isOdd(),
-                isBuzzNumber(), isDuck(),
-                isPalindromic(), isGapful(), isSpy());
+               value, !isOdd(), isOdd(), isBuzzNumber(), isDuck(),
+               isPalindromic(), isGapful(), isSpy(), isSquare(), isSunny());
     }
 }
