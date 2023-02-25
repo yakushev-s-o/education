@@ -17,17 +17,17 @@ public enum Messages {
     PROMPT("Enter a request: "),
     FIRST_ERROR("The first parameter should be a natural number or zero."),
     SECOND_ERROR("The second parameter should be a natural number."),
-    THIRD_ERROR("""
-            The property [%s] is wrong.
+    PROPERTY_ERROR("""
+            The property %s is wrong.
             Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY]
             """),
-    FOURTH_ERROR("""
-            The properties [%s, %s] are wrong.
-            Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY]
-            """),
-    MUTUALLY_EXCLUSIVE("""
-            The request contains mutually exclusive properties: [%s, %s]
+    MUTUALLY_EXCLUSIVE_ERROR("""
+            The request contains mutually exclusive properties: %s
             There are no numbers with these properties.
+            """),
+    INCORRECT_PROPERTIES("""
+            The properties ... are wrong
+            Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY]
             """),
     GOODBYE("Goodbye!");
 

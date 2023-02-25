@@ -94,13 +94,13 @@ public class Number {
         return sum == product;
     }
 
-    // This is integer that is the square of an integer. // 1 8 square
+    // This is integer that is the square of an integer.
     private boolean isSquare() {
         long sqrt = (long) Math.sqrt(value);
         return value == sqrt * sqrt;
     }
 
-    // This is the number next to which there is a perfect square, if N+1 is a perfect square. // 1 7 sunny
+    // This is the number next to which there is a perfect square, if N+1 is a perfect square.
     private boolean isSunny() {
         long sqrt = (long) Math.sqrt(value + 1);
         return value + 1 == sqrt * sqrt;
