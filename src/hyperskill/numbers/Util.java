@@ -88,11 +88,12 @@ public class Util {
 
     // Returns a long array containing only the numbers entered by the user.
     public static long[] numberOnly(String[] userInput) {
-        if (userInput.length == 1) {
+        if (userInput.length == 1 && isValidNumber(userInput[0])) {
             return new long[]{Long.parseLong(userInput[0])};
-        } else {
+        } else if (userInput.length == 2 && isValidNumber(userInput[1])) {
             return new long[]{Long.parseLong(userInput[0]), Long.parseLong(userInput[1])};
         }
+        return new long[]{0};
     }
 
     // Checking if properties in user input are mutually exclusive.

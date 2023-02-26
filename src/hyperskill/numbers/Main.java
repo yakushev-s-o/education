@@ -14,9 +14,9 @@ public class Main {
 
         do {
             System.out.println(Messages.PROMPT);
-            String[] inputProperty = {"EVEN", "ODD", "BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY"};
+            String[] inputProperty = {"EVEN", "ODD", "BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY", "JUMPING"};
             String[] userInput = scanner.nextLine().toUpperCase().split(" ");
-            long[] value = numberOnly(userInput);
+//            long[] value = numberOnly(userInput);
             String[] property = propertyOnly(userInput);
             request = checkRequest(userInput, inputProperty, property);
 
@@ -27,9 +27,9 @@ public class Main {
                 case INVALID_PROPERTY -> printfError(Messages.PROPERTY_ERROR, propertyError(property, inputProperty));
                 case INVALID_ALL_PROPERTY -> System.out.println(Messages.INCORRECT_PROPERTIES);
                 case MUTUALLY_EXCLUSIVE -> printfError(Messages.MUTUALLY_EXCLUSIVE_ERROR, property);
-                case FIRST_NUMBER -> print(value[0]);
-                case SECOND_NUMBER -> print(value[0], value[1]);
-                case PROPERTY -> print(value[0], value[1], property);
+                case FIRST_NUMBER -> print(Long.parseLong(userInput[0]));
+                case SECOND_NUMBER -> print(Long.parseLong(userInput[0]), Long.parseLong(userInput[1]));
+                case PROPERTY -> print(Long.parseLong(userInput[0]), Long.parseLong(userInput[1]), property);
                 case ZERO -> System.out.println(Messages.GOODBYE);
             }
         } while (request != Request.ZERO);

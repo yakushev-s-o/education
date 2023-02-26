@@ -12,6 +12,7 @@ public class Number {
     private final boolean spy;
     private final boolean square;
     private final boolean sunny;
+    private final boolean jumping;
 
     public Number(long value) {
         this.value = value;
@@ -23,6 +24,7 @@ public class Number {
         this.spy = isSpy();
         this.square = isSquare();
         this.sunny = isSunny();
+        this.jumping = isJumping();
     }
 
     public static boolean isNatural(long value) {
@@ -106,6 +108,30 @@ public class Number {
         return value + 1 == sqrt * sqrt;
     }
 
+    // This is the number is a jump number if adjacent digits within the number differ by 1.
+    public boolean isJumping() {
+        long num = value;
+
+        if (num < 10) {
+            return true;
+        }
+
+        long prevDigit = num % 10;
+        num /= 10;
+
+        while (num != 0) {
+            long currDigit = num % 10;
+            long diff = currDigit - prevDigit;
+            if (diff != 1 && diff != -1) {
+                return false;
+            }
+            prevDigit = currDigit;
+            num /= 10;
+        }
+
+        return true;
+    }
+
     public String printPropertiesRow() {
         String isOdd = odd ? "odd" : "even";
         String isBuzz = buzz ? ", buzz" : "";
@@ -115,9 +141,10 @@ public class Number {
         String isSpy = spy ? ", spy" : "";
         String isSquare = square ? ", square" : "";
         String isSunny = sunny ? ", sunny" : "";
+        String isJumping = jumping ? ", jumping" : "";
 
-        return String.format(Locale.US, "%,d is %s%s%s%s%s%s%s%s",
-                value, isOdd, isBuzz, isDuck, isPalindromic, isGapful, isSpy, isSquare, isSunny);
+        return String.format(Locale.US, "%,d is %s%s%s%s%s%s%s%s%s",
+                value, isOdd, isBuzz, isDuck, isPalindromic, isGapful, isSpy, isSquare, isSunny, isJumping);
     }
 
     public String printPropertiesColumn() {
@@ -132,8 +159,9 @@ public class Number {
                                  spy: %b
                               square: %b
                                sunny: %b
+                             jumping: %b
                         """,
                value, !isOdd(), isOdd(), isBuzzNumber(), isDuck(),
-               isPalindromic(), isGapful(), isSpy(), isSquare(), isSunny());
+               isPalindromic(), isGapful(), isSpy(), isSquare(), isSunny(), isJumping());
     }
 }
