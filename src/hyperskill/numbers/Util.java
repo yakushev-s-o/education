@@ -150,4 +150,9 @@ public class Util {
             }
         }
     }
+
+    // Displays an error message using the formatted output from the Messages object and the Property array of lines.
+    public static void printfError(Messages message, String[] property) {
+        System.out.printf(message.toString(), Arrays.toString(property));
+    }
 }
