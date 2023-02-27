@@ -14,10 +14,12 @@ public class Main {
 
         do {
             System.out.println(Messages.PROMPT);
-            String[] inputProperty = {"EVEN", "ODD", "BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "SQUARE", "SUNNY", "JUMPING"};
             String[] userInput = scanner.nextLine().toUpperCase().split(" ");
-//            long[] value = numberOnly(userInput);
             String[] property = propertyOnly(userInput);
+            String[] inputProperty = {"EVEN", "ODD", "BUZZ", "DUCK", "PALINDROMIC",
+                    "GAPFUL", "SPY", "SQUARE", "SUNNY", "JUMPING", "HAPPY", "SAD",
+                    "-EVEN", "-ODD", "-BUZZ", "-DUCK", "-PALINDROMIC",
+                    "-GAPFUL", "-SPY", "-SQUARE", "-SUNNY", "-JUMPING", "-HAPPY", "-SAD"};
             request = checkRequest(userInput, inputProperty, property);
 
             switch (request) {

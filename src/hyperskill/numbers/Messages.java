@@ -10,6 +10,7 @@ public enum Messages {
               * the first parameter represents a starting number;
               * the second parameter shows how many consecutive numbers are to be printed;
             - two natural numbers and properties to search for;
+            - a property preceded by minus must not be present in numbers;
             - separate the parameters with one space;
             - enter 0 to exit."""
     ),

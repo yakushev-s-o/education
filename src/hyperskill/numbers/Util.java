@@ -86,16 +86,6 @@ public class Util {
         return resultList.toArray(new String[0]);
     }
 
-    // Returns a long array containing only the numbers entered by the user.
-    public static long[] numberOnly(String[] userInput) {
-        if (userInput.length == 1 && isValidNumber(userInput[0])) {
-            return new long[]{Long.parseLong(userInput[0])};
-        } else if (userInput.length == 2 && isValidNumber(userInput[1])) {
-            return new long[]{Long.parseLong(userInput[0]), Long.parseLong(userInput[1])};
-        }
-        return new long[]{0};
-    }
-
     // Checking if properties in user input are mutually exclusive.
     public static boolean checkMutuallyExclusive(String[] userInputs) {
         boolean containsEven = false;
@@ -104,6 +94,8 @@ public class Util {
         boolean containsSpy = false;
         boolean containsSquare = false;
         boolean containsSunny = false;
+        boolean containsHappy = false;
+        boolean containsSad = false;
 
         for (String input : userInputs) {
             switch (input) {
@@ -113,10 +105,13 @@ public class Util {
                 case "SPY" -> containsSpy = true;
                 case "SQUARE" -> containsSquare = true;
                 case "SUNNY" -> containsSunny = true;
+                case "HAPPY" -> containsHappy = true;
+                case "SAD" -> containsSad = true;
             }
         }
 
-        return (containsEven && containsOdd) || (containsDuck && containsSpy) || (containsSquare && containsSunny);
+        return (containsEven && containsOdd) || (containsDuck && containsSpy) ||
+                (containsSquare && containsSunny) || (containsHappy && containsSad);
     }
 
 
@@ -132,16 +127,23 @@ public class Util {
         }
     }
 
-    // Displays multiple specific properties on a row multiple times with value changes.
+    // Displays multiple defined properties in a row multiple times with value change ignoring negative properties.
     public static void print(long value, long many, String[] property) {
         while (many > 0) {
             String print = new Number(value++).printPropertiesRow();
 
             boolean found = true;
             for (String s : property) {
-                if (!print.toLowerCase().contains(s.toLowerCase())) {
-                    found = false;
-                    break;
+                if (s.startsWith("-")) {
+                    if (print.toLowerCase().contains(s.substring(1).toLowerCase())) {
+                        found = false;
+                        break;
+                    }
+                } else {
+                    if (!print.toLowerCase().contains(s.toLowerCase())) {
+                        found = false;
+                        break;
+                    }
                 }
             }
 
@@ -151,6 +153,7 @@ public class Util {
             }
         }
     }
+
 
     // Displays an error message using the formatted output from the Messages object and the Property array of lines.
     public static void printfError(Messages message, String[] property) {
