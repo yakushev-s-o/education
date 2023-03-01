@@ -1,8 +1,6 @@
 package hyperskill.numbers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Util {
 
@@ -34,7 +32,7 @@ public class Util {
                     }
                 } else {
                     if (checkAllProperties(userInput, inputProperty)) {
-                        if (!checkMutuallyExclusive(userInput)) {
+                        if (!checkMutuallyExclusive(property)) {
                             return Request.PROPERTY;
                         } else {
                             return Request.MUTUALLY_EXCLUSIVE;
@@ -86,32 +84,56 @@ public class Util {
         return resultList.toArray(new String[0]);
     }
 
-    // Checking if properties in user input are mutually exclusive.
-    public static boolean checkMutuallyExclusive(String[] userInputs) {
-        boolean containsEven = false;
-        boolean containsOdd = false;
-        boolean containsDuck = false;
-        boolean containsSpy = false;
-        boolean containsSquare = false;
-        boolean containsSunny = false;
-        boolean containsHappy = false;
-        boolean containsSad = false;
+//    // Checking if properties in user input are mutually exclusive.
+//    public static boolean checkMutuallyExclusive(String[] userInputs) {
+//        boolean containsEven = false;
+//        boolean containsOdd = false;
+//        boolean containsDuck = false;
+//        boolean containsSpy = false;
+//        boolean containsSquare = false;
+//        boolean containsSunny = false;
+//        boolean containsHappy = false;
+//        boolean containsSad = false;
+//
+//        for (String input : userInputs) {
+//            switch (input) {
+//                case "EVEN" -> containsEven = true;
+//                case "ODD" -> containsOdd = true;
+//                case "DUCK" -> containsDuck = true;
+//                case "SPY" -> containsSpy = true;
+//                case "SQUARE" -> containsSquare = true;
+//                case "SUNNY" -> containsSunny = true;
+//                case "HAPPY" -> containsHappy = true;
+//                case "SAD" -> containsSad = true;
+//            }
+//        }
+//
+//        return (containsEven && containsOdd) || (containsDuck && containsSpy) ||
+//                (containsSquare && containsSunny) || (containsHappy && containsSad);
+//    }
 
-        for (String input : userInputs) {
-            switch (input) {
-                case "EVEN" -> containsEven = true;
-                case "ODD" -> containsOdd = true;
-                case "DUCK" -> containsDuck = true;
-                case "SPY" -> containsSpy = true;
-                case "SQUARE" -> containsSquare = true;
-                case "SUNNY" -> containsSunny = true;
-                case "HAPPY" -> containsHappy = true;
-                case "SAD" -> containsSad = true;
+    public static boolean checkMutuallyExclusive(String[] strings) {
+        Map<String, Integer> map = new HashMap<>();
+
+        for (String s : strings) {
+            for (Property p : Property.values()) {
+                if (s.contains(p.name())) {
+                    map.put(s, p.code);
+                    break;
+                }
             }
         }
 
-        return (containsEven && containsOdd) || (containsDuck && containsSpy) ||
-                (containsSquare && containsSunny) || (containsHappy && containsSad);
+        // Имена разные | Значения одинаковые - взаимоисключающие
+        for (Map.Entry<String, Integer> entry1 : map.entrySet()) {
+            for (Map.Entry<String, Integer> entry2 : map.entrySet()) {
+                if (!entry1.getKey().equals(entry2.getKey()) && entry1.getValue().equals(entry2.getValue())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 
