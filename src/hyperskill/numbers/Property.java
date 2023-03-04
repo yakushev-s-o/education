@@ -19,7 +19,8 @@ public enum Property {
     Property(int code) {
         this.code = code;
     }
-    public void  changeValue() {
+
+    public void changeValue() {
         this.code -= this.code + this.code;
     }
 }

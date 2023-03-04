@@ -15,7 +15,7 @@ public class Util {
     }
 
     // Validates the request type based on user input and an array of valid properties.
-    public static Request checkRequest(String[] userInput, String[] inputProperty, String[] property) {
+    public static Request checkRequest(String[] userInput, String[] property) {
         if (userInput.length == 0) {
             return Request.EMPTY;
         } else if (userInput[0].equals("0")) {
@@ -31,14 +31,14 @@ public class Util {
                         return Request.INVALID_SECOND_NUMBER;
                     }
                 } else {
-                    if (checkAllProperties(userInput, inputProperty)) {
+                    if (checkAllProperties(userInput)) {
                         if (!checkMutuallyExclusive(property)) {
                             return Request.PROPERTY;
                         } else {
                             return Request.MUTUALLY_EXCLUSIVE;
                         }
                     } else {
-                        if (Util.propertyError(property, inputProperty).length == 1) {
+                        if (Util.propertyError(property).length == 1) {
                             return Request.INVALID_PROPERTY;
                         } else {
                             return Request.INVALID_ALL_PROPERTY;
@@ -52,13 +52,19 @@ public class Util {
     }
 
     // Checks if the user input contains all valid properties.
-    public static boolean checkAllProperties(String[] userInput, String[] inputProperty) {
+    public static boolean checkAllProperties(String[] userInput) {
         for (int i = 2; i < userInput.length; i++) {
-            if (!Arrays.asList(inputProperty).contains(userInput[i])) {
+            boolean found = false;
+            for (Property property : Property.values()) {
+                if (userInput[i].contains(property.name())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -72,11 +78,18 @@ public class Util {
     }
 
     // Returns an array of strings, contains invalid properties from user input.
-    public static String[] propertyError(String[] property, String[] inputProperty) {
+    public static String[] propertyError(String[] property) {
         List<String> resultList = new ArrayList<>();
 
         for (String s : property) {
-            if (!Arrays.asList(inputProperty).contains(s)) {
+            boolean found = false;
+            for (Property p : Property.values()) {
+                if (s.contains(p.name())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
                 resultList.add(s);
             }
         }
@@ -84,50 +97,39 @@ public class Util {
         return resultList.toArray(new String[0]);
     }
 
-//    // Checking if properties in user input are mutually exclusive.
-//    public static boolean checkMutuallyExclusive(String[] userInputs) {
-//        boolean containsEven = false;
-//        boolean containsOdd = false;
-//        boolean containsDuck = false;
-//        boolean containsSpy = false;
-//        boolean containsSquare = false;
-//        boolean containsSunny = false;
-//        boolean containsHappy = false;
-//        boolean containsSad = false;
-//
-//        for (String input : userInputs) {
-//            switch (input) {
-//                case "EVEN" -> containsEven = true;
-//                case "ODD" -> containsOdd = true;
-//                case "DUCK" -> containsDuck = true;
-//                case "SPY" -> containsSpy = true;
-//                case "SQUARE" -> containsSquare = true;
-//                case "SUNNY" -> containsSunny = true;
-//                case "HAPPY" -> containsHappy = true;
-//                case "SAD" -> containsSad = true;
-//            }
-//        }
-//
-//        return (containsEven && containsOdd) || (containsDuck && containsSpy) ||
-//                (containsSquare && containsSunny) || (containsHappy && containsSad);
-//    }
-
+    // Checking if properties in user input are mutually exclusive.
     public static boolean checkMutuallyExclusive(String[] strings) {
         Map<String, Integer> map = new HashMap<>();
 
         for (String s : strings) {
             for (Property p : Property.values()) {
                 if (s.contains(p.name())) {
-                    map.put(s, p.code);
+                    if (s.startsWith("-")) {
+                        p.changeValue();
+                        map.put(s, p.code);
+                        p.changeValue();
+                    } else {
+                        map.put(s, p.code);
+                    }
                     break;
                 }
             }
         }
 
-        // Имена разные | Значения одинаковые - взаимоисключающие
+        /*
+        If the keys are not equal, the values are equal and both keys do not start with a "-" character,
+        or if one key without a "-" character is equal to the other, or "ODD" is equal to "EVEN".
+         */
         for (Map.Entry<String, Integer> entry1 : map.entrySet()) {
             for (Map.Entry<String, Integer> entry2 : map.entrySet()) {
-                if (!entry1.getKey().equals(entry2.getKey()) && entry1.getValue().equals(entry2.getValue())) {
+                if (!entry1.getKey().equals(entry2.getKey()) &&
+                        entry1.getValue().equals(entry2.getValue()) &&
+                        !entry1.getKey().startsWith("-") &&
+                        !entry2.getKey().startsWith("-") ||
+                        entry1.getKey().substring(1).equals(entry2.getKey()) ||
+                        entry2.getKey().substring(1).equals(entry1.getKey()) ||
+                        entry1.getKey().equals("ODD") && entry2.getKey().equals("EVEN") ||
+                        entry1.getKey().equals("-ODD") && entry2.getKey().equals("-EVEN")) {
                     return true;
                 }
             }
@@ -135,7 +137,6 @@ public class Util {
 
         return false;
     }
-
 
     // Displays properties in a row.
     public static void print(long value) {
@@ -175,7 +176,6 @@ public class Util {
             }
         }
     }
-
 
     // Displays an error message using the formatted output from the Messages object and the Property array of lines.
     public static void printfError(Messages message, String[] property) {

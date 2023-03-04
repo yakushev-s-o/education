@@ -16,17 +16,13 @@ public class Main {
             System.out.println(Messages.PROMPT);
             String[] userInput = scanner.nextLine().toUpperCase().split(" ");
             String[] property = propertyOnly(userInput);
-            String[] inputProperty = {"EVEN", "ODD", "BUZZ", "DUCK", "PALINDROMIC",
-                    "GAPFUL", "SPY", "SQUARE", "SUNNY", "JUMPING", "HAPPY", "SAD",
-                    "-EVEN", "-ODD", "-BUZZ", "-DUCK", "-PALINDROMIC",
-                    "-GAPFUL", "-SPY", "-SQUARE", "-SUNNY", "-JUMPING", "-HAPPY", "-SAD"};
-            request = checkRequest(userInput, inputProperty, property);
+            request = checkRequest(userInput, property);
 
             switch (request) {
                 case EMPTY -> System.out.println(Messages.INSTRUCTIONS);
                 case INVALID_FIRST_NUMBER -> System.out.println(Messages.FIRST_ERROR);
                 case INVALID_SECOND_NUMBER -> System.out.println(Messages.SECOND_ERROR);
-                case INVALID_PROPERTY -> printfError(Messages.PROPERTY_ERROR, propertyError(property, inputProperty));
+                case INVALID_PROPERTY -> printfError(Messages.PROPERTY_ERROR, propertyError(property));
                 case INVALID_ALL_PROPERTY -> System.out.println(Messages.INCORRECT_PROPERTIES);
                 case MUTUALLY_EXCLUSIVE -> printfError(Messages.MUTUALLY_EXCLUSIVE_ERROR, property);
                 case FIRST_NUMBER -> print(Long.parseLong(userInput[0]));
