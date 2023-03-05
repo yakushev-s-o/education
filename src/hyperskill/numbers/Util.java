@@ -56,7 +56,7 @@ public class Util {
         for (int i = 2; i < userInput.length; i++) {
             boolean found = false;
             for (Property property : Property.values()) {
-                if (userInput[i].contains(property.name())) {
+                if (userInput[i].equals(property.name()) || userInput[i].equals("-" + property.name())) {
                     found = true;
                     break;
                 }
@@ -84,7 +84,7 @@ public class Util {
         for (String s : property) {
             boolean found = false;
             for (Property p : Property.values()) {
-                if (s.contains(p.name())) {
+                if (s.equals(p.name()) || s.equals("-" + p.name())) {
                     found = true;
                     break;
                 }

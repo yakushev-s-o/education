@@ -22,7 +22,7 @@ public class Main {
                 case EMPTY -> System.out.println(Messages.INSTRUCTIONS);
                 case INVALID_FIRST_NUMBER -> System.out.println(Messages.FIRST_ERROR);
                 case INVALID_SECOND_NUMBER -> System.out.println(Messages.SECOND_ERROR);
-                case INVALID_PROPERTY -> printfError(Messages.PROPERTY_ERROR, propertyError(property));
+                case INVALID_PROPERTY -> System.out.println(Messages.PROPERTY_ERROR);
                 case INVALID_ALL_PROPERTY -> System.out.println(Messages.INCORRECT_PROPERTIES);
                 case MUTUALLY_EXCLUSIVE -> printfError(Messages.MUTUALLY_EXCLUSIVE_ERROR, property);
                 case FIRST_NUMBER -> print(Long.parseLong(userInput[0]));
