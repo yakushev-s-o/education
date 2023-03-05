@@ -32,13 +32,13 @@ public class Util {
                     }
                 } else {
                     if (checkAllProperties(userInput)) {
-                        if (!checkMutuallyExclusive(property)) {
+                        if (checkMutuallyExclusive(property).length == 0) {
                             return Request.PROPERTY;
                         } else {
                             return Request.MUTUALLY_EXCLUSIVE;
                         }
                     } else {
-                        if (Util.propertyError(property).length == 1) {
+                        if (propertyError(property).length == 1) {
                             return Request.INVALID_PROPERTY;
                         } else {
                             return Request.INVALID_ALL_PROPERTY;
@@ -98,8 +98,9 @@ public class Util {
     }
 
     // Checking if properties in user input are mutually exclusive.
-    public static boolean checkMutuallyExclusive(String[] strings) {
+    public static String[] checkMutuallyExclusive(String[] strings) {
         Map<String, Integer> map = new HashMap<>();
+        List<String> resultList = new ArrayList<>();
 
         for (String s : strings) {
             for (Property p : Property.values()) {
@@ -120,6 +121,7 @@ public class Util {
         If the keys are not equal, the values are equal and both keys do not start with a "-" character,
         or if one key without a "-" character is equal to the other, or "ODD" is equal to "EVEN".
          */
+        boolean foundMatch = false;
         for (Map.Entry<String, Integer> entry1 : map.entrySet()) {
             for (Map.Entry<String, Integer> entry2 : map.entrySet()) {
                 if (!entry1.getKey().equals(entry2.getKey()) &&
@@ -130,12 +132,17 @@ public class Util {
                         entry2.getKey().substring(1).equals(entry1.getKey()) ||
                         entry1.getKey().equals("ODD") && entry2.getKey().equals("EVEN") ||
                         entry1.getKey().equals("-ODD") && entry2.getKey().equals("-EVEN")) {
-                    return true;
+                    resultList.addAll(Arrays.asList(entry1.getKey(), entry2.getKey()));
+                    foundMatch = true;
                 }
+            }
+
+            if (foundMatch) {
+                break;
             }
         }
 
-        return false;
+        return resultList.toArray(new String[0]);
     }
 
     // Displays properties in a row.

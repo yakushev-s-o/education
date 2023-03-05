@@ -18,7 +18,7 @@ public enum Messages {
     FIRST_ERROR("The first parameter should be a natural number or zero."),
     SECOND_ERROR("The second parameter should be a natural number."),
     PROPERTY_ERROR("""
-            The property ... is wrong
+            The property %s is wrong
             Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, HAPPY, SAD]
             """),
     MUTUALLY_EXCLUSIVE_ERROR("""
@@ -26,7 +26,7 @@ public enum Messages {
             There are no numbers with these properties.
             """),
     INCORRECT_PROPERTIES("""
-            The properties ... are wrong
+            The properties %s are wrong
             Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, HAPPY, SAD]
             """),
     GOODBYE("Goodbye!");
