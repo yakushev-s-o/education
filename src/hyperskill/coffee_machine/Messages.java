@@ -13,7 +13,7 @@ public enum Messages {
     BUY("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:"),
     ADD_WATER("Write how many ml of water you want to add:"),
     ADD_MILK("Write how many ml of milk you want to add:"),
-    ADD_COFFEE("Write how many grams of coffee beans you want to add:"),
+    ADD_BEANS("Write how many grams of coffee beans you want to add:"),
     ADD_CUPS("Write how many disposable cups you want to add:"),
     TAKE("I gave you $%d\n"),
     ENOUGH_RESOURCE("I have enough resources, making you a coffee!"),
