@@ -23,7 +23,8 @@ public class Bullscows {
             if (size < 10) {
                 break;
             } else {
-                System.out.printf("Error: can't generate a secret number with a length of %d because there aren't enough unique digits.\n", size);
+                System.out.printf("Error: can't generate a secret number " +
+                        "with a length of %d because there aren't enough unique digits.\n", size);
             }
         }
 
@@ -71,28 +72,19 @@ public class Bullscows {
     }
 
     public void randomSecretCode(int size) {
-        boolean check;
-        do {
-            long pseudoRandomNumber = System.nanoTime();
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(pseudoRandomNumber).reverse();
+        StringBuilder secretCode = new StringBuilder();
+        boolean[] digits = new boolean[10];
 
-            while (stringBuilder.charAt(0) == '0') {
-                stringBuilder.deleteCharAt(0);
-            }
-
-            secret = stringBuilder.substring(0, size);
-
-            check = false;
-            boolean[] digits = new boolean[10];
-            for (int i = 0; i < secret.length(); i++) {
-                int digit = Character.getNumericValue(secret.charAt(i));
-                if (digits[digit]) {
-                    check = true;
-                }
+        for (int i = 0; i < size; i++) {
+            int digit = (int) (Math.random() * 9 + 1);
+            if (digits[digit]) {
+                i--;
+            } else {
                 digits[digit] = true;
+                secretCode.append(digit);
             }
+        }
 
-        } while (check);
+        secret = secretCode.toString();
     }
 }
