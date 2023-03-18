@@ -16,19 +16,23 @@ public class Bullscows {
         Scanner sc = new Scanner(System.in);
         System.out.println("Please, enter the secret code's length:");
 
-        int size;
+        int length;
         while (true) {
-            size = sc.nextInt();
+            length = sc.nextInt();
 
-            if (size < 10) {
+            if (length < 32) {
                 break;
             } else {
                 System.out.printf("Error: can't generate a secret number " +
-                        "with a length of %d because there aren't enough unique digits.\n", size);
+                        "with a length of %d because there aren't enough unique digits.\n", length);
             }
         }
 
-        randomSecretCode(size);
+        System.out.println("Input the number of possible symbols in the code:");
+        int range = sc.nextInt();
+
+
+        randomSecretCode(length, range);
         System.out.println("Okay, let's start a game!");
 
         int turn = 1;
@@ -71,20 +75,18 @@ public class Bullscows {
         }
     }
 
-    public void randomSecretCode(int size) {
+    public void randomSecretCode(int length, int range) {
         StringBuilder secretCode = new StringBuilder();
-        boolean[] digits = new boolean[10];
+        final String ALPHABET = "1234567890abcdefghijklmnopqrstuvwxyz";
 
-        for (int i = 0; i < size; i++) {
-            int digit = (int) (Math.random() * 9 + 1);
-            if (digits[digit]) {
-                i--;
-            } else {
-                digits[digit] = true;
-                secretCode.append(digit);
+        while (secretCode.length() < length) {
+            int random = (int) (Math.random() * (range - ALPHABET.length()) + range);
+
+            if (!secretCode.toString().contains(String.valueOf(ALPHABET.charAt(random)))) {
+                secretCode.append(ALPHABET.charAt(random));
             }
         }
-
         secret = secretCode.toString();
+        System.out.println(secret);
     }
 }
