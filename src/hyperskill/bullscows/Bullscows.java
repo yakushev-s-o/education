@@ -6,6 +6,7 @@ public class Bullscows {
     private String secret;
     private int bulls;
     private int cows;
+    private final String ALPHABET = "1234567890abcdefghijklmnopqrstuvwxyz";
 
     public Bullscows() {
         bulls = 0;
@@ -14,13 +15,13 @@ public class Bullscows {
 
     public void run() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Please, enter the secret code's length:");
+        System.out.println("Input the length of the secret code:");
 
         int length;
         while (true) {
             length = sc.nextInt();
 
-            if (length < 32) {
+            if (length <= 36) {
                 break;
             } else {
                 System.out.printf("Error: can't generate a secret number " +
@@ -31,8 +32,16 @@ public class Bullscows {
         System.out.println("Input the number of possible symbols in the code:");
         int range = sc.nextInt();
 
+        secret = randomSecretCode(length, range);
 
-        randomSecretCode(length, range);
+        String rangeChar;
+        if (range < 10) {
+            rangeChar = "0-" + ALPHABET.charAt(range - 1);
+        } else {
+            rangeChar = "0-9, a-" + ALPHABET.charAt(range - 1);
+        }
+        System.out.printf("The secret is prepared: %s (%s).\n", "*".repeat(length), rangeChar);
+
         System.out.println("Okay, let's start a game!");
 
         int turn = 1;
@@ -75,18 +84,16 @@ public class Bullscows {
         }
     }
 
-    public void randomSecretCode(int length, int range) {
+    public String randomSecretCode(int length, int range) {
         StringBuilder secretCode = new StringBuilder();
-        final String ALPHABET = "1234567890abcdefghijklmnopqrstuvwxyz";
 
         while (secretCode.length() < length) {
-            int random = (int) (Math.random() * (range - ALPHABET.length()) + range);
+            int random = (int) (Math.random() * range);
 
             if (!secretCode.toString().contains(String.valueOf(ALPHABET.charAt(random)))) {
                 secretCode.append(ALPHABET.charAt(random));
             }
         }
-        secret = secretCode.toString();
-        System.out.println(secret);
+        return secretCode.toString();
     }
 }
