@@ -7,15 +7,7 @@ public class Bullscows {
     private String secret;
     private int bulls;
     private int cows;
-    private int length;
-    private int range;
 
-    public Bullscows() {
-        bulls = 0;
-        cows = 0;
-        length = 0;
-        range = 0;
-    }
 
     public void run() {
         try (Scanner sc = new Scanner(System.in)) {
@@ -23,7 +15,7 @@ public class Bullscows {
 
             String inputLength = sc.next();
             try {
-                length = Integer.parseInt(inputLength);
+                int length = Integer.parseInt(inputLength);
 
                 if (length > 36 || length == 0) {
                     System.out.printf("Error: can't generate a secret number " +
@@ -33,7 +25,7 @@ public class Bullscows {
 
                     String inputRange = sc.next();
                     try {
-                        range = Integer.parseInt(inputRange);
+                        int range = Integer.parseInt(inputRange);
 
                         if (range > 36) {
                             System.out.println("Error: maximum number of possible symbols in the code is 36 (0-9, a-z).");
