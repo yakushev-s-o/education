@@ -7,8 +7,8 @@ public enum Ship {
     CRUISER("Cruiser", 3),
     DESTROYER("Destroyer", 2);
 
-    String name;
-    int length;
+    private final String name;
+    private final int length;
 
     public String getName() {
         return name;
