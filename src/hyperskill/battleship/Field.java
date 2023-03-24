@@ -1,7 +1,6 @@
 package hyperskill.battleship;
 
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class Field {
     private char[][] field;
@@ -10,13 +9,6 @@ public class Field {
     private static final char SHIP = 'O';
     private static final char SHIT = 'X';
     private static final char MISS = 'M';
-
-    public void run() {
-        initial();
-        display();
-        fill(Ship.AIRCRAFT_CARRIER);
-        display();
-    }
 
     public void initial() {
         field = new char[FIELD_SIZE][FIELD_SIZE];
@@ -37,63 +29,74 @@ public class Field {
         }
     }
 
-    public void fill(Ship ship) {
-        Scanner sc = new Scanner(System.in);
-        int[] c1 = convertCoordinates(sc.next());
-        int[] c2 = convertCoordinates(sc.next());
+    public void run() {
+        initial();
+        display();
 
+        for (Ship ship : Ship.values()) {
+            fill(ship);
+            display();
+        }
+    }
+
+    public void fill(Ship ship) {
         int[][] coordinate;
 
-        if (c1[1] > c2[1] || c1[0] > c2[0]) {
-            coordinate = new int[][]{c2, c1};
-        } else {
-            coordinate = new int[][]{c1, c2};
+        do {
+            System.out.printf(Messages.ENTER_SHIP.toString(), ship.getName(), ship.getLength());
+            coordinate = setCoordinates();
+        } while (!checkValid(coordinate, ship));
+
+
+        for (int i = coordinate[0][0] - 1; i <= coordinate[1][0] - 1; i++) {
+            for (int j = coordinate[0][1] - 1; j <= coordinate[1][1] - 1; j++) {
+                field[i][j] = SHIP;
+            }
         }
+    }
 
-
+    public boolean checkValid(int[][] coordinate, Ship ship) {
         if (coordinate[0][0] < 1 || coordinate[0][0] > 10 || coordinate[1][0] < 1 || coordinate[1][0] > 10) {
-            System.out.println("Error! Invalid input!");
+            System.out.println(Messages.ERROR_INPUT);
+            return false;
         } else if (coordinate[0][0] != coordinate[1][0] && coordinate[0][1] != coordinate[1][1]) {
-            System.out.println("Error! Wrong ship location! Try again:");
+            System.out.println(Messages.ERROR_LOCATION);
+            return false;
         } else if ((Math.abs(coordinate[0][1] - coordinate[1][1]) + 1 != ship.getLength()) &&
                 (Math.abs(coordinate[0][0] - coordinate[1][0]) + 1 != ship.getLength())) {
-            System.out.println("Error! Wrong length of the " + ship.getName() + "! Try again:");
+            System.out.printf(Messages.ERROR_LENGTH.toString(), ship.getName());
+            return false;
         } else {
             for (int i = coordinate[0][0] - 2; i <= coordinate[1][0]; i++) {
                 for (int j = coordinate[0][1] - 2; j <= coordinate[1][1]; j++) {
                     if ((i >= 0 && i < field.length) && (j >= 0 && j < field.length)) {
-                        if (field[i][j] == 'O') {
-                            System.out.println("Error! You placed it too close to another one. Try again:");
-                            return;
+                        if (field[i][j] == SHIP) {
+                            System.out.println(Messages.ERROR_CLOSE);
+                            return false;
                         }
                     }
                 }
             }
         }
+        return true;
+    }
 
-        for (int i = coordinate[0][0] - 1; i <= coordinate[1][0] - 1; i++) {
-            for (int j = coordinate[0][1] - 1; j <= coordinate[1][1] - 1; j++) {
-                field[i][j] = 'O';
-            }
+    public int[][] setCoordinates() {
+        Scanner sc = new Scanner(System.in);
+
+        int[] x = convertCoordinates(sc.next());
+        int[] y = convertCoordinates(sc.next());
+
+        if (x[1] > y[1] || x[0] > y[0]) {
+            return new int[][]{y, x};
+        } else {
+            return new int[][]{x, y};
         }
     }
 
-    public static int[] convertCoordinates(String s) {
-        int[] coordinate = {0, Integer.parseInt(s.substring(1))};
-
-        switch (s.substring(0, 1)) {
-            case "A" -> coordinate[0] = 1;
-            case "B" -> coordinate[0] = 2;
-            case "C" -> coordinate[0] = 3;
-            case "D" -> coordinate[0] = 4;
-            case "E" -> coordinate[0] = 5;
-            case "F" -> coordinate[0] = 6;
-            case "G" -> coordinate[0] = 7;
-            case "H" -> coordinate[0] = 8;
-            case "I" -> coordinate[0] = 9;
-            case "J" -> coordinate[0] = 10;
-        }
-
-        return coordinate;
+    public int[] convertCoordinates(String s) {
+        int first = "ABCDEFGHIJ".indexOf(s.toUpperCase().charAt(0)) + 1;
+        int second = Integer.parseInt(s.substring(1));
+        return new int[]{first, second};
     }
 }
