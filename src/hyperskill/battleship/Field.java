@@ -5,10 +5,13 @@ import java.util.*;
 public class Field {
     private char[][] field;
     private final static int FIELD_SIZE = 10;
+    private final static String LETTERS = "ABCDEFGHIJ";
     private static final char FOG = '~';
     private static final char SHIP = 'O';
-    private static final char SHIT = 'X';
+    private static final char HIT = 'X';
     private static final char MISS = 'M';
+
+    final Scanner sc = new Scanner(System.in);
 
     public void initial() {
         field = new char[FIELD_SIZE][FIELD_SIZE];
@@ -17,7 +20,7 @@ public class Field {
         }
     }
 
-    public void display() {
+    public void printField() {
         char letter = 'A';
         System.out.println("  1 2 3 4 5 6 7 8 9 10");
         for (char[] chars : field) {
@@ -29,33 +32,24 @@ public class Field {
         }
     }
 
-    public void run() {
-        initial();
-        display();
+    public void placeShip(Ship ship) {
+        System.out.printf(Messages.ENTER_SHIP.toString(), ship.getName(), ship.getLength());
 
-        for (Ship ship : Ship.values()) {
-            fill(ship);
-            display();
-        }
-    }
+        while (true) {
+            int[][] coordinate = getCoordinates();
 
-    public void fill(Ship ship) {
-        int[][] coordinate;
-
-        do {
-            System.out.printf(Messages.ENTER_SHIP.toString(), ship.getName(), ship.getLength());
-            coordinate = setCoordinates();
-        } while (!checkValid(coordinate, ship));
-
-
-        for (int i = coordinate[0][0] - 1; i <= coordinate[1][0] - 1; i++) {
-            for (int j = coordinate[0][1] - 1; j <= coordinate[1][1] - 1; j++) {
-                field[i][j] = SHIP;
+            if (isValidPlaceShip(coordinate, ship)) {
+                for (int i = coordinate[0][0] - 1; i <= coordinate[1][0] - 1; i++) {
+                    for (int j = coordinate[0][1] - 1; j <= coordinate[1][1] - 1; j++) {
+                        field[i][j] = SHIP;
+                    }
+                }
+                break;
             }
         }
     }
 
-    public boolean checkValid(int[][] coordinate, Ship ship) {
+    public boolean isValidPlaceShip(int[][] coordinate, Ship ship) {
         if (coordinate[0][0] < 1 || coordinate[0][0] > 10 || coordinate[1][0] < 1 || coordinate[1][0] > 10) {
             System.out.println(Messages.ERROR_INPUT);
             return false;
@@ -81,21 +75,45 @@ public class Field {
         return true;
     }
 
-    public int[][] setCoordinates() {
-        Scanner sc = new Scanner(System.in);
+    public void takeShot() {
+        while (true) {
+            System.out.println(Messages.TAKE_SHOT);
+            int[] coordinate = stringToCoordinates(sc.next());
 
-        int[] x = convertCoordinates(sc.next());
-        int[] y = convertCoordinates(sc.next());
-
-        if (x[1] > y[1] || x[0] > y[0]) {
-            return new int[][]{y, x};
-        } else {
-            return new int[][]{x, y};
+            if (isValidTakeShot(coordinate)) {
+                if (field[coordinate[0] - 1][coordinate[1] - 1] == SHIP) {
+                    System.out.println(Messages.HIT);
+                    field[coordinate[0] - 1][coordinate[1] - 1] = HIT;
+                } else if (field[coordinate[0] - 1][coordinate[1] - 1] == FOG) {
+                    System.out.println(Messages.MISS);
+                    field[coordinate[0] - 1][coordinate[1] - 1] = MISS;
+                }
+                break;
+            }
         }
     }
 
-    public int[] convertCoordinates(String s) {
-        int first = "ABCDEFGHIJ".indexOf(s.toUpperCase().charAt(0)) + 1;
+    public boolean isValidTakeShot(int[] coordinate) {
+        if (coordinate[0] < 1 || coordinate[0] > 10 || coordinate[1] < 1 || coordinate[1] > 10) {
+            System.out.println(Messages.ERROR_INPUT);
+            return false;
+        }
+        return true;
+    }
+
+    public int[][] getCoordinates() {
+        int[] c1 = stringToCoordinates(sc.next());
+        int[] c2 = stringToCoordinates(sc.next());
+
+        if (c1[1] > c2[1] || c1[0] > c2[0]) {
+            return new int[][]{c2, c1};
+        } else {
+            return new int[][]{c1, c2};
+        }
+    }
+
+    public int[] stringToCoordinates(String s) {
+        int first = LETTERS.indexOf(s.toUpperCase().charAt(0)) + 1;
         int second = Integer.parseInt(s.substring(1));
         return new int[]{first, second};
     }
