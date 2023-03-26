@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Field {
     private char[][] field;
-    private char[][] copyField;
+    private char[][] fogField;
     private final static int FIELD_SIZE = 10;
     private final static String LETTERS = "ABCDEFGHIJ";
     private static final char FOG = '~';
@@ -35,7 +35,7 @@ public class Field {
 
     public void placeShip(Ship ship) {
         while (true) {
-            int[][] coordinate;
+            int[] coordinate;
 
             try {
                 coordinate = getCoordinates();
@@ -44,9 +44,9 @@ public class Field {
                 continue;
             }
 
-            if (isPossibleToPlaceShip(coordinate, ship)) {
-                for (int i = coordinate[0][0] - 1; i <= coordinate[1][0] - 1; i++) {
-                    for (int j = coordinate[0][1] - 1; j <= coordinate[1][1] - 1; j++) {
+            if (isCoordinatesValid(coordinate) && isPossibleToPlaceShip(coordinate, ship)) {
+                for (int i = coordinate[0] - 1; i <= coordinate[2] - 1; i++) {
+                    for (int j = coordinate[1] - 1; j <= coordinate[3] - 1; j++) {
                         field[i][j] = SHIP;
                     }
                 }
@@ -55,7 +55,7 @@ public class Field {
         }
     }
 
-    public boolean isValidCoordinate(int[] coordinate) {
+    public boolean isCoordinatesValid(int[] coordinate) {
         if (coordinate[0] < 1 || coordinate[0] > 10 || coordinate[1] < 1 || coordinate[1] > 10) {
             System.out.println(Messages.ERROR_INPUT);
             return false;
@@ -63,21 +63,17 @@ public class Field {
         return true;
     }
 
-    public boolean isPossibleToPlaceShip(int[][] coordinate, Ship ship) {
-        if (coordinate[0][0] < 1 || coordinate[0][0] > 10 || coordinate[1][0] < 1 || coordinate[1][0] > 10 ||
-                coordinate[0][1] < 1 || coordinate[0][1] > 10 || coordinate[1][1] < 1 || coordinate[1][1] > 10) {
-            System.out.println(Messages.ERROR_INPUT);
-            return false;
-        } else if (coordinate[0][0] != coordinate[1][0] && coordinate[0][1] != coordinate[1][1]) {
+    public boolean isPossibleToPlaceShip(int[] coordinate, Ship ship) {
+        if (coordinate[0] != coordinate[2] && coordinate[1] != coordinate[3]) {
             System.out.println(Messages.ERROR_LOCATION);
             return false;
-        } else if ((Math.abs(coordinate[0][1] - coordinate[1][1]) + 1 != ship.getLength()) &&
-                (Math.abs(coordinate[0][0] - coordinate[1][0]) + 1 != ship.getLength())) {
+        } else if ((Math.abs(coordinate[1] - coordinate[3]) + 1 != ship.getLength()) &&
+                (Math.abs(coordinate[0] - coordinate[2]) + 1 != ship.getLength())) {
             System.out.printf(Messages.ERROR_LENGTH.toString(), ship.getName());
             return false;
         } else {
-            for (int i = coordinate[0][0] - 2; i <= coordinate[1][0]; i++) {
-                for (int j = coordinate[0][1] - 2; j <= coordinate[1][1]; j++) {
+            for (int i = coordinate[0] - 2; i <= coordinate[2]; i++) {
+                for (int j = coordinate[1] - 2; j <= coordinate[3]; j++) {
                     if ((i >= 0 && i < field.length) && (j >= 0 && j < field.length)) {
                         if (field[i][j] == SHIP) {
                             System.out.println(Messages.ERROR_CLOSE);
@@ -95,21 +91,21 @@ public class Field {
             int[] coordinate;
 
             try {
-                coordinate = stringToCoordinates(sc.next());
+                coordinate = getCoordinates();
             } catch (NumberFormatException e) {
                 System.out.println(Messages.ERROR_INPUT);
                 continue;
             }
 
-            if (isValidCoordinate(coordinate)) {
-                if (copyField[coordinate[0] - 1][coordinate[1] - 1] == SHIP) {
+            if (isCoordinatesValid(coordinate)) {
+                if (fogField[coordinate[0] - 1][coordinate[1] - 1] == SHIP) {
                     field[coordinate[0] - 1][coordinate[1] - 1] = HIT;
-                    copyField[coordinate[0] - 1][coordinate[1] - 1] = HIT;
+                    fogField[coordinate[0] - 1][coordinate[1] - 1] = HIT;
                     printField();
                     System.out.println(Messages.HIT);
-                } else if (copyField[coordinate[0] - 1][coordinate[1] - 1] == FOG) {
+                } else if (fogField[coordinate[0] - 1][coordinate[1] - 1] == FOG) {
                     field[coordinate[0] - 1][coordinate[1] - 1] = MISS;
-                    copyField[coordinate[0] - 1][coordinate[1] - 1] = MISS;
+                    fogField[coordinate[0] - 1][coordinate[1] - 1] = MISS;
                     printField();
                     System.out.println(Messages.MISS);
                 }
@@ -118,28 +114,32 @@ public class Field {
         }
     }
 
-    public int[][] getCoordinates() {
-        int[] c1 = stringToCoordinates(sc.next());
-        int[] c2 = stringToCoordinates(sc.next());
+    public int[] getCoordinates() {
+        String[] coordinate = sc.nextLine().split(" ");
 
-        if (c1[1] > c2[1] || c1[0] > c2[0]) {
-            return new int[][]{c2, c1};
+        int firstL = LETTERS.indexOf(coordinate[0].toUpperCase().charAt(0)) + 1;
+        int firstN = Integer.parseInt(coordinate[0].substring(1));
+
+        if (coordinate.length > 1) {
+            int secondL = LETTERS.indexOf(coordinate[1].toUpperCase().charAt(0)) + 1;
+            int secondN = Integer.parseInt(coordinate[1].substring(1));
+
+            if (firstN > secondN || firstL > secondL) {
+                return new int[]{secondL, secondN, firstL, firstN};
+            } else {
+                return new int[]{firstL, firstN, secondL, secondN};
+            }
         } else {
-            return new int[][]{c1, c2};
+
+            return new int[]{firstL, firstN};
         }
     }
 
-    public int[] stringToCoordinates(String s) {
-        int first = LETTERS.indexOf(s.toUpperCase().charAt(0)) + 1;
-        int second = Integer.parseInt(s.substring(1));
-        return new int[]{first, second};
-    }
-
     public void setCopyField() {
-        copyField = field;
+        fogField = field;
     }
 
     public void setField() {
-        field = copyField;
+        field = fogField;
     }
 }
