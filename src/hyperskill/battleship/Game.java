@@ -13,12 +13,11 @@ public class Game {
         }
 
         System.out.println(Messages.GAME_STARTS);
-        field.setCopyField();
-        field.clearField();
         field.printField();
+        field.clearFogField();
+        field.printFogField();
         System.out.println(Messages.TAKE_SHOT);
         field.takeShot();
-        field.setField();
         field.printField();
     }
 }
