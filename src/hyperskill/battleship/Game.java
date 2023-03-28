@@ -14,14 +14,38 @@ public class Game {
         System.out.println(Messages.GAME_STARTS);
         field.printField(field.getFogField());
 
+        System.out.println(Messages.TAKE_SHOT);
+
         int count = 0;
         while (count < 5) {
-            System.out.println(Messages.TAKE_SHOT);
-            field.takeShot();
-            count += field.isSunk();
+            switch (field.takeShot()) {
+                case HIT -> {
+                    field.printField(field.getFogField());
+                    System.out.println(Messages.HIT);
+                }
+                case MISS -> {
+                    field.printField(field.getFogField());
+                    System.out.println(Messages.MISS);
+                }
+                case HIT_SHOT -> {
+                    field.printField(field.getFogField());
+                    System.out.println(Messages.HIT_SHOT);
+                }
+                case HIT_MISS -> {
+                    field.printField(field.getFogField());
+                    System.out.println(Messages.HIT_MISS);
+                }
+                case SANK -> {
+                    field.printField(field.getFogField());
+                    if (++count == 5) {
+                        System.out.println(Messages.WON);
+                    } else {
+                        System.out.println(Messages.SANK);
+                    }
+                }
+            }
         }
 
         field.printField(field.getField());
-        System.out.println(Messages.WON);
     }
 }

@@ -1,7 +1,6 @@
 package hyperskill.battleship;
 
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class Field {
     private final char[][] field;
@@ -89,7 +88,7 @@ public class Field {
         }
     }
 
-    public void takeShot() {
+    public State takeShot() {
         while (true) {
             int[] coordinate;
 
@@ -100,17 +99,23 @@ public class Field {
                     case SHIP -> {
                         field[coordinate[0] - 1][coordinate[1] - 1] = HIT;
                         fogField[coordinate[0] - 1][coordinate[1] - 1] = HIT;
-                        printField(fogField);
-                        System.out.println(Messages.HIT);
+                        if (isSunk()) {
+                            return State.SANK;
+                        } else {
+                            return State.HIT;
+                        }
                     }
                     case FOG -> {
                         field[coordinate[0] - 1][coordinate[1] - 1] = MISS;
                         fogField[coordinate[0] - 1][coordinate[1] - 1] = MISS;
-                        printField(fogField);
-                        System.out.println(Messages.MISS);
+                        return State.MISS;
                     }
-                    case 'M' -> System.out.println(Messages.HIT_MISS);
-                    case 'X' -> System.out.println(Messages.HIT_HIT);
+                    case HIT -> {
+                        return State.HIT_SHOT;
+                    }
+                    case MISS -> {
+                        return State.HIT_MISS;
+                    }
                 }
 
                 break;
@@ -118,9 +123,11 @@ public class Field {
                 System.out.print(e.getMessage());
             }
         }
+
+        return null;
     }
 
-    public int isSunk() {
+    public boolean isSunk() {
         for (Ship ship : Ship.values()) {
             int count = 0;
             if (!ship.isChecked()) {
@@ -135,12 +142,11 @@ public class Field {
 
             if (count == ship.getLength()) {
                 ship.setChecked(true);
-                System.out.println(ship.getName());
-                return 1;
+                return true;
             }
         }
 
-        return 0;
+        return false;
     }
 
     private int[] getCoordinate(String coordinate) {

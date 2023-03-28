@@ -10,8 +10,8 @@ public enum Messages {
     TAKE_SHOT("Take a shot!"),
     HIT("You hit a ship! Try again:"),
     MISS("You missed. Try again:"),
-    HIT_MISS("You hit a miss!"),
-    HIT_HIT("You hit a hit!"),
+    HIT_SHOT("You hit a ship! Try again:"),
+    HIT_MISS("You missed. Try again:"),
     WON("You sank the last ship. You won. Congratulations!"),
     SANK("You sank a ship! Specify a new target:");
 
