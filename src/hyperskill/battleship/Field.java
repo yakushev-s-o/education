@@ -28,7 +28,7 @@ public class Field {
         return fogField;
     }
 
-    public void initialize(char[][] field) {
+    private void initialize(char[][] field) {
         for (char[] chars : field) {
             Arrays.fill(chars, FOG);
         }
@@ -46,7 +46,6 @@ public class Field {
         }
     }
 
-    // a1 a5 c1 c4 e1 e3 g1 g3 i1 i2
     public void placeShip(Ship ship) {
         while (true) {
             int[] coordinate;
@@ -117,32 +116,26 @@ public class Field {
                         return State.HIT_MISS;
                     }
                 }
-
-                break;
             } catch (IllegalArgumentException e) {
                 System.out.print(e.getMessage());
             }
         }
-
-        return null;
     }
 
-    public boolean isSunk() {
+    private boolean isSunk() {
         for (Ship ship : Ship.values()) {
             int count = 0;
             if (!ship.isChecked()) {
                 for (int i = ship.getCoordinate()[0] - 1; i <= ship.getCoordinate()[2] - 1; i++) {
                     for (int j = ship.getCoordinate()[1] - 1; j <= ship.getCoordinate()[3] - 1; j++) {
-                        if (field[i][j] == HIT){
-                            count++;
+                        if (field[i][j] == HIT) {
+                            if (++count == ship.getLength()) {
+                                ship.setChecked(true);
+                                return true;
+                            }
                         }
                     }
                 }
-            }
-
-            if (count == ship.getLength()) {
-                ship.setChecked(true);
-                return true;
             }
         }
 
