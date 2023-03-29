@@ -16,28 +16,20 @@ public class Field {
     public Field() {
         field = new char[FIELD_SIZE][FIELD_SIZE];
         fogField = new char[FIELD_SIZE][FIELD_SIZE];
-        initialize(field);
-        initialize(fogField);
+        initField(false);
+        initField(true);
     }
 
-    public char[][] getField() {
-        return field;
-    }
-
-    public char[][] getFogField() {
-        return fogField;
-    }
-
-    private void initialize(char[][] field) {
-        for (char[] chars : field) {
+    public void initField(boolean fogOfWar) {
+        for (char[] chars : fogOfWar ? fogField : field) {
             Arrays.fill(chars, FOG);
         }
     }
 
-    public void printField(char[][] field) {
+    public void printField(boolean fogOfWar) {
         char letter = 'A';
         System.out.println("  1 2 3 4 5 6 7 8 9 10");
-        for (char[] chars : field) {
+        for (char[] chars : fogOfWar ? fogField : field) {
             System.out.print(letter++);
             for (char c : chars) {
                 System.out.print(" " + c);
@@ -87,39 +79,48 @@ public class Field {
         }
     }
 
-    public State takeShot() {
-        while (true) {
-            int[] coordinate;
+    public boolean takeShot() {
+        int[] coordinate;
 
-            try {
-                coordinate = getCoordinate(sc.next());
+        try {
+            coordinate = getCoordinate(sc.next());
 
-                switch (field[coordinate[0] - 1][coordinate[1] - 1]) {
-                    case SHIP -> {
-                        field[coordinate[0] - 1][coordinate[1] - 1] = HIT;
-                        fogField[coordinate[0] - 1][coordinate[1] - 1] = HIT;
-                        if (isSunk()) {
-                            return State.SANK;
-                        } else {
-                            return State.HIT;
+            switch (field[coordinate[0] - 1][coordinate[1] - 1]) {
+                case SHIP -> {
+                    field[coordinate[0] - 1][coordinate[1] - 1] = HIT;
+                    fogField[coordinate[0] - 1][coordinate[1] - 1] = HIT;
+
+                    if (isSunk()) {
+                        for (Ship ship : Ship.values()) {
+                            if (ship.isChecked()) {
+                                System.out.println(Messages.SANK);
+                                return false;
+                            } else {
+                                System.out.println(Messages.WON);
+                                return true;
+                            }
                         }
-                    }
-                    case FOG -> {
-                        field[coordinate[0] - 1][coordinate[1] - 1] = MISS;
-                        fogField[coordinate[0] - 1][coordinate[1] - 1] = MISS;
-                        return State.MISS;
-                    }
-                    case HIT -> {
-                        return State.HIT_SHOT;
-                    }
-                    case MISS -> {
-                        return State.HIT_MISS;
+                    } else {
+                        System.out.println(Messages.HIT);
                     }
                 }
-            } catch (IllegalArgumentException e) {
-                System.out.print(e.getMessage());
+                case FOG -> {
+                    field[coordinate[0] - 1][coordinate[1] - 1] = MISS;
+                    fogField[coordinate[0] - 1][coordinate[1] - 1] = MISS;
+                    System.out.println(Messages.MISS);
+                }
+                case HIT -> {
+                    System.out.println(Messages.HIT_SHOT);
+                }
+                case MISS -> {
+                    System.out.println(Messages.HIT_MISS);
+                }
             }
+        } catch (IllegalArgumentException e) {
+            System.out.print(e.getMessage());
         }
+
+        return false;
     }
 
     private boolean isSunk() {
