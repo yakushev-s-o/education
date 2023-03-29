@@ -4,50 +4,46 @@ import java.util.Scanner;
 
 public class Game {
     public void run() {
-        boolean isGameOver = false;
         Player player1 = new Player("Player 1");
         Player player2 = new Player("Player 2");
 
         System.out.printf(Messages.PLAYER.toString(), "Player 1");
+        player1.field.initField();
         player1.field.printField(false);
-        addShips(player1.field);
+        player1.field.placeShips();
         changeTurn();
 
         System.out.printf(Messages.PLAYER.toString(), "Player 2");
+        player2.field.initField();
         player2.field.printField(false);
-        addShips(player2.field);
+        player2.field.placeShips();
         changeTurn();
 
         System.out.println(Messages.GAME_STARTS);
+        System.out.println(Messages.TAKE_SHOT);
 
-        // a1 a5 c1 c4 e1 e3 g1 g3 i1 i2
-        while (!isGameOver) {
+        while (true) {
             player2.field.printField(true);
             System.out.println("---------------------");
             player1.field.printField(false);
             System.out.printf(Messages.TURN.toString(), "Player 1");
-            isGameOver = player2.field.takeShot();
-            if (isGameOver) {
+
+            if (player2.field.takeShot()) {
                 break;
             }
+
             changeTurn();
+
             player1.field.printField(true);
             System.out.println("---------------------");
             player2.field.printField(false);
             System.out.printf(Messages.TURN.toString(), "Player 2");
-            isGameOver = player1.field.takeShot();
-            if (isGameOver) {
+
+            if (player1.field.takeShot()) {
                 break;
             }
-            changeTurn();
-        }
-    }
 
-    private void addShips(Field field) {
-        for (Ship ship : Ship.values()) {
-            System.out.printf(Messages.ENTER_SHIP.toString(), ship.getName(), ship.getLength());
-            field.placeShip(ship);
-            field.printField(false);
+            changeTurn();
         }
     }
 

@@ -3,27 +3,35 @@ package hyperskill.battleship;
 import java.util.*;
 
 public class Field {
-    private final char[][] field;
-    private final char[][] fogField;
+    private char[][] field;
+    private char[][] fogField;
     private final static int FIELD_SIZE = 10;
     private static final char FOG = '~';
     private static final char SHIP = 'O';
     private static final char HIT = 'X';
     private static final char MISS = 'M';
+    private Ship[] ships;
 
     private final Scanner sc = new Scanner(System.in);
 
-    public Field() {
+    public void initField() {
         field = new char[FIELD_SIZE][FIELD_SIZE];
         fogField = new char[FIELD_SIZE][FIELD_SIZE];
-        initField(false);
-        initField(true);
-    }
 
-    public void initField(boolean fogOfWar) {
-        for (char[] chars : fogOfWar ? fogField : field) {
+        for (char[] chars : field) {
             Arrays.fill(chars, FOG);
         }
+
+        for (char[] chars : fogField) {
+            Arrays.fill(chars, FOG);
+        }
+
+        ships = new Ship[]{
+                new Ship("Aircraft Carrier", 5),
+                new Ship("Battleship", 4),
+                new Ship("Submarine", 3),
+                new Ship("Cruiser", 3),
+                new Ship("Destroyer", 2)};
     }
 
     public void printField(boolean fogOfWar) {
@@ -38,25 +46,30 @@ public class Field {
         }
     }
 
-    public void placeShip(Ship ship) {
-        while (true) {
-            int[] coordinate;
+    public void placeShips() {
+        for (Ship ship : ships) {
+            System.out.printf(Messages.ENTER_SHIP.toString(), ship.getName(), ship.getLength());
 
-            try {
-                coordinate = getCoordinates();
-                isPossibleToPlaceShip(coordinate, ship);
-                ship.setCoordinate(coordinate);
+            while (true) {
+                int[] coordinate;
 
-                for (int i = coordinate[0] - 1; i <= coordinate[2] - 1; i++) {
-                    for (int j = coordinate[1] - 1; j <= coordinate[3] - 1; j++) {
-                        field[i][j] = SHIP;
+                try {
+                    coordinate = getCoordinates();
+                    isPossibleToPlaceShip(coordinate, ship);
+                    ship.setCoordinate(coordinate);
+
+                    for (int i = coordinate[0] - 1; i <= coordinate[2] - 1; i++) {
+                        for (int j = coordinate[1] - 1; j <= coordinate[3] - 1; j++) {
+                            field[i][j] = SHIP;
+                        }
                     }
-                }
 
-                break;
-            } catch (IllegalArgumentException e) {
-                System.out.print(e.getMessage());
+                    break;
+                } catch (IllegalArgumentException e) {
+                    System.out.print(e.getMessage());
+                }
             }
+            printField(false);
         }
     }
 
@@ -91,15 +104,18 @@ public class Field {
                     fogField[coordinate[0] - 1][coordinate[1] - 1] = HIT;
 
                     if (isSunk()) {
-                        for (Ship ship : Ship.values()) {
+                        int count = 0;
+                        for (Ship ship : ships) {
                             if (ship.isChecked()) {
-                                System.out.println(Messages.SANK);
-                                return false;
-                            } else {
-                                System.out.println(Messages.WON);
-                                return true;
+                                if (++count == 5) {
+                                    System.out.println(Messages.WON);
+                                    return true;
+                                }
                             }
                         }
+
+                        System.out.println(Messages.SANK);
+                        return false;
                     } else {
                         System.out.println(Messages.HIT);
                     }
@@ -109,12 +125,8 @@ public class Field {
                     fogField[coordinate[0] - 1][coordinate[1] - 1] = MISS;
                     System.out.println(Messages.MISS);
                 }
-                case HIT -> {
-                    System.out.println(Messages.HIT_SHOT);
-                }
-                case MISS -> {
-                    System.out.println(Messages.HIT_MISS);
-                }
+                case HIT -> System.out.println(Messages.HIT_SHOT);
+                case MISS -> System.out.println(Messages.HIT_MISS);
             }
         } catch (IllegalArgumentException e) {
             System.out.print(e.getMessage());
@@ -124,7 +136,7 @@ public class Field {
     }
 
     private boolean isSunk() {
-        for (Ship ship : Ship.values()) {
+        for (Ship ship : ships) {
             int count = 0;
             if (!ship.isChecked()) {
                 for (int i = ship.getCoordinate()[0] - 1; i <= ship.getCoordinate()[2] - 1; i++) {

@@ -1,17 +1,16 @@
 package hyperskill.battleship;
 
-public enum Ship {
-    AIRCRAFT_CARRIER("Aircraft Carrier", 5),
-    BATTLESHIP("Battleship", 4),
-    SUBMARINE("Submarine", 3),
-    CRUISER("Cruiser", 3),
-    DESTROYER("Destroyer", 2);
-
+public class Ship {
     private final String name;
     private final int length;
     private int[] coordinate;
-
     private boolean checked;
+
+    Ship(String name, int length) {
+        this.name = name;
+        this.length = length;
+        this.checked = false;
+    }
 
     public String getName() {
         return name;
@@ -35,11 +34,5 @@ public enum Ship {
 
     public void setChecked(boolean checked) {
         this.checked = checked;
-    }
-
-    Ship(String name, int length) {
-        this.name = name;
-        this.length = length;
-        this.checked = false;
     }
 }

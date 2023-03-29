@@ -10,14 +10,13 @@ public enum Messages {
     TAKE_SHOT("Take a shot!"),
     HIT("You hit a ship!"),
     MISS("You missed!"),
-    HIT_SHOT("You hit a hit!"),
+    HIT_SHOT("You hit a shot!"),
     HIT_MISS("You hit a missed!"),
     WON("You sank the last ship. You won. Congratulations!"),
     SANK("You sank a ship! Specify a new target:"),
     ENTER("Press Enter and pass the move to another player"),
     PLAYER("%s, place your ships on the game field\n"),
     TURN("%s, it's your turn:\n");
-
 
     private final String message;
 
