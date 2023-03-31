@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 public class HyperSkillSave {
 
     private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test";
+    private static final String NEW_FOLDER_PATH = "C:/Users/Admin/Desktop/res";
 
     public static void main(String[] args) {
         File folder = new File(FOLDER_PATH);
@@ -24,7 +25,8 @@ public class HyperSkillSave {
                 String newFileName = createNewFileName(link);
                 String newFilePath = createNewFilePath(link);
                 fileContent = replaceLinks(fileContent);
-                fileContent = replaceOther(fileContent, link, newFilePath.replace(FOLDER_PATH, ""));
+//                fileContent = replaceOther(fileContent, link, newFilePath.replace(FOLDER_PATH, ""));
+                fileContent = replaceOther(fileContent, link, newFilePath);
                 writeFile(file, fileContent);
                 File newFile = renameFile(file, newFileName);
                 moveFile(newFile, newFilePath);
@@ -60,7 +62,7 @@ public class HyperSkillSave {
 
     private static String createNewFilePath(String link) {
         String[] parts = link.split("/");
-        StringBuilder path = new StringBuilder(FOLDER_PATH);
+        StringBuilder path = new StringBuilder(NEW_FOLDER_PATH);
         for (int i = 3; i < parts.length - 1; i++) {
             path.append("/").append(parts[i]);
             createFolder(path.toString());
@@ -77,7 +79,8 @@ public class HyperSkillSave {
         while (matcher.find()) {
             if (i != 0) { // skip first match
                 String link = matcher.group();
-                String newLink = link.replace("https://hyperskill.org", ""); // FOLDER_PATH
+//                String newLink = link.replace("https://hyperskill.org", "");
+                String newLink = link.replace("https://hyperskill.org", NEW_FOLDER_PATH);
                 if (!newLink.matches(".*\\.[a-zA-Z]+$") && link.contains("https://hyperskill.org")) { // if the link is without extension
                     newLink += ".html";
                 }
@@ -91,11 +94,10 @@ public class HyperSkillSave {
 
     public static String replaceOther(String fileContent, String link, String newFilePath) {
         String condition = "hint.html|practice.html|useful_link.html|comment.html|.html";
-        String leftOld = "Theory </a><button data-v-5a34a0c7";
-        String rightOld = "Practice </button>";
-        String leftNew = "Theory </a><a data-v-5a34a0c7=\"\" href=\"" +
-                newFilePath.replaceAll(condition, "practice.html") + "\" ";
-        String rightNew = "Practice </a>";
+        String leftOld = "Theory </a><button";
+        String leftNew = "Theory </a><a";
+        String rightOld = "> Practice </button>";
+        String rightNew = " href=" + newFilePath.replaceAll(condition, "practice.html") + "> Practice </a>";
         String data = "saved date: \\w{3} \\w{3} \\d{2} \\d{4} \\d{2}:\\d{2}:\\d{2} GMT[+\\-]\\d{4} \\([^()]*\\)";
 
         Pattern pattern = Pattern.compile(data);
@@ -108,7 +110,7 @@ public class HyperSkillSave {
                 .replace("href=#hint", "href=" +
                         newFilePath.replaceAll(condition, "hint.html"))
                 .replace(leftOld, leftNew).replace(rightOld, rightNew)
-                .replace("?track=", "track=")
+                .replaceAll("\\?track=\\d+", "")
                 .replaceAll("Sergey Yakushev|> SY <", "");
     }
 
