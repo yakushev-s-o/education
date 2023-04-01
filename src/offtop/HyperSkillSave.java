@@ -93,12 +93,16 @@ public class HyperSkillSave {
     }
 
     public static String replaceOther(String fileContent, String link, String newFilePath) {
-        String condition = "hint.html|practice.html|useful_link.html|comment.html|.html";
+        String data = "saved date: \\w{3} \\w{3} \\d{2} \\d{4} \\d{2}:\\d{2}:\\d{2} GMT[+\\-]\\d{4} \\([^()]*\\)";
+        String condition = "solutions.html|hint.html|practice.html|useful_link.html|comment.html|.html";
+
         String leftOld = "Theory </a><button";
         String leftNew = "Theory </a><a";
         String rightOld = "> Practice </button>";
         String rightNew = " href=" + newFilePath.replaceAll(condition, "practice.html") + "> Practice </a>";
-        String data = "saved date: \\w{3} \\w{3} \\d{2} \\d{4} \\d{2}:\\d{2}:\\d{2} GMT[+\\-]\\d{4} \\([^()]*\\)";
+
+        String avatar = "# target=_self class=\"nav-link dropdown-toggle text-decoration-none d-flex align-items-center py-0\"";
+        String avatarNew = "profile/370575247.html" + avatar.substring(1);
 
         Pattern pattern = Pattern.compile(data);
 
@@ -109,9 +113,13 @@ public class HyperSkillSave {
                         newFilePath.replaceAll(condition, "useful_link.html"))
                 .replace("href=#hint", "href=" +
                         newFilePath.replaceAll(condition, "hint.html"))
+                .replace("href=#solutions", "href=" +
+                        newFilePath.replaceAll(condition, "solutions.html"))
                 .replace(leftOld, leftNew).replace(rightOld, rightNew)
-                .replaceAll("\\?track=\\d+", "")
-                .replaceAll("Sergey Yakushev|> SY <", "");
+                .replace(avatar, avatarNew)
+                .replace("?track", "track")
+                .replace("Sergey Yakushev", "Admin Admin")
+                .replace("> SY <", "> AA <");
     }
 
     private static void writeFile(File file, String fileContent) {
