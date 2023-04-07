@@ -1,4 +1,4 @@
-package offtop;
+package offtop.hyperskill;
 
 import java.io.File;
 import java.io.IOException;
