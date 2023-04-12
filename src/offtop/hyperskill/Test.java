@@ -1,11 +1,9 @@
 package offtop.hyperskill;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -13,52 +11,64 @@ import java.time.Duration;
 
 public class Test {
     public static void main(String[] args) {
-        // Set the path to the ChromeDriver executable
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver_win32\\chromedriver.exe");
 
-        // Create a new instance of the ChromeDriver
         WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
 
         login(driver);
 
         driver.get("https://hyperskill.org/learn/step/2499");
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         swapElements(driver);
 
-        // Close the browser
 //        driver.quit();
     }
 
     private static void swapElements(WebDriver driver) {
-        WebElement element1 = driver.findElement(By.xpath("//span[@class='value px-3' and contains(text(), 'doc comment')]"));
-        WebElement element2 = driver.findElement(By.xpath("//span[@class='value px-3' and contains(text(), 'multi-line comment')]"));
+        if (checkDownload(driver, "//div[@class='submission']")) {
+            int first = 0;
+            int second = 0;
 
-        int x1 = element1.getLocation().getX();
-        int y1 = element1.getLocation().getY();
-        int x2 = element2.getLocation().getX();
-        int y2 = element2.getLocation().getY();
+            for (int i = 1; i < 4; i++) {
+                String question = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[1]/div[" + 1 + "]/span";
 
-        String js = String.format("window.scrollBy(%d,%d)", x2 - x1, y2 - y1);
-        ((JavascriptExecutor) driver).executeScript(js);
+                WebElement element = driver.findElement(By.xpath(question));
+                String text = element.getText();
 
-        JavascriptExecutor jsss = (JavascriptExecutor) driver;
-        jsss.executeScript("arguments[0].setAttribute('style', 'position: absolute; z-index: 10000;')", element1);
-        jsss.executeScript("arguments[0].removeAttribute('draggable')", element1);
+                if ("// a comment".equals(text)) {
+                   first = i;
+                   break;
+                }
+            }
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            while (first != second) {
+                for (int i = 1; i < 4; i++) {
+                    String test = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + i + "]/div/span";
+                    String upArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + i +
+                            "]/div/div[2]/button[" + 1 + "]";
+                    String downArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + i +
+                            "]/div/div[2]/button[" + 2 + "]";
+
+                    WebElement element = driver.findElement(By.xpath(test));
+                    String text = element.getText();
+
+                    if ("end-of-line comment".equals(text)) {
+                        second = i;
+
+                        if (first == second) {
+                            break;
+                        }
+
+                        WebElement arrow = driver.findElement(By.xpath(first < second ? upArrow : downArrow));
+                        arrow.click();
+                        System.out.println("first = " + first + " / " + "second = " + second);
+                        System.out.println(first > second ? "upArrow" : "downArrow");
+                        break;
+                    }
+                }
+            }
         }
-
-        Actions actions = new Actions(driver);
-        actions.dragAndDrop(element1, element2).build().perform();
     }
 
     private static void login(WebDriver driver) {
@@ -69,14 +79,13 @@ public class Test {
             WebElement passwordField = driver.findElement(By.xpath("//input[@type='password']"));
             WebElement signInButton = driver.findElement(By.cssSelector("button[data-cy='submitButton']"));
 
-            // Вводим логин и пароль и нажимаем кнопку входа
             emailField.sendKeys("yakushev.s.o@ya.ru");
             passwordField.sendKeys("{yx#e%B9~SGl4@Cr");
             signInButton.click();
         }
 
         try {
-            Thread.sleep(10000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -84,8 +93,6 @@ public class Test {
 
     private static boolean checkDownload(WebDriver driver, String s) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s)));
-
-        return element.isDisplayed();
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s))).isDisplayed();
     }
 }

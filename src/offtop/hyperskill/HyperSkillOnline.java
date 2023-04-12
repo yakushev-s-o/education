@@ -155,11 +155,8 @@ public class HyperSkillOnline {
 
     // Метод для проверки состояния загрузки страницы
     private static boolean checkDownload(WebDriver driver, String s) {
-        Duration timeout = Duration.ofSeconds(10);
-        WebDriverWait wait = new WebDriverWait(driver, timeout);
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s)));
-
-        return element.isDisplayed();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s))).isDisplayed();
     }
 }
 
