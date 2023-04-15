@@ -25,39 +25,40 @@ public class HyperSkillOnline {
     public static void main(String[] args) throws InterruptedException, IOException {
         // Устанавливаем путь к драйверу браузера
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver_win32\\chromedriver.exe");
+
         // Создаем экземпляр драйвера
         WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
 
         // Выполняем авторизацию
         login(driver);
 
-        // Переходим на страницу теста
-        driver.get("https://hyperskill.org/learn/step/15238");
+        driver.get("https://hyperskill.org/learn/step/2499");
+//        driver.get("http://91.217.76.232/learn/step/2499");
 
-        // Выбираем первый ответ в тесте
-        sendTest(driver);
+        String[] answers = new String[]{"// a comment;end-of-line comment",
+                "/* a comment */;multi-line comment",
+                "/** a comment */;doc comment"};
+        sendPermutation(driver, answers);
 
-        // Переходим на страницу теста
-        driver.get("http://91.217.76.232/learn/step/15238");
-
-        // Получаем список правильных ответов и сохраняем его в файл
-        List<String> correctAnswers = getTest(driver);
-        String fileName = "src/offtop/hyperskill/" + "correct-answers.json";
-        List<Answers> testDataList = new ArrayList<>();
-        testDataList.add(new Answers("https://hyperskill.org/learn/step/15238", correctAnswers)); // 1 ответ
-//        testDataList.add(new Answers("http://91.217.76.232/learn/step/1982", correctAnswers)); // 2 ответа
-//        testDataList.add(new Answers("http://91.217.76.232/learn/step/3412", correctAnswers)); // ответ с текстом
-//        testDataList.add(new Answers("http://91.217.76.232/learn/step/2165", correctAnswers)); // ответ с кодом
-//        testDataList.add(new Answers("http://91.217.76.232/learn/step/2499", correctAnswers)); // ответ с перестановкой
-//        testDataList.add(new Answers("http://91.217.76.232/learn/step/2123", correctAnswers)); // ответ с матрицей
-        saveCorrectAnswersToFile(fileName, testDataList);
+//        // Получаем список правильных ответов и сохраняем его в файл
+//        List<String> correctAnswers = getPermutation(driver);
+//        String fileName = "src/offtop/hyperskill/" + "correct-answers.json";
+//        List<Answers> testDataList = new ArrayList<>();
+////        testDataList.add(new Answers("https://hyperskill.org/learn/step/15238", correctAnswers)); // 1 ответ
+////        testDataList.add(new Answers("https://hyperskill.org/learn/step/1982", correctAnswers)); // 2 ответа
+////        testDataList.add(new Answers("https://hyperskill.org/learn/step/3412", correctAnswers)); // ответ с текстом
+////        testDataList.add(new Answers("https://hyperskill.org/learn/step/2165", correctAnswers)); // ответ с кодом
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/2499", correctAnswers)); // ответ с перестановкой
+////        testDataList.add(new Answers("https://hyperskill.org/learn/step/2123", correctAnswers)); // ответ с матрицей
+//        saveCorrectAnswersToFile(fileName, testDataList);
 
         // Закрываем браузер
-        driver.quit();
+//        driver.quit();
     }
 
     // Метод для авторизации на сайте
-    private static void login(WebDriver driver) throws InterruptedException {
+    private static void login(WebDriver driver) {
         driver.get("https://hyperskill.org/login");
 
         if (checkDownload(driver, "//input[@type='email']")) {
@@ -71,7 +72,7 @@ public class HyperSkillOnline {
             signInButton.click();
         }
 
-        Thread.sleep(5000);
+        checkDownload(driver, "//div[@class='user-avatar']");
     }
 
     // Метод для получения ответа из текстового поля
@@ -85,6 +86,8 @@ public class HyperSkillOnline {
         Actions actions = new Actions(driver);
         WebElement radioBtn = driver.findElement(By.xpath("//input[@placeholder='Type your answer here...']"));
         actions.moveToElement(radioBtn).click().sendKeys("123").perform();
+//        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
+//        signInButton.click();
     }
 
     // Метод для получения ответа из поля с кодом
@@ -98,11 +101,14 @@ public class HyperSkillOnline {
         WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
         input.clear();
         input.sendKeys("123");
+//        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
+//        signInButton.click();
     }
 
     // Метод для получения списка правильных ответов из теста
     private static List<String> getTest(WebDriver driver) {
         List<String> correctAnswers = null;
+
         if (checkDownload(driver, "//div[@class='submission submission-correct']")) {
             String pageSource = driver.getPageSource();
             Document doc = Jsoup.parse(pageSource);
@@ -124,9 +130,75 @@ public class HyperSkillOnline {
             Actions actions = new Actions(driver);
             WebElement radioBtn = driver.findElement(By.cssSelector("input[type='radio'][value='1']"));
             actions.moveToElement(radioBtn).click().perform();
-            WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
-//        signInButton.click();
+//            WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
+//            signInButton.click();
         }
+    }
+
+    // Метод для получения списка правильных ответов из теста с перетягиванием
+    private static List<String> getPermutation(WebDriver driver) {
+        List<String> correctAnswers = new ArrayList<>();
+
+        if (checkDownload(driver, "//div[@class='submission submission-correct']")) { // submission-correct
+
+            List<WebElement> count = driver.findElements(By.xpath("//div[@class='left-side__line']"));
+
+            for (int i = 1; i <= count.size(); i++) {
+                String question = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/div[1]/div[" + i + "]/span";
+                String answer = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + i + "]/div/span";
+                WebElement element1 = driver.findElement(By.xpath(question));
+                WebElement element2 = driver.findElement(By.xpath(answer));
+
+                correctAnswers.add(element1.getText() + ";" + element2.getText());
+            }
+        }
+
+        return correctAnswers;
+    }
+
+    // Метод для выбора ответа в тесте переставлением
+    private static void sendPermutation(WebDriver driver, String[] correctAnswer) {
+        if (checkDownload(driver, "//div[@class='left-side__line']")) {
+            for (int i = 1; i <= correctAnswer.length; i++) {
+                String question = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[1]/div[" + i + "]/span";
+                WebElement element1 = driver.findElement(By.xpath(question));
+                String text1 = element1.getText();
+
+                String[] res = null;
+                for (String s : correctAnswer) {
+                    res = s.split(";");
+
+                    if (res[0].equals(text1)) {
+                        break;
+                    }
+                }
+
+                boolean checkTrue = true;
+                while (checkTrue) {
+                    for (int j = 1; j <= correctAnswer.length; j++) {
+                        String answer = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j + "]/div/span";
+                        String upArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j +
+                                "]/div/div[2]/button[" + 1 + "]";
+                        String downArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j +
+                                "]/div/div[2]/button[" + 2 + "]";
+                        WebElement element2 = driver.findElement(By.xpath(answer));
+                        String text2 = element2.getText();
+
+                        if (text2.equals(res[1])) {
+                            if (i != j) {
+                                WebElement arrow = driver.findElement(By.xpath(i < j ? upArrow : downArrow));
+                                arrow.click();
+                            } else {
+                                checkTrue = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+//        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
+//        signInButton.click();
     }
 
     // Метод для сохранения списка правильных ответов в файл в формате JSON

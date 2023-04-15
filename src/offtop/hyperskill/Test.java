@@ -8,88 +8,62 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Test {
     public static void main(String[] args) {
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver_win32\\chromedriver.exe");
 
         WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
 
         login(driver);
 
         driver.get("https://hyperskill.org/learn/step/2499");
 //        driver.get("http://91.217.76.232/learn/step/2499");
 
-        checkElements(driver);
-//        swapElements(driver);
+        String[] correctAnswers = new String[]{"// a comment;end-of-line comment",
+                "/* a comment */;multi-line comment",
+                "/** a comment */;doc comment"};
+        swapElements(driver, correctAnswers);
 
-        driver.quit();
+//        driver.quit();
     }
 
-    private static void checkElements(WebDriver driver) {
-        if (checkDownload(driver, "//div[@class='submission']")) { // submission-correct
-            ArrayList<String> questions = new ArrayList<>();
-            ArrayList<String> answers = new ArrayList<>();
-
-            List<WebElement> count = driver.findElements(By.xpath("//div[@class='left-side__line']"));
-
-            for (int i = 1; i <= count.size(); i++) {
-                String question = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/div[1]/div[" + i + "]/span";
-                String answer = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + i + "]/div/span";
+    private static void swapElements(WebDriver driver, String[] correctAnswer) {
+        if (checkDownload(driver, "//div[@class='left-side__line']")) {
+            for (int i = 1; i <= correctAnswer.length; i++) {
+                String question = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[1]/div[" + i + "]/span";
                 WebElement element1 = driver.findElement(By.xpath(question));
-                WebElement element2 = driver.findElement(By.xpath(answer));
-
                 String text1 = element1.getText();
-                String text2 = element2.getText();
-                questions.add(text1);
-                answers.add(text2);
-                System.out.println(questions.get(i - 1) + " --> " + answers.get(i - 1));
-            }
-        }
-    }
 
-    private static void swapElements(WebDriver driver) {
-        if (checkDownload(driver, "//div[@class='submission']")) {
-            int first = 0;
-            int second = 0;
+                String[] res = null;
+                for (String s : correctAnswer) {
+                    res = s.split(";");
 
-            for (int i = 1; i < 4; i++) {
-                String question = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[1]/div[" + 1 + "]/span";
-
-                WebElement element = driver.findElement(By.xpath(question));
-                String text = element.getText();
-
-                if ("// a comment".equals(text)) {
-                    first = i;
-                    break;
-                }
-            }
-
-            while (first != second) {
-                for (int i = 1; i < 4; i++) {
-                    String test = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + i + "]/div/span";
-                    String upArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + i +
-                            "]/div/div[2]/button[" + 1 + "]";
-                    String downArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + i +
-                            "]/div/div[2]/button[" + 2 + "]";
-
-                    WebElement element = driver.findElement(By.xpath(test));
-                    String text = element.getText();
-
-                    if ("end-of-line comment".equals(text)) {
-                        second = i;
-
-                        if (first == second) {
-                            break;
-                        }
-
-                        WebElement arrow = driver.findElement(By.xpath(first < second ? upArrow : downArrow));
-                        arrow.click();
-                        System.out.println("first = " + first + " / " + "second = " + second);
-                        System.out.println(first > second ? "upArrow" : "downArrow");
+                    if (res[0].equals(text1)) {
                         break;
+                    }
+                }
+
+                boolean checkTrue = true;
+                while (checkTrue) {
+                    for (int j = 1; j <= correctAnswer.length; j++) {
+                        String answer = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j + "]/div/span";
+                        String upArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j +
+                                "]/div/div[2]/button[" + 1 + "]";
+                        String downArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j +
+                                "]/div/div[2]/button[" + 2 + "]";
+                        WebElement element2 = driver.findElement(By.xpath(answer));
+                        String text2 = element2.getText();
+
+                        if (text2.equals(res[1])) {
+                            if (i != j) {
+                                WebElement arrow = driver.findElement(By.xpath(i < j ? upArrow : downArrow));
+                                arrow.click();
+                            } else {
+                                checkTrue = false;
+                            }
+                        }
                     }
                 }
             }
@@ -109,11 +83,7 @@ public class Test {
             signInButton.click();
         }
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        checkDownload(driver, "//div[@class='user-avatar']");
     }
 
     private static boolean checkDownload(WebDriver driver, String s) {
