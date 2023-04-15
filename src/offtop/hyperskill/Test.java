@@ -18,56 +18,18 @@ public class Test {
 
         login(driver);
 
-        driver.get("https://hyperskill.org/learn/step/2499");
-//        driver.get("http://91.217.76.232/learn/step/2499");
-
-        String[] correctAnswers = new String[]{"// a comment;end-of-line comment",
-                "/* a comment */;multi-line comment",
-                "/** a comment */;doc comment"};
-        swapElements(driver, correctAnswers);
+        driver.get("https://hyperskill.org/learn/step/2123");
+//        driver.get("http://91.217.76.232/learn/step/2123");
 
 //        driver.quit();
     }
 
-    private static void swapElements(WebDriver driver, String[] correctAnswer) {
-        if (checkDownload(driver, "//div[@class='left-side__line']")) {
-            for (int i = 1; i <= correctAnswer.length; i++) {
-                String question = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[1]/div[" + i + "]/span";
-                WebElement element1 = driver.findElement(By.xpath(question));
-                String text1 = element1.getText();
+    private static void getMatrix(WebDriver driver) {
 
-                String[] res = null;
-                for (String s : correctAnswer) {
-                    res = s.split(";");
+    }
 
-                    if (res[0].equals(text1)) {
-                        break;
-                    }
-                }
+    private static void sendMatrix(WebDriver driver, String[] correctAnswer) {
 
-                boolean checkTrue = true;
-                while (checkTrue) {
-                    for (int j = 1; j <= correctAnswer.length; j++) {
-                        String answer = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j + "]/div/span";
-                        String upArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j +
-                                "]/div/div[2]/button[" + 1 + "]";
-                        String downArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j +
-                                "]/div/div[2]/button[" + 2 + "]";
-                        WebElement element2 = driver.findElement(By.xpath(answer));
-                        String text2 = element2.getText();
-
-                        if (text2.equals(res[1])) {
-                            if (i != j) {
-                                WebElement arrow = driver.findElement(By.xpath(i < j ? upArrow : downArrow));
-                                arrow.click();
-                            } else {
-                                checkTrue = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private static void login(WebDriver driver) {

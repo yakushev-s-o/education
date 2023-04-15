@@ -33,25 +33,28 @@ public class HyperSkillOnline {
         // Выполняем авторизацию
         login(driver);
 
-        driver.get("https://hyperskill.org/learn/step/2499");
-//        driver.get("http://91.217.76.232/learn/step/2499");
+        driver.get("http://91.217.76.232/learn/step/2499");
 
-        String[] answers = new String[]{"// a comment;end-of-line comment",
-                "/* a comment */;multi-line comment",
-                "/** a comment */;doc comment"};
-        sendPermutation(driver, answers);
+        getPermutation(driver);
 
-//        // Получаем список правильных ответов и сохраняем его в файл
-//        List<String> correctAnswers = getPermutation(driver);
-//        String fileName = "src/offtop/hyperskill/" + "correct-answers.json";
-//        List<Answers> testDataList = new ArrayList<>();
-////        testDataList.add(new Answers("https://hyperskill.org/learn/step/15238", correctAnswers)); // 1 ответ
-////        testDataList.add(new Answers("https://hyperskill.org/learn/step/1982", correctAnswers)); // 2 ответа
-////        testDataList.add(new Answers("https://hyperskill.org/learn/step/3412", correctAnswers)); // ответ с текстом
-////        testDataList.add(new Answers("https://hyperskill.org/learn/step/2165", correctAnswers)); // ответ с кодом
-//        testDataList.add(new Answers("https://hyperskill.org/learn/step/2499", correctAnswers)); // ответ с перестановкой
-////        testDataList.add(new Answers("https://hyperskill.org/learn/step/2123", correctAnswers)); // ответ с матрицей
-//        saveCorrectAnswersToFile(fileName, testDataList);
+//        String[] answers = new String[]{"// a comment;end-of-line comment",
+//                "/* a comment */;multi-line comment",
+//                "/** a comment */;doc comment"};
+//        sendPermutation(driver, answers);
+
+        // Получаем список правильных ответов и сохраняем его в файл
+        List<Object> correctAnswers = new ArrayList<>();
+        correctAnswers.add(getPermutation(driver));
+        List<Answers> testDataList = new ArrayList<>();
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/15238", correctAnswers)); // 1 ответ
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/1982", correctAnswers)); // 2 ответа
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/3412", correctAnswers)); // ответ с текстом
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/2165", correctAnswers)); // ответ с кодом
+        testDataList.add(new Answers("https://hyperskill.org/learn/step/2499", correctAnswers)); // ответ с перестановкой
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/2123", correctAnswers)); // ответ с матрицей
+
+        String fileName = "src/offtop/hyperskill/" + "correct-answers.json";
+        saveCorrectAnswersToFile(fileName, testDataList);
 
         // Закрываем браузер
 //        driver.quit();
@@ -73,36 +76,6 @@ public class HyperSkillOnline {
         }
 
         checkDownload(driver, "//div[@class='user-avatar']");
-    }
-
-    // Метод для получения ответа из текстового поля
-    private static String getText(WebDriver driver) {
-        WebElement input = driver.findElement(By.xpath("//input[@type='number']"));
-        return input.getAttribute("value");
-    }
-
-    // Метод для записи ответа в текстовое поле
-    private static void sendText(WebDriver driver) {
-        Actions actions = new Actions(driver);
-        WebElement radioBtn = driver.findElement(By.xpath("//input[@placeholder='Type your answer here...']"));
-        actions.moveToElement(radioBtn).click().sendKeys("123").perform();
-//        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
-//        signInButton.click();
-    }
-
-    // Метод для получения ответа из поля с кодом
-    private static String getCode(WebDriver driver) {
-        WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
-        return input.getText();
-    }
-
-    // Метод для записи ответа в поле с кодом
-    private static void sendCode(WebDriver driver) {
-        WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
-        input.clear();
-        input.sendKeys("123");
-//        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
-//        signInButton.click();
     }
 
     // Метод для получения списка правильных ответов из теста
@@ -135,11 +108,41 @@ public class HyperSkillOnline {
         }
     }
 
-    // Метод для получения списка правильных ответов из теста с перетягиванием
-    private static List<String> getPermutation(WebDriver driver) {
-        List<String> correctAnswers = new ArrayList<>();
+    // Метод для получения ответа из поля с кодом
+    private static String getCode(WebDriver driver) {
+        WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
+        return input.getText();
+    }
 
-        if (checkDownload(driver, "//div[@class='submission submission-correct']")) { // submission-correct
+    // Метод для записи ответа в поле с кодом
+    private static void sendCode(WebDriver driver) {
+        WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
+        input.clear();
+        input.sendKeys("123");
+//        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
+//        signInButton.click();
+    }
+
+    // Метод для получения ответа из текстового поля
+    private static String getText(WebDriver driver) {
+        WebElement input = driver.findElement(By.xpath("//input[@type='number']"));
+        return input.getAttribute("value");
+    }
+
+    // Метод для записи ответа в текстовое поле
+    private static void sendText(WebDriver driver) {
+        Actions actions = new Actions(driver);
+        WebElement radioBtn = driver.findElement(By.xpath("//input[@placeholder='Type your answer here...']"));
+        actions.moveToElement(radioBtn).click().sendKeys("123").perform();
+//        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
+//        signInButton.click();
+    }
+
+    // Метод для получения списка правильных ответов из теста с перетягиванием
+    private static List<String[]> getPermutation(WebDriver driver) {
+        List<String[]> correctAnswers = new ArrayList<>();
+
+        if (checkDownload(driver, "//div[@class='submission submission-correct']")) {
 
             List<WebElement> count = driver.findElements(By.xpath("//div[@class='left-side__line']"));
 
@@ -149,7 +152,8 @@ public class HyperSkillOnline {
                 WebElement element1 = driver.findElement(By.xpath(question));
                 WebElement element2 = driver.findElement(By.xpath(answer));
 
-                correctAnswers.add(element1.getText() + ";" + element2.getText());
+                String[] s = new String[]{element1.getText(), element2.getText()};
+                correctAnswers.add(s);
             }
         }
 
@@ -234,9 +238,9 @@ public class HyperSkillOnline {
 
 class Answers {
     String url;
-    List<String> answers;
+    List<Object> answers;
 
-    public Answers(String url, List<String> answers) {
+    public Answers(String url, List<Object> answers) {
         this.url = url;
         this.answers = answers;
     }

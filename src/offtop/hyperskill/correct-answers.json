@@ -2,7 +2,49 @@
   {
     "url": "https://hyperskill.org/learn/step/15238",
     "answers": [
-      "2"
+      [
+        "2"
+      ]
+    ]
+  },
+  {
+    "url": "https://hyperskill.org/learn/step/1982",
+    "answers": [
+      [
+        "2",
+        "3"
+      ]
+    ]
+  },
+  {
+    "url": "https://hyperskill.org/learn/step/3412",
+    "answers": [
+      "35"
+    ]
+  },
+  {
+    "url": "https://hyperskill.org/learn/step/2165",
+    "answers": [
+      "import java.util.Scanner;\n\nclass Main {\n    public static void main(String[] args) {\n        Scanner scanner \u003d new Scanner(System.in);\n        // start coding here\n        int n \u003d scanner.nextInt();\n        if (n \u003c\u003d 12 \u0026\u0026 n \u003e -15) {\n            System.out.println(\"True\");\n        } else if (n \u003e 14 \u0026\u0026 n \u003c 17) {\n            System.out.println(\"True\");\n        } else if (n \u003e\u003d 19) {\n            System.out.println(\"True\");\n        } else {\n            System.out.println(\"False\");\n        }\n    }\n}"
+    ]
+  },
+  {
+    "url": "https://hyperskill.org/learn/step/2499",
+    "answers": [
+      [
+        [
+          "// a comment",
+          "end-of-line comment"
+        ],
+        [
+          "/* a comment */",
+          "multi-line comment"
+        ],
+        [
+          "/** a comment */",
+          "doc comment"
+        ]
+      ]
     ]
   }
 ]
