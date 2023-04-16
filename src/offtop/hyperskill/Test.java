@@ -18,14 +18,19 @@ public class Test {
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
 
-//        login(driver);
+        login(driver);
 
-//        driver.get("https://hyperskill.org/learn/step/2123");
-        driver.get("http://91.217.76.232/learn/step/2123");
+        driver.get("https://hyperskill.org/learn/step/2123");
+//        driver.get("http://91.217.76.232/learn/step/2123");
 
-        getMatrix(driver);
+        boolean[][] b = new boolean[][] {
+                {true, false, false, true},
+                {true, true, true, true},
+                {true, true, true, true},
+                {true, true, true, true}};
+        sendMatrix(driver, b);
 
-        driver.quit();
+//        driver.quit();
     }
 
     private static void getMatrix(WebDriver driver) {
@@ -51,8 +56,21 @@ public class Test {
         }
     }
 
-    private static void sendMatrix(WebDriver driver, String[] correctAnswer) {
+    private static void sendMatrix(WebDriver driver, boolean[][] correctAnswer) {
+        if (checkDownload(driver, "//div[@class='submission']")) {
+            for (int i = 1; i <= correctAnswer.length; i++) {
+                for (int j = 1; j <= correctAnswer[i - 1].length; j++) {
+                    String s = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/table/tbody/tr" +
+                            "[" + i + "]/td[" + (j + 1) + "]/div/div";
+                    WebElement checkbox = driver.findElement(By.xpath(s));
 
+                    if (correctAnswer[i - 1][j - 1]) {
+                        checkbox.click();
+                    }
+                }
+            }
+
+        }
     }
 
     private static void login(WebDriver driver) {

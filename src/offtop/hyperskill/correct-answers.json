@@ -46,5 +46,36 @@
         ]
       ]
     ]
+  },
+  {
+    "url": "https://hyperskill.org/learn/step/2123",
+    "answers": [
+      [
+        [
+          true,
+          false,
+          false,
+          true
+        ],
+        [
+          true,
+          true,
+          true,
+          true
+        ],
+        [
+          true,
+          true,
+          true,
+          true
+        ],
+        [
+          true,
+          true,
+          true,
+          true
+        ]
+      ]
+    ]
   }
 ]

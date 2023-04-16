@@ -31,11 +31,9 @@ public class HyperSkillOnline {
         driver.manage().window().maximize();
 
         // Выполняем авторизацию
-        login(driver);
+//        login(driver);
 
-        driver.get("http://91.217.76.232/learn/step/2499");
-
-        getPermutation(driver);
+        driver.get("http://91.217.76.232/learn/step/2123");
 
 //        String[] answers = new String[]{"// a comment;end-of-line comment",
 //                "/* a comment */;multi-line comment",
@@ -44,20 +42,20 @@ public class HyperSkillOnline {
 
         // Получаем список правильных ответов и сохраняем его в файл
         List<Object> correctAnswers = new ArrayList<>();
-        correctAnswers.add(getPermutation(driver));
+        correctAnswers.add(getMatrix(driver));
         List<Answers> testDataList = new ArrayList<>();
 //        testDataList.add(new Answers("https://hyperskill.org/learn/step/15238", correctAnswers)); // 1 ответ
 //        testDataList.add(new Answers("https://hyperskill.org/learn/step/1982", correctAnswers)); // 2 ответа
 //        testDataList.add(new Answers("https://hyperskill.org/learn/step/3412", correctAnswers)); // ответ с текстом
 //        testDataList.add(new Answers("https://hyperskill.org/learn/step/2165", correctAnswers)); // ответ с кодом
-        testDataList.add(new Answers("https://hyperskill.org/learn/step/2499", correctAnswers)); // ответ с перестановкой
-//        testDataList.add(new Answers("https://hyperskill.org/learn/step/2123", correctAnswers)); // ответ с матрицей
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/2499", correctAnswers)); // ответ с перестановкой
+        testDataList.add(new Answers("https://hyperskill.org/learn/step/2123", correctAnswers)); // ответ с матрицей
 
         String fileName = "src/offtop/hyperskill/" + "correct-answers.json";
         saveCorrectAnswersToFile(fileName, testDataList);
 
         // Закрываем браузер
-//        driver.quit();
+        driver.quit();
     }
 
     // Метод для авторизации на сайте
@@ -139,7 +137,6 @@ public class HyperSkillOnline {
         List<String[]> correctAnswers = new ArrayList<>();
 
         if (checkDownload(driver, "//div[@class='submission submission-correct']")) {
-
             List<WebElement> count = driver.findElements(By.xpath("//div[@class='left-side__line']"));
 
             for (int i = 1; i <= count.size(); i++) {
@@ -198,6 +195,31 @@ public class HyperSkillOnline {
         }
 
 //        sendAnswer(driver);
+    }
+
+    private static boolean[][] getMatrix(WebDriver driver) {
+        boolean[][] matrix = new boolean[0][];
+
+        if (checkDownload(driver, "//div[@class='submission submission-correct']")) {
+            WebElement tbody = driver.findElement(By.tagName("tbody"));
+            List<WebElement> rows = tbody.findElements(By.tagName("tr"));
+            int rowCount = rows.size();
+            List<WebElement> columns = rows.get(0).findElements(By.tagName("td"));
+            int columnCount = columns.size() - 1;
+
+            matrix = new boolean[rowCount][columnCount];
+            for (int i = 1; i <= rowCount; i++) {
+                for (int j = 1; j <= columnCount; j++) {
+                    String s = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/table/tbody/tr" +
+                            "[" + i + "]/td[" + (j + 1) + "]/div/div";
+                    WebElement checkbox = driver.findElement(By.xpath(s));
+
+                    matrix[i - 1][j - 1] = "custom-checkbox checked disabled".equals(checkbox.getAttribute("class"));
+                }
+            }
+        }
+
+        return matrix;
     }
 
     private static void sendAnswer(WebDriver driver) {
