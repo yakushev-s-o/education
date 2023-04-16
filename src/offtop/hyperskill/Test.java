@@ -8,6 +8,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 
 public class Test {
     public static void main(String[] args) {
@@ -16,16 +18,37 @@ public class Test {
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
 
-        login(driver);
+//        login(driver);
 
-        driver.get("https://hyperskill.org/learn/step/2123");
-//        driver.get("http://91.217.76.232/learn/step/2123");
+//        driver.get("https://hyperskill.org/learn/step/2123");
+        driver.get("http://91.217.76.232/learn/step/2123");
 
-//        driver.quit();
+        getMatrix(driver);
+
+        driver.quit();
     }
 
     private static void getMatrix(WebDriver driver) {
+        if (checkDownload(driver, "//div[@class='submission submission-correct']")) {
+            WebElement tbody = driver.findElement(By.tagName("tbody"));
+            List<WebElement> rows = tbody.findElements(By.tagName("tr"));
+            int rowCount = rows.size();
+            List<WebElement> columns = rows.get(0).findElements(By.tagName("td"));
+            int columnCount = columns.size() - 1;
 
+            boolean[][] matrix = new boolean[rowCount][columnCount];
+            for (int i = 1; i <= rowCount; i++) {
+                for (int j = 1; j <= columnCount; j++) {
+                    String s = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/table/tbody/tr" +
+                            "[" + i + "]/td[" + (j + 1) + "]/div/div";
+                    WebElement checkbox = driver.findElement(By.xpath(s));
+
+                    matrix[i - 1][j - 1] = "custom-checkbox checked disabled".equals(checkbox.getAttribute("class"));
+                }
+            }
+
+            System.out.println(Arrays.deepToString(matrix));
+        }
     }
 
     private static void sendMatrix(WebDriver driver, String[] correctAnswer) {

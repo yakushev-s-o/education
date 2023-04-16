@@ -80,13 +80,12 @@ public class HyperSkillOnline {
 
     // Метод для получения списка правильных ответов из теста
     private static List<String> getTest(WebDriver driver) {
-        List<String> correctAnswers = null;
+        List<String> correctAnswers = new ArrayList<>();
 
         if (checkDownload(driver, "//div[@class='submission submission-correct']")) {
             String pageSource = driver.getPageSource();
             Document doc = Jsoup.parse(pageSource);
 
-            correctAnswers = new ArrayList<>();
             Elements checkedInputs = doc.select("input[type=radio][checked], input[type=checkbox][checked]");
             for (Element checkedInput : checkedInputs) {
                 String value = checkedInput.attr("value");
@@ -103,8 +102,7 @@ public class HyperSkillOnline {
             Actions actions = new Actions(driver);
             WebElement radioBtn = driver.findElement(By.cssSelector("input[type='radio'][value='1']"));
             actions.moveToElement(radioBtn).click().perform();
-//            WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
-//            signInButton.click();
+//            sendAnswer(driver);
         }
     }
 
@@ -119,8 +117,7 @@ public class HyperSkillOnline {
         WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
         input.clear();
         input.sendKeys("123");
-//        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
-//        signInButton.click();
+//        sendAnswer(driver);
     }
 
     // Метод для получения ответа из текстового поля
@@ -134,8 +131,7 @@ public class HyperSkillOnline {
         Actions actions = new Actions(driver);
         WebElement radioBtn = driver.findElement(By.xpath("//input[@placeholder='Type your answer here...']"));
         actions.moveToElement(radioBtn).click().sendKeys("123").perform();
-//        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
-//        signInButton.click();
+//        sendAnswer(driver);
     }
 
     // Метод для получения списка правильных ответов из теста с перетягиванием
@@ -201,8 +197,18 @@ public class HyperSkillOnline {
             }
         }
 
-//        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
-//        signInButton.click();
+//        sendAnswer(driver);
+    }
+
+    private static void sendAnswer(WebDriver driver) {
+        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
+        signInButton.click();
+    }
+
+    // Метод для проверки состояния загрузки страницы
+    private static boolean checkDownload(WebDriver driver, String s) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s))).isDisplayed();
     }
 
     // Метод для сохранения списка правильных ответов в файл в формате JSON
@@ -227,12 +233,6 @@ public class HyperSkillOnline {
         FileWriter writer = new FileWriter(file);
         gson.toJson(existingData, writer);
         writer.close();
-    }
-
-    // Метод для проверки состояния загрузки страницы
-    private static boolean checkDownload(WebDriver driver, String s) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s))).isDisplayed();
     }
 }
 
