@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -29,11 +30,18 @@ public class HyperSkillOnline {
         // Выполняем авторизацию
         login(driver);
 
-//        driver.get("http://91.217.76.232/learn/step/15238");
-        driver.get("https://hyperskill.org/learn/step/1982");
+//        driver.get("http://185.117.119.184/learn/step/2165");
+        driver.get("https://hyperskill.org/learn/step/2165");
 
-        int[] answers = new int[]{2,3};
-        sendTestAnswers(driver, answers);
+
+//        int[] answers = new int[]{2,3};
+//        sendTestAnswers(driver, answers);
+
+        String code = "import java.util.Scanner;\n\nclass Main {\n    public static void main(String[] args) {\n        Scanner scanner \u003d new Scanner(System.in);\n        // start coding here\n        int n \u003d scanner.nextInt();\n        if (n \u003c\u003d 12 \u0026\u0026 n \u003e -15) {\n            System.out.println(\"True\");\n        } else if (n \u003e 14 \u0026\u0026 n \u003c 17) {\n            System.out.println(\"True\");\n        } else if (n \u003e\u003d 19) {\n            System.out.println(\"True\");\n        } else {\n            System.out.println(\"False\");\n        }\n    }\n}";
+        sendCode(driver, code);
+
+//        String answer = "123";
+//        sendCode(driver, answer);
 
 //        String[] answers = new String[]{"// a comment;end-of-line comment",
 //                "/* a comment */;multi-line comment",
@@ -48,21 +56,25 @@ public class HyperSkillOnline {
 //        sendMatrix(driver, b);
 
         // Получаем список правильных ответов и сохраняем его в файл
-//        List<Object> correctAnswers = new ArrayList<>();
-//        correctAnswers.add(getTestAnswers(driver));
-//        List<Answers> testDataList = new ArrayList<>();
-////        testDataList.add(new Answers("https://hyperskill.org/learn/step/15238", correctAnswers)); // 1 ответ
-//        testDataList.add(new Answers("https://hyperskill.org/learn/step/1982", correctAnswers)); // 2 ответа
-////        testDataList.add(new Answers("https://hyperskill.org/learn/step/3412", correctAnswers)); // ответ с текстом
-////        testDataList.add(new Answers("https://hyperskill.org/learn/step/2165", correctAnswers)); // ответ с кодом
-////        testDataList.add(new Answers("https://hyperskill.org/learn/step/2499", correctAnswers)); // ответ с перестановкой
-////        testDataList.add(new Answers("https://hyperskill.org/learn/step/2123", correctAnswers)); // ответ с матрицей
-//
-//        String fileName = "src/offtop/hyperskill/" + "correct-answers.json";
-//        saveCorrectAnswersToFile(fileName, testDataList);
+//        getListAnswersAddToFile(driver);
 
         // Закрываем браузер
 //        driver.quit();
+    }
+
+    private static void getListAnswersAddToFile(WebDriver driver) throws IOException {
+        List<Object> correctAnswers = new ArrayList<>();
+        correctAnswers.add(getCode(driver));
+        List<Answers> testDataList = new ArrayList<>();
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/15238", correctAnswers)); // 1 ответ
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/1982", correctAnswers)); // 2 ответа
+        testDataList.add(new Answers("https://hyperskill.org/learn/step/2165", correctAnswers)); // ответ с кодом
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/3412", correctAnswers)); // ответ с текстом
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/2499", correctAnswers)); // ответ с перестановкой
+//        testDataList.add(new Answers("https://hyperskill.org/learn/step/2123", correctAnswers)); // ответ с матрицей
+
+        String fileName = "src/offtop/hyperskill/" + "correct-answers.json";
+        saveCorrectAnswersToFile(fileName, testDataList);
     }
 
     // Авторизация на сайте
@@ -111,18 +123,27 @@ public class HyperSkillOnline {
         }
     }
 
-    // Метод для получения ответа из поля с кодом
+    // Получаем ответ из поля с кодом
     private static String getCode(WebDriver driver) {
-        WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
-        return input.getText();
+        if (checkDownload(driver, "//div[@class='cm-content']")) {
+            WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
+            return input.getText();
+        }
+
+        return null;
     }
 
-    // Метод для записи ответа в поле с кодом
-    private static void sendCode(WebDriver driver) {
-        WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
-        input.clear();
-        input.sendKeys("123");
+    // Записываем ответ в поле с кодом
+    private static void sendCode(WebDriver driver, String code) {
+        if (checkDownload(driver, "//div[@class='cm-content']")) {
+            WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
+            input.clear();
+
+            JavascriptExecutor executor = (JavascriptExecutor) driver;
+            executor.executeScript("arguments[0].innerText = '" + code.replace("\n", "\\n") + "';", input);
+
 //        sendAnswer(driver);
+        }
     }
 
     // Метод для получения ответа из текстового поля
