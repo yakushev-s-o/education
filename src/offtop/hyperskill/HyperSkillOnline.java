@@ -289,7 +289,15 @@ public class HyperSkillOnline {
     }
 
     private static void choiceMethod() {
-        // //span[text()=' Select one option from the list ']
+//        "//span[text()=' Select one option from the list ']"
+
+//        Select one option from the list
+//        Select one or more options from the list
+//        Write a program in Java 17
+//        Enter a number
+//        Match the items from left and right columns
+//        Choose one or more options for each row
+//        Match the items from left and right columns
     }
 
     // Сохраняем список правильных ответов в файл в формате JSON
