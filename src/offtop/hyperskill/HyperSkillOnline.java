@@ -19,54 +19,74 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HyperSkillOnline {
+    private static WebDriver driver;
 
     public static void main(String[] args) throws InterruptedException, IOException {
         // Устанавливаем путь к драйверу браузера
         System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver_win32\\chromedriver.exe");
 
         // Создаем экземпляр драйвера
-        WebDriver driver = new ChromeDriver();
+        driver = new ChromeDriver();
         driver.manage().window().maximize();
 
         // Выполняем авторизацию
 //        login(driver);
 
-        testGetMethods(driver);
+        getAllAnswers();
 
-        testSendMethods(driver);
+        testSendMethods();
 
         // Закрываем браузер
         driver.quit();
     }
 
-    private static void testGetMethods(WebDriver driver) throws IOException {
-        final String GET_SINGLE_PAGE = "http://185.117.119.184/learn/step/15238";
-        final String GET_MULTIPLE_PAGE = "http://185.117.119.184/learn/step/1982";
-        final String GET_CODE_PAGE = "http://185.117.119.184/learn/step/2165";
-        final String GET_TEXT_PAGE = "http://185.117.119.184/learn/step/3412";
-        final String GET_MATCH_PAGE = "http://185.117.119.184/learn/step/2499";
-        final String GET_MATRIX_PAGE = "http://185.117.119.184/learn/step/2123";
+    private static void getAllAnswers() throws IOException {
+        final String FOLDER_PATH = "C:/Users/Admin/Desktop/test/learn/step/";
+        File folder = new File(FOLDER_PATH);
+        File[] files = folder.listFiles();
 
-        driver.get(GET_SINGLE_PAGE);
-        getListAnswersAddToFile(driver, GET_SINGLE_PAGE); // Получаем список правильных ответов и сохраняем его в файл
+        List<Answers> listAnswers = new ArrayList<>();
 
-        driver.get(GET_MULTIPLE_PAGE);
-        getListAnswersAddToFile(driver, GET_MULTIPLE_PAGE);
+        if (files != null) {
+            for (File file : files) {
+                driver.get(FOLDER_PATH + file.getName());
+                listAnswers.add(getListAnswers(file.getName()));
+            }
+        }
 
-        driver.get(GET_CODE_PAGE);
-        getListAnswersAddToFile(driver, GET_CODE_PAGE);
-
-        driver.get(GET_TEXT_PAGE);
-        getListAnswersAddToFile(driver, GET_TEXT_PAGE);
-
-        driver.get(GET_MATCH_PAGE);
-        getListAnswersAddToFile(driver, GET_MATCH_PAGE);
-
-        driver.get(GET_MATRIX_PAGE);
-        getListAnswersAddToFile(driver, GET_MATRIX_PAGE);
+        saveCorrectAnswersToFile(listAnswers);
     }
 
-    private static void testSendMethods(WebDriver driver) {
+    // Получаем правильный ответ и сохраняем его в файл
+    private static Answers getListAnswers(String page) {
+        waitDownloadElement("//div[@class='step-problem']");
+
+        final String SINGLE = "Select one option from the list";
+        final String MULTIPLE = "Select one or more options from the list";
+        final String CODE = "Write a program in Java 17";
+        final String TEXT = "Enter a number";
+        final String MATCH = "Match the items from left and right columns";
+        final String MATRIX = "Choose one or more options for each row";
+
+        WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
+
+        String originPage = "https://hyperskill.org/learn/step/";
+        String modPage = originPage + page.replace(".html", "");
+
+        Answers answer = null;
+
+        switch (element.getText()) {
+            case SINGLE, MULTIPLE -> answer = new Answers(modPage, getTestAnswers()); // один / несколько ответов
+            case CODE -> answer = new Answers(modPage, getCode()); // ответ с кодом
+            case TEXT -> answer = new Answers(modPage, getText()); // ответ с текстом
+            case MATCH -> answer = new Answers(modPage, getMatch()); // ответ с перестановкой
+            case MATRIX -> answer = new Answers(modPage, getMatrix()); // ответ с матрицей
+        }
+
+        return answer;
+    }
+
+    private static void testSendMethods() {
 //        int[] answers = new int[]{2,3};
 //        sendTestAnswers(driver, answers);
 //
@@ -89,51 +109,11 @@ public class HyperSkillOnline {
 //        sendMatrix(driver, answers);
     }
 
-    private static void getListAnswersAddToFile(WebDriver driver, String page) throws IOException {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
-
-        final String SINGLE = "Select one option from the list";
-        final String MULTIPLE = "Select one or more options from the list";
-        final String CODE = "Write a program in Java 17";
-        final String TEXT = "Enter a number";
-        final String MATCH = "Match the items from left and right columns";
-        final String MATRIX = "Choose one or more options for each row";
-
-        List<Object> correctAnswers = new ArrayList<>();
-        List<Answers> testDataList = new ArrayList<>();
-        WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
-
-        switch (element.getText()) {
-            case SINGLE, MULTIPLE -> {
-                correctAnswers.add(getTestAnswers(driver));
-                testDataList.add(new Answers(page, correctAnswers)); // 1 ответ / несколько ответов
-            }
-            case CODE -> {
-                correctAnswers.add(getCode(driver));
-                testDataList.add(new Answers(page, correctAnswers)); // ответ с кодом
-            }
-            case TEXT -> {
-                correctAnswers.add(getText(driver));
-                testDataList.add(new Answers(page, correctAnswers)); // ответ с текстом
-            }
-            case MATCH -> {
-                correctAnswers.add(getMatch(driver));
-                testDataList.add(new Answers(page, correctAnswers)); // ответ с перестановкой
-            }
-            case MATRIX -> {
-                correctAnswers.add(getMatrix(driver));
-                testDataList.add(new Answers(page, correctAnswers)); // ответ с матрицей
-            }
-        }
-
-        saveCorrectAnswersToFile("src/offtop/hyperskill/" + "correct-answers.json", testDataList);
-    }
-
     // Авторизация на сайте
-    private static void login(WebDriver driver) {
+    private static void login() {
         driver.get("https://hyperskill.org/login");
 
-        waitDownloadElement(driver, "//input[@type='email']");
+        waitDownloadElement("//input[@type='email']");
 
         WebElement emailField = driver.findElement(By.xpath("//input[@type='email']"));
         WebElement passwordField = driver.findElement(By.xpath("//input[@type='password']"));
@@ -143,12 +123,12 @@ public class HyperSkillOnline {
         passwordField.sendKeys("{yx#e%B9~SGl4@Cr");
         signInButton.click();
 
-        waitDownloadElement(driver, "//div[@class='user-avatar']");
+        waitDownloadElement("//div[@class='user-avatar']");
     }
 
     // Получаем список правильных ответов из теста
-    private static List<String> getTestAnswers(WebDriver driver) {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
+    private static List<String> getTestAnswers() {
+        waitDownloadElement("//div[@class='step-problem']");
 
         List<String> correctAnswers = new ArrayList<>();
         List<WebElement> input = driver.findElements(By.cssSelector("input[type=radio][checked], input[type=checkbox][checked]"));
@@ -161,8 +141,8 @@ public class HyperSkillOnline {
     }
 
     // Выбираем ответы в тесте
-    private static void sendTestAnswers(WebDriver driver, int[] answer) {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
+    private static void sendTestAnswers(int[] answer) {
+        waitDownloadElement("//div[@class='step-problem']");
 
         for (int i : answer) {
             Actions actions = new Actions(driver);
@@ -170,20 +150,20 @@ public class HyperSkillOnline {
             actions.moveToElement(input).click().perform();
         }
 
-//            sendAnswer(driver);
+//        sendAnswer();
     }
 
     // Получаем ответ из поля с кодом
-    private static String getCode(WebDriver driver) {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
+    private static String getCode() {
+        waitDownloadElement("//div[@class='step-problem']");
 
         WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
         return input.getText();
     }
 
     // Записываем ответ в поле с кодом
-    private static void sendCode(WebDriver driver, String code) {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
+    private static void sendCode(String code) {
+        waitDownloadElement("//div[@class='step-problem']");
 
         WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
         input.clear();
@@ -191,30 +171,30 @@ public class HyperSkillOnline {
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         executor.executeScript("arguments[0].innerText = '" + code.replace("\n", "\\n") + "';", input);
 
-//        sendAnswer(driver);
+//        sendAnswer();
     }
 
     // Получаем ответ из текстового поля
-    private static String getText(WebDriver driver) {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
+    private static String getText() {
+        waitDownloadElement("//div[@class='step-problem']");
 
         WebElement input = driver.findElement(By.xpath("//input[@type='number']"));
         return input.getAttribute("value");
     }
 
     // Записываем ответ в текстовое поле
-    private static void sendText(WebDriver driver, String answer) {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
+    private static void sendText(String answer) {
+        waitDownloadElement("//div[@class='step-problem']");
 
         WebElement input = driver.findElement(By.xpath("//input[@type='number']"));
         input.sendKeys(answer);
 
-//        sendAnswer(driver);
+//        sendAnswer();
     }
 
     // Получаем список правильных ответов из теста с сопоставлением
-    private static List<String[]> getMatch(WebDriver driver) {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
+    private static List<String[]> getMatch() {
+        waitDownloadElement("//div[@class='step-problem']");
 
         List<String[]> correctAnswers = new ArrayList<>();
         List<WebElement> count = driver.findElements(By.xpath("//div[@class='left-side__line']"));
@@ -233,8 +213,8 @@ public class HyperSkillOnline {
     }
 
     // Выбираем ответы в тесте с сопоставлением
-    private static void sendMatch(WebDriver driver, String[] correctAnswer) {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
+    private static void sendMatch(String[] correctAnswer) {
+        waitDownloadElement("//div[@class='step-problem']");
 
         for (int i = 1; i <= correctAnswer.length; i++) {
             String question = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[1]/div[" + i + "]/span";
@@ -273,12 +253,12 @@ public class HyperSkillOnline {
             }
         }
 
-//        sendAnswer(driver);
+//        sendAnswer();
     }
 
     // Получить матрицу правильных ответов из теста
-    private static boolean[][] getMatrix(WebDriver driver) {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
+    private static boolean[][] getMatrix() {
+        waitDownloadElement("//div[@class='step-problem']");
 
         WebElement tbody = driver.findElement(By.tagName("tbody"));
         List<WebElement> rows = tbody.findElements(By.tagName("tr"));
@@ -301,8 +281,8 @@ public class HyperSkillOnline {
     }
 
     // Выбираем правильные ответы в тесте с матрицей
-    private static void sendMatrix(WebDriver driver, boolean[][] correctAnswer) {
-        waitDownloadElement(driver, "//div[@class='step-problem']");
+    private static void sendMatrix(boolean[][] correctAnswer) {
+        waitDownloadElement("//div[@class='step-problem']");
 
         for (int i = 1; i <= correctAnswer.length; i++) {
             for (int j = 1; j <= correctAnswer[i - 1].length; j++) {
@@ -316,28 +296,28 @@ public class HyperSkillOnline {
             }
         }
 
-//        sendAnswer(driver);
+//        sendAnswer();
     }
 
     // Нажимаем на кнопку "Send"
-    private static void sendAnswer(WebDriver driver) {
+    private static void sendAnswer() {
         WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
         signInButton.click();
     }
 
     // Проверяем состояние загрузки страницы
-    private static void waitDownloadElement(WebDriver driver, String s) {
+    private static void waitDownloadElement(String s) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s))).isDisplayed();
     }
 
     // Сохраняем список правильных ответов в файл в формате JSON
-    private static void saveCorrectAnswersToFile(String fileName, List<Answers> testDataList) throws IOException {
+    private static void saveCorrectAnswersToFile(List<Answers> testDataList) throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         List<Answers> existingData = new ArrayList<>();
 
         // Проверяем, существует ли файл, и если да, то загружаем его содержимое в память
-        File file = new File(fileName);
+        File file = new File("src/offtop/hyperskill/correct-answers.json");
         if (file.exists()) {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             Type listType = new TypeToken<List<Answers>>() {
