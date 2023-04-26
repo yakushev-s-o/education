@@ -20,10 +20,15 @@ import java.util.List;
 
 public class HyperSkillOnline {
     private static WebDriver driver;
+    private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test/learn/step/";
+    private static final String CHROMEDRIVER_PATH = "C:\\tools\\chromedriver_win32\\chromedriver.exe";
+    private static final String JSON_PATH = "src/offtop/hyperskill/correct-answers.json";
+    private static final String STEP_PATH = "https://hyperskill.org/learn/step/";
+
 
     public static void main(String[] args) throws InterruptedException, IOException {
         // Устанавливаем путь к драйверу браузера
-        System.setProperty("webdriver.chrome.driver", "C:\\tools\\chromedriver_win32\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_PATH);
 
         // Создаем экземпляр драйвера
         driver = new ChromeDriver();
@@ -32,33 +37,54 @@ public class HyperSkillOnline {
         // Выполняем авторизацию
 //        login(driver);
 
-        getAllAnswers();
+        getAllCorrectAnswers();
 
-        testSendMethods();
+        sendAllCorrectAnswers();
 
         // Закрываем браузер
         driver.quit();
     }
 
-    private static void getAllAnswers() throws IOException {
-        final String FOLDER_PATH = "C:/Users/Admin/Desktop/test/learn/step/";
+    // Получаем все правильные ответы и по очереди сохраняем в файл
+    private static void getAllCorrectAnswers() throws IOException {
         File folder = new File(FOLDER_PATH);
         File[] files = folder.listFiles();
-
-        List<Answers> listAnswers = new ArrayList<>();
 
         if (files != null) {
             for (File file : files) {
                 driver.get(FOLDER_PATH + file.getName());
-                listAnswers.add(getListAnswers(file.getName()));
+                saveCorrectAnswerToFile(getCorrectAnswer(file.getName()));
             }
         }
-
-        saveCorrectAnswersToFile(listAnswers);
     }
 
-    // Получаем правильный ответ и сохраняем его в файл
-    private static Answers getListAnswers(String page) {
+    // Сохраняем правильный ответ в файл в формате JSON
+    private static void saveCorrectAnswerToFile(Answers<?> answer) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        List<Answers<?>> existingData = new ArrayList<>();
+
+        // Проверяем, существует ли файл, и если да, то загружаем его содержимое в память
+        File file = new File(JSON_PATH);
+
+        if (file.exists()) {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            Type listType = new TypeToken<List<Answers<?>>>() {
+            }.getType();
+            existingData = gson.fromJson(reader, listType);
+            reader.close();
+        }
+
+        // Добавляем новые данные к уже существующим данным в памяти
+        existingData.add(answer);
+
+        // Записываем обновленные данные в файл
+        FileWriter writer = new FileWriter(file);
+        gson.toJson(existingData, writer);
+        writer.close();
+    }
+
+    // Получаем правильный ответ через подходящий метод
+    private static Answers<?> getCorrectAnswer(String srcPage) {
         waitDownloadElement("//div[@class='step-problem']");
 
         final String SINGLE = "Select one option from the list";
@@ -69,24 +95,30 @@ public class HyperSkillOnline {
         final String MATRIX = "Choose one or more options for each row";
 
         WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
-
-        String originPage = "https://hyperskill.org/learn/step/";
-        String modPage = originPage + page.replace(".html", "");
-
-        Answers answer = null;
+        String page = STEP_PATH + srcPage.replace(".html", "");
 
         switch (element.getText()) {
-            case SINGLE, MULTIPLE -> answer = new Answers(modPage, getTestAnswers()); // один / несколько ответов
-            case CODE -> answer = new Answers(modPage, getCode()); // ответ с кодом
-            case TEXT -> answer = new Answers(modPage, getText()); // ответ с текстом
-            case MATCH -> answer = new Answers(modPage, getMatch()); // ответ с перестановкой
-            case MATRIX -> answer = new Answers(modPage, getMatrix()); // ответ с матрицей
+            case SINGLE, MULTIPLE -> {
+                return new Answers<>(page, false, getTestAnswers());
+            }
+            case CODE -> {
+                return new Answers<>(page, false, getCode());
+            }
+            case TEXT -> {
+                return new Answers<>(page, false, getText());
+            }
+            case MATCH -> {
+                return new Answers<>(page, false, getMatch());
+            }
+            case MATRIX -> {
+                return new Answers<>(page, false, getMatrix());
+            }
         }
 
-        return answer;
+        return new Answers<>(page, false, new String[0]);
     }
 
-    private static void testSendMethods() {
+    private static void sendAllCorrectAnswers() {
 //        int[] answers = new int[]{2,3};
 //        sendTestAnswers(driver, answers);
 //
@@ -309,29 +341,5 @@ public class HyperSkillOnline {
     private static void waitDownloadElement(String s) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s))).isDisplayed();
-    }
-
-    // Сохраняем список правильных ответов в файл в формате JSON
-    private static void saveCorrectAnswersToFile(List<Answers> testDataList) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        List<Answers> existingData = new ArrayList<>();
-
-        // Проверяем, существует ли файл, и если да, то загружаем его содержимое в память
-        File file = new File("src/offtop/hyperskill/correct-answers.json");
-        if (file.exists()) {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            Type listType = new TypeToken<List<Answers>>() {
-            }.getType();
-            existingData = gson.fromJson(reader, listType);
-            reader.close();
-        }
-
-        // Добавляем новые данные к уже существующим данным в памяти
-        existingData.addAll(testDataList);
-
-        // Записываем обновленные данные в файл
-        FileWriter writer = new FileWriter(file);
-        gson.toJson(existingData, writer);
-        writer.close();
     }
 }
