@@ -10,4 +10,12 @@ public class Answers<T> {
         this.checked = checked;
         this.answers = answers;
     }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 }

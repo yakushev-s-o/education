@@ -25,7 +25,6 @@ public class HyperSkillOnline {
     private static final String JSON_PATH = "src/offtop/hyperskill/correct-answers.json";
     private static final String STEP_PATH = "https://hyperskill.org/learn/step/";
 
-
     public static void main(String[] args) throws InterruptedException, IOException {
         // Устанавливаем путь к драйверу браузера
         System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_PATH);
@@ -45,6 +44,28 @@ public class HyperSkillOnline {
         driver.quit();
     }
 
+    // Проверяем совпадение страницы с ответом в файле
+    private static boolean checkMatch(String page) throws IOException {
+        Gson gson = new Gson();
+        File file = new File(JSON_PATH);
+
+        if (file.exists()) {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            Type listType = new TypeToken<List<Answers<?>>>() {
+            }.getType();
+            List<Answers<?>> listAnswers = gson.fromJson(reader, listType);
+            reader.close();
+
+            for (Answers<?> answer : listAnswers) {
+                if (answer.getUrl().equals(STEP_PATH + page.replace(".html", ""))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     // Получаем все правильные ответы и по очереди сохраняем в файл
     private static void getAllCorrectAnswers() throws IOException {
         File folder = new File(FOLDER_PATH);
@@ -52,8 +73,10 @@ public class HyperSkillOnline {
 
         if (files != null) {
             for (File file : files) {
-                driver.get(FOLDER_PATH + file.getName());
-                saveCorrectAnswerToFile(getCorrectAnswer(file.getName()));
+                if (!checkMatch(file.getName())) {
+                    driver.get(FOLDER_PATH + file.getName());
+                    saveCorrectAnswerToFile(getCorrectAnswer(file.getName()));
+                }
             }
         }
     }
@@ -70,7 +93,7 @@ public class HyperSkillOnline {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             Type listType = new TypeToken<List<Answers<?>>>() {
             }.getType();
-            existingData = gson.fromJson(reader, listType);
+            existingData = gson.fromJson(new FileReader(file), listType);
             reader.close();
         }
 
