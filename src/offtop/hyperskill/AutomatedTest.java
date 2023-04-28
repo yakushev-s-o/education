@@ -97,35 +97,34 @@ public class AutomatedTest {
 
                     switch (answer.getMode()) {
                         case 1 -> {
-                            sendTestSingle(answer.getStr());
+                            sendTestSingle(answer.getAnswerStr());
                             answer.setChecked(true);
                         }
                         case 2 -> {
-                            sendTestMultiple(answer.getList());
+                            sendTestMultiple(answer.getAnswerArr());
                             answer.setChecked(true);
                         }
                         case 3 -> {
-                            sendCode(answer.getStr());
+                            sendCode(answer.getAnswerStr());
                             answer.setChecked(true);
                         }
                         case 4 -> {
-                            sendText(answer.getStr());
+                            sendText(answer.getAnswerStr());
                             answer.setChecked(true);
                         }
                         case 5 -> {
-                            sendMatch(answer.getListArr());
+                            sendMatch(answer.getAnswerListArr());
                             answer.setChecked(true);
                         }
                         case 6 -> {
-                            sendMatrix(answer.getB());
+                            sendMatrix(answer.getAnswerBoolean());
                             answer.setChecked(true);
                         }
-
                     }
 
                     // Задержка между переходами
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -226,7 +225,7 @@ public class AutomatedTest {
                 return new Answers(page, false, 4, getText());
             }
             case MATCH -> {
-                return new Answers(page, false, getMatch(), 5);
+                return new Answers(page, false, 5, getMatch());
             }
             case MATRIX -> {
                 return new Answers(page, false, 6, getMatrix());
@@ -257,7 +256,7 @@ public class AutomatedTest {
     }
 
     // Получаем несколько ответов из теста
-    private List<String> getTestMultiple() {
+    private String[] getTestMultiple() {
         waitDownloadElement("//div[@class='step-problem']");
 
         List<String> correctAnswers = new ArrayList<>();
@@ -267,11 +266,11 @@ public class AutomatedTest {
             correctAnswers.add(answer.getAttribute("value"));
         }
 
-        return correctAnswers;
+        return correctAnswers.toArray(new String[0]);
     }
 
     // Выбираем несколько ответов в тесте
-    private void sendTestMultiple(List<String> answer) {
+    private void sendTestMultiple(String[] answer) {
         waitDownloadElement("//div[@class='step-problem']");
 
         for (String i : answer) {

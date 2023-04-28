@@ -6,37 +6,37 @@ public class Answers {
     private final String url;
     private boolean checked;
     private final int mode;
-    private String str;
-    private List<String> list;
-    private List<String[]> listArr;
-    private boolean[][] b;
+    private String answerStr;
+    private String[] answerArr;
+    private List<String[]> answerListArr;
+    private boolean[][] answerBoolean;
 
-    public Answers(String url, boolean checked, int mode, String str) {
+    public Answers(String url, boolean checked, int mode, String answerStr) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
-        this.str = str;
+        this.answerStr = answerStr;
     }
 
-    public Answers(String url, boolean checked, int mode, List<String> list) {
+    public Answers(String url, boolean checked, int mode, String[] answerArr) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
-        this.list = list;
+        this.answerArr = answerArr;
     }
 
-    public Answers(String url, boolean checked, List<String[]> strArr, int mode) {
+    public Answers(String url, boolean checked, int mode, List<String[]> answerListArr) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
-        this.listArr = strArr;
+        this.answerListArr = answerListArr;
     }
 
-    public Answers(String url, boolean checked, int mode, boolean[][] b) {
+    public Answers(String url, boolean checked, int mode, boolean[][] answerBoolean) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
-        this.b = b;
+        this.answerBoolean = answerBoolean;
     }
 
     public String getUrl() {
@@ -55,19 +55,19 @@ public class Answers {
         return this.mode;
     }
 
-    public String getStr() {
-        return this.str;
+    public String getAnswerStr() {
+        return this.answerStr;
     }
 
-    public List<String> getList() {
-        return list;
+    public String[] getAnswerArr() {
+        return answerArr;
     }
 
-    public List<String[]> getListArr() {
-        return listArr;
+    public List<String[]> getAnswerListArr() {
+        return answerListArr;
     }
 
-    public boolean[][] getB() {
-        return b;
+    public boolean[][] getAnswerBoolean() {
+        return answerBoolean;
     }
 }
