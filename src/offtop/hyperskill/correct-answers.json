@@ -2,14 +2,14 @@
   {
     "url": "https://hyperskill.org/learn/step/15238",
     "checked": false,
-    "answers": [
-      "2"
-    ]
+    "mode": 1,
+    "str": "2"
   },
   {
     "url": "https://hyperskill.org/learn/step/1982",
     "checked": false,
-    "answers": [
+    "mode": 2,
+    "list": [
       "2",
       "3"
     ]
@@ -17,7 +17,8 @@
   {
     "url": "https://hyperskill.org/learn/step/2123",
     "checked": false,
-    "answers": [
+    "mode": 6,
+    "b": [
       [
         true,
         false,
@@ -47,12 +48,14 @@
   {
     "url": "https://hyperskill.org/learn/step/2165",
     "checked": false,
-    "answers": "import java.util.Scanner;\n\nclass Main {\n    public static void main(String[] args) {\n        Scanner scanner \u003d new Scanner(System.in);\n        // start coding here\n        int n \u003d scanner.nextInt();\n        if (n \u003c\u003d 12 \u0026\u0026 n \u003e -15) {\n            System.out.println(\"True\");\n        } else if (n \u003e 14 \u0026\u0026 n \u003c 17) {\n            System.out.println(\"True\");\n        } else if (n \u003e\u003d 19) {\n            System.out.println(\"True\");\n        } else {\n            System.out.println(\"False\");\n        }\n    }\n}"
+    "mode": 3,
+    "str": "import java.util.Scanner;\n\nclass Main {\n    public static void main(String[] args) {\n        Scanner scanner \u003d new Scanner(System.in);\n        // start coding here\n        int n \u003d scanner.nextInt();\n        if (n \u003c\u003d 12 \u0026\u0026 n \u003e -15) {\n            System.out.println(\"True\");\n        } else if (n \u003e 14 \u0026\u0026 n \u003c 17) {\n            System.out.println(\"True\");\n        } else if (n \u003e\u003d 19) {\n            System.out.println(\"True\");\n        } else {\n            System.out.println(\"False\");\n        }\n    }\n}"
   },
   {
     "url": "https://hyperskill.org/learn/step/2499",
     "checked": false,
-    "answers": [
+    "mode": 5,
+    "listArr": [
       [
         "// a comment",
         "end-of-line comment"
@@ -70,6 +73,7 @@
   {
     "url": "https://hyperskill.org/learn/step/3412",
     "checked": false,
-    "answers": "35"
+    "mode": 4,
+    "str": "35"
   }
 ]

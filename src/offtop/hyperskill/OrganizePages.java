@@ -9,12 +9,12 @@ import java.nio.file.StandardCopyOption;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HyperSkillOffline {
+public class OrganizePages {
 
     private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test";
 //    private static final String NEW_FOLDER_PATH = "C:/Users/Admin/Desktop/res";
 
-    public static void main(String[] args) {
+    public void run() {
         File folder = new File(FOLDER_PATH);
         File[] files = folder.listFiles();
         if (files != null) {

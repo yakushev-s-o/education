@@ -18,154 +18,26 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HyperSkillOnline {
+public class AutomatedTest {
     private static WebDriver driver;
     private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test/learn/step/";
     private static final String CHROMEDRIVER_PATH = "C:\\tools\\chromedriver_win32\\chromedriver.exe";
     private static final String JSON_PATH = "src/offtop/hyperskill/correct-answers.json";
     private static final String STEP_PATH = "https://hyperskill.org/learn/step/";
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    private void createDriverChrome() {
         // Устанавливаем путь к драйверу браузера
         System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_PATH);
 
         // Создаем экземпляр драйвера
         driver = new ChromeDriver();
         driver.manage().window().maximize();
-
-        // Выполняем авторизацию
-//        login(driver);
-
-        getAllCorrectAnswers();
-
-        sendAllCorrectAnswers();
-
-        // Закрываем браузер
-        driver.quit();
     }
 
-    // Проверяем совпадение страницы с ответом в файле
-    private static boolean checkMatch(String page) throws IOException {
-        Gson gson = new Gson();
-        File file = new File(JSON_PATH);
+    // Выполняем авторизацию на сайте
+    public void login() {
+        createDriverChrome();
 
-        if (file.exists()) {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            Type listType = new TypeToken<List<Answers<?>>>() {
-            }.getType();
-            List<Answers<?>> listAnswers = gson.fromJson(reader, listType);
-            reader.close();
-
-            for (Answers<?> answer : listAnswers) {
-                if (answer.getUrl().equals(STEP_PATH + page.replace(".html", ""))) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    // Получаем все правильные ответы и по очереди сохраняем в файл
-    private static void getAllCorrectAnswers() throws IOException {
-        File folder = new File(FOLDER_PATH);
-        File[] files = folder.listFiles();
-
-        if (files != null) {
-            for (File file : files) {
-                if (!checkMatch(file.getName())) {
-                    driver.get(FOLDER_PATH + file.getName());
-                    saveCorrectAnswerToFile(getCorrectAnswer(file.getName()));
-                }
-            }
-        }
-    }
-
-    // Сохраняем правильный ответ в файл в формате JSON
-    private static void saveCorrectAnswerToFile(Answers<?> answer) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        List<Answers<?>> existingData = new ArrayList<>();
-
-        // Проверяем, существует ли файл, и если да, то загружаем его содержимое в память
-        File file = new File(JSON_PATH);
-
-        if (file.exists()) {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-            Type listType = new TypeToken<List<Answers<?>>>() {
-            }.getType();
-            existingData = gson.fromJson(new FileReader(file), listType);
-            reader.close();
-        }
-
-        // Добавляем новые данные к уже существующим данным в памяти
-        existingData.add(answer);
-
-        // Записываем обновленные данные в файл
-        FileWriter writer = new FileWriter(file);
-        gson.toJson(existingData, writer);
-        writer.close();
-    }
-
-    // Получаем правильный ответ через подходящий метод
-    private static Answers<?> getCorrectAnswer(String srcPage) {
-        waitDownloadElement("//div[@class='step-problem']");
-
-        final String SINGLE = "Select one option from the list";
-        final String MULTIPLE = "Select one or more options from the list";
-        final String CODE = "Write a program in Java 17";
-        final String TEXT = "Enter a number";
-        final String MATCH = "Match the items from left and right columns";
-        final String MATRIX = "Choose one or more options for each row";
-
-        WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
-        String page = STEP_PATH + srcPage.replace(".html", "");
-
-        switch (element.getText()) {
-            case SINGLE, MULTIPLE -> {
-                return new Answers<>(page, false, getTestAnswers());
-            }
-            case CODE -> {
-                return new Answers<>(page, false, getCode());
-            }
-            case TEXT -> {
-                return new Answers<>(page, false, getText());
-            }
-            case MATCH -> {
-                return new Answers<>(page, false, getMatch());
-            }
-            case MATRIX -> {
-                return new Answers<>(page, false, getMatrix());
-            }
-        }
-
-        return new Answers<>(page, false, new String[0]);
-    }
-
-    private static void sendAllCorrectAnswers() {
-//        int[] answers = new int[]{2,3};
-//        sendTestAnswers(driver, answers);
-//
-//        String code = "import java.util.Scanner;\n\nclass Main {\n    public static void main(String[] args) {\n        Scanner scanner \u003d new Scanner(System.in);\n        // start coding here\n        int n \u003d scanner.nextInt();\n        if (n \u003c\u003d 12 \u0026\u0026 n \u003e -15) {\n            System.out.println(\"True\");\n        } else if (n \u003e 14 \u0026\u0026 n \u003c 17) {\n            System.out.println(\"True\");\n        } else if (n \u003e\u003d 19) {\n            System.out.println(\"True\");\n        } else {\n            System.out.println(\"False\");\n        }\n    }\n}";
-//        sendCode(driver, code);
-//
-//        String answer = "123";
-//        sendText(driver, answer);
-//
-//        String[] answers = new String[]{"// a comment;end-of-line comment",
-//                "/* a comment */;multi-line comment",
-//                "/** a comment */;doc comment"};
-//        sendMatch(driver, answers);
-//
-//        boolean[][] answers = new boolean[][]{
-//                {true, false, false, true},
-//                {true, true, true, true},
-//                {true, true, true, true},
-//                {true, true, true, true}};
-//        sendMatrix(driver, answers);
-    }
-
-    // Авторизация на сайте
-    private static void login() {
         driver.get("https://hyperskill.org/login");
 
         waitDownloadElement("//input[@type='email']");
@@ -181,12 +53,215 @@ public class HyperSkillOnline {
         waitDownloadElement("//div[@class='user-avatar']");
     }
 
-    // Получаем список правильных ответов из теста
-    private static List<String> getTestAnswers() {
+    // Получаем все правильные ответы и по очереди сохраняем в файл
+    public void getAnswers() {
+        createDriverChrome();
+
+        File folder = new File(FOLDER_PATH);
+        File[] files = folder.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (!checkMatch(file.getName())) {
+                    driver.get(FOLDER_PATH + file.getName());
+                    saveCorrectAnswerToFile(getCorrectAnswer(file.getName()));
+                }
+            }
+        }
+
+        driver.quit();
+    }
+
+    // Заполняем правильные ответы из файла на сайте
+    public void sendAnswers() {
+        Gson gson = new Gson();
+        File file = new File(JSON_PATH);
+
+        // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
+        if (file.exists()) {
+            List<Answers> listAnswers;
+
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                Type listType = new TypeToken<List<Answers>>() {
+                }.getType();
+                listAnswers = gson.fromJson(reader, listType);
+                reader.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            for (Answers answer : listAnswers) {
+                if (!answer.getChecked()) {
+                    driver.get(answer.getUrl());
+
+                    switch (answer.getMode()) {
+                        case 1 -> {
+                            sendTestSingle(answer.getStr());
+                            answer.setChecked(true);
+                        }
+                        case 2 -> {
+                            sendTestMultiple(answer.getList());
+                            answer.setChecked(true);
+                        }
+                        case 3 -> {
+                            sendCode(answer.getStr());
+                            answer.setChecked(true);
+                        }
+                        case 4 -> {
+                            sendText(answer.getStr());
+                            answer.setChecked(true);
+                        }
+                        case 5 -> {
+                            sendMatch(answer.getListArr());
+                            answer.setChecked(true);
+                        }
+                        case 6 -> {
+                            sendMatrix(answer.getB());
+                            answer.setChecked(true);
+                        }
+
+                    }
+
+                    // Задержка между переходами
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
+        driver.quit();
+    }
+
+    // Проверяем ссылку на наличие в файле
+    private boolean checkMatch(String page) {
+        Gson gson = new Gson();
+        File file = new File(JSON_PATH);
+
+        // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
+        if (file.exists() && file.length() != 0) {
+            List<Answers> listAnswers;
+
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                Type listType = new TypeToken<List<Answers>>() {
+                }.getType();
+                listAnswers = gson.fromJson(reader, listType);
+                reader.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            // Проверяем объекты на совпадение в Url
+            for (Answers answer : listAnswers) {
+                if (answer.getUrl().equals(STEP_PATH + page.replace(".html", ""))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // Сохраняем правильный ответ в файл в формате JSON
+    private void saveCorrectAnswerToFile(Answers answer) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        List<Answers> existingData = new ArrayList<>();
+        File file = new File(JSON_PATH);
+
+        // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
+        if (file.exists() && file.length() != 0) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                Type listType = new TypeToken<List<Answers>>() {
+                }.getType();
+                existingData = gson.fromJson(new FileReader(file), listType);
+                reader.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // Добавляем новые данные к уже существующим данным в памяти
+        existingData.add(answer);
+
+        // Записываем обновленные данные в файл
+        try {
+            FileWriter writer = new FileWriter(file);
+            gson.toJson(existingData, writer);
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Получаем правильный ответ используя подходящий метод
+    private Answers getCorrectAnswer(String srcPage) {
+        waitDownloadElement("//div[@class='step-problem']");
+
+        final String SINGLE = "Select one option from the list";
+        final String MULTIPLE = "Select one or more options from the list";
+        final String CODE = "Write a program in Java 17";
+        final String TEXT = "Enter a number";
+        final String MATCH = "Match the items from left and right columns";
+        final String MATRIX = "Choose one or more options for each row";
+
+        WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
+        String page = STEP_PATH + srcPage.replace(".html", "");
+
+        switch (element.getText()) {
+            case SINGLE -> {
+                return new Answers(page, false, 1, getTestSingle());
+            }
+            case MULTIPLE -> {
+                return new Answers(page, false, 2, getTestMultiple());
+            }
+            case CODE -> {
+                return new Answers(page, false, 3, getCode());
+            }
+            case TEXT -> {
+                return new Answers(page, false, 4, getText());
+            }
+            case MATCH -> {
+                return new Answers(page, false, getMatch(), 5);
+            }
+            case MATRIX -> {
+                return new Answers(page, false, 6, getMatrix());
+            }
+        }
+
+        return new Answers(page, false, 0, "");
+    }
+
+    // Получаем один ответ из теста
+    private String getTestSingle() {
+        waitDownloadElement("//div[@class='step-problem']");
+
+        WebElement answer = driver.findElement(By.cssSelector("input[type=radio][checked]"));
+
+        return answer.getAttribute("value");
+    }
+
+    // Выбираем один ответ в тесте
+    private void sendTestSingle(String answer) {
+        waitDownloadElement("//div[@class='step-problem']");
+
+        Actions actions = new Actions(driver);
+        WebElement input = driver.findElement(By.cssSelector("input[type='radio'][value='" + answer + "']"));
+        actions.moveToElement(input).click().perform();
+
+//        clickOnButtonSend();
+    }
+
+    // Получаем несколько ответов из теста
+    private List<String> getTestMultiple() {
         waitDownloadElement("//div[@class='step-problem']");
 
         List<String> correctAnswers = new ArrayList<>();
-        List<WebElement> input = driver.findElements(By.cssSelector("input[type=radio][checked], input[type=checkbox][checked]"));
+        List<WebElement> input = driver.findElements(By.cssSelector("input[type=checkbox][checked]"));
 
         for (WebElement answer : input) {
             correctAnswers.add(answer.getAttribute("value"));
@@ -195,21 +270,21 @@ public class HyperSkillOnline {
         return correctAnswers;
     }
 
-    // Выбираем ответы в тесте
-    private static void sendTestAnswers(int[] answer) {
+    // Выбираем несколько ответов в тесте
+    private void sendTestMultiple(List<String> answer) {
         waitDownloadElement("//div[@class='step-problem']");
 
-        for (int i : answer) {
+        for (String i : answer) {
             Actions actions = new Actions(driver);
             WebElement input = driver.findElement(By.cssSelector("input[type='checkbox'][value='" + i + "']"));
             actions.moveToElement(input).click().perform();
         }
 
-//        sendAnswer();
+//        clickOnButtonSend();
     }
 
     // Получаем ответ из поля с кодом
-    private static String getCode() {
+    private String getCode() {
         waitDownloadElement("//div[@class='step-problem']");
 
         WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
@@ -217,8 +292,8 @@ public class HyperSkillOnline {
     }
 
     // Записываем ответ в поле с кодом
-    private static void sendCode(String code) {
-        waitDownloadElement("//div[@class='step-problem']");
+    private void sendCode(String code) {
+        waitDownloadElement("//div[@class='cm-content']");
 
         WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
         input.clear();
@@ -226,11 +301,11 @@ public class HyperSkillOnline {
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         executor.executeScript("arguments[0].innerText = '" + code.replace("\n", "\\n") + "';", input);
 
-//        sendAnswer();
+//        clickOnButtonSend();
     }
 
     // Получаем ответ из текстового поля
-    private static String getText() {
+    private String getText() {
         waitDownloadElement("//div[@class='step-problem']");
 
         WebElement input = driver.findElement(By.xpath("//input[@type='number']"));
@@ -238,17 +313,17 @@ public class HyperSkillOnline {
     }
 
     // Записываем ответ в текстовое поле
-    private static void sendText(String answer) {
+    private void sendText(String answer) {
         waitDownloadElement("//div[@class='step-problem']");
 
         WebElement input = driver.findElement(By.xpath("//input[@type='number']"));
         input.sendKeys(answer);
 
-//        sendAnswer();
+//        clickOnButtonSend();
     }
 
     // Получаем список правильных ответов из теста с сопоставлением
-    private static List<String[]> getMatch() {
+    private List<String[]> getMatch() {
         waitDownloadElement("//div[@class='step-problem']");
 
         List<String[]> correctAnswers = new ArrayList<>();
@@ -268,17 +343,17 @@ public class HyperSkillOnline {
     }
 
     // Выбираем ответы в тесте с сопоставлением
-    private static void sendMatch(String[] correctAnswer) {
+    private void sendMatch(List<String[]> correctAnswers) {
         waitDownloadElement("//div[@class='step-problem']");
 
-        for (int i = 1; i <= correctAnswer.length; i++) {
+        for (int i = 1; i <= correctAnswers.size(); i++) {
             String question = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[1]/div[" + i + "]/span";
             WebElement element1 = driver.findElement(By.xpath(question));
             String text1 = element1.getText();
 
             String[] res = null;
-            for (String s : correctAnswer) {
-                res = s.split(";");
+            for (String[] ans : correctAnswers) {
+                res = ans;
 
                 if (res[0].equals(text1)) {
                     break;
@@ -287,7 +362,7 @@ public class HyperSkillOnline {
 
             boolean checkTrue = true;
             while (checkTrue) {
-                for (int j = 1; j <= correctAnswer.length; j++) {
+                for (int j = 1; j <= correctAnswers.size(); j++) {
                     String answer = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j + "]/div/span";
                     String upArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j +
                             "]/div/div[2]/button[" + 1 + "]";
@@ -308,11 +383,11 @@ public class HyperSkillOnline {
             }
         }
 
-//        sendAnswer();
+        // sendAnswer();
     }
 
     // Получить матрицу правильных ответов из теста
-    private static boolean[][] getMatrix() {
+    private boolean[][] getMatrix() {
         waitDownloadElement("//div[@class='step-problem']");
 
         WebElement tbody = driver.findElement(By.tagName("tbody"));
@@ -336,7 +411,7 @@ public class HyperSkillOnline {
     }
 
     // Выбираем правильные ответы в тесте с матрицей
-    private static void sendMatrix(boolean[][] correctAnswer) {
+    private void sendMatrix(boolean[][] correctAnswer) {
         waitDownloadElement("//div[@class='step-problem']");
 
         for (int i = 1; i <= correctAnswer.length; i++) {
@@ -351,17 +426,17 @@ public class HyperSkillOnline {
             }
         }
 
-//        sendAnswer();
+//        clickOnButtonSend();
     }
 
     // Нажимаем на кнопку "Send"
-    private static void sendAnswer() {
+    private void clickOnButtonSend() {
         WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
         signInButton.click();
     }
 
     // Проверяем состояние загрузки страницы
-    private static void waitDownloadElement(String s) {
+    private void waitDownloadElement(String s) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s))).isDisplayed();
     }
