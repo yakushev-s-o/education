@@ -1,4 +1,4 @@
-package offtop.hyperskill;
+package offtop.hyperskill_manager;
 
 import java.util.List;
 

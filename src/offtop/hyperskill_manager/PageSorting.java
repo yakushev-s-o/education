@@ -1,4 +1,4 @@
-package offtop.hyperskill;
+package offtop.hyperskill_manager;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +9,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class OrganizePages {
+public class PageSorting {
 
     private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test";
-//    private static final String NEW_FOLDER_PATH = "C:/Users/Admin/Desktop/res";
 
     public void run() {
         File folder = new File(FOLDER_PATH);
@@ -26,7 +25,6 @@ public class OrganizePages {
                 String newFilePath = createNewFilePath(link);
                 fileContent = replaceLinks(fileContent);
                 fileContent = replaceOther(fileContent, link, newFilePath.replace(FOLDER_PATH, ""));
-//                fileContent = replaceOther(fileContent, link, newFilePath);
                 writeFile(file, fileContent);
                 File newFile = renameFile(file, newFileName);
                 moveFile(newFile, newFilePath);
@@ -62,7 +60,6 @@ public class OrganizePages {
 
     private static String createNewFilePath(String link) {
         String[] parts = link.split("/");
-//        StringBuilder path = new StringBuilder(NEW_FOLDER_PATH);
         StringBuilder path = new StringBuilder(FOLDER_PATH);
         for (int i = 3; i < parts.length - 1; i++) {
             path.append("/").append(parts[i]);
@@ -81,7 +78,6 @@ public class OrganizePages {
             if (i != 0) { // skip first match
                 String link = matcher.group();
                 String newLink = link.replace("https://hyperskill.org", "");
-//                String newLink = link.replace("https://hyperskill.org", NEW_FOLDER_PATH);
                 if (!newLink.matches(".*\\.[a-zA-Z]+$") && link.contains("https://hyperskill.org")) { // if the link is without extension
                     newLink += ".html";
                 }
@@ -103,7 +99,6 @@ public class OrganizePages {
         String practiceRightNew = " href=" + newFilePath.replaceAll(condition, "practice.html") + "> Practice </a>";
 
         String avatarOld = "# target=_self class=\"nav-link dropdown-toggle text-decoration-none d-flex align-items-center py-0\"";
-//        String avatarNew = NEW_FOLDER_PATH + "/profile/370575247.html" + avatarOld.substring(1);
         String avatarNew = "/profile/370575247.html" + avatarOld.substring(1);
 
         Pattern pattern = Pattern.compile(data);

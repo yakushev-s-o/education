@@ -1,18 +1,18 @@
-package offtop.hyperskill;
+package offtop.hyperskill_manager;
 
 import java.util.Scanner;
 
-public class HyperSkillManager {
+public class Main {
     public static void main(String[] args) {
-        AutomatedTest test = new AutomatedTest();
-        OrganizePages pages = new OrganizePages();
+        TestAutomation test = new TestAutomation();
+        PageSorting pages = new PageSorting();
 
         Scanner sc = new Scanner(System.in);
 
         while (true) {
             System.out.println("""
                     Выберите режим:
-                    1. Управление страницами с ответами
+                    1. Сортировка страниц
                     2. Получить правильные ответы
                     3. Ответить на тесты
                     4. Выйти""");

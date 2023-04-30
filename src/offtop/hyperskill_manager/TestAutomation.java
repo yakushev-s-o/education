@@ -1,4 +1,4 @@
-package offtop.hyperskill;
+package offtop.hyperskill_manager;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -18,14 +18,14 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AutomatedTest {
+public class TestAutomation {
     private static WebDriver driver;
     private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test/learn/step/";
     private static final String CHROMEDRIVER_PATH = "C:\\tools\\chromedriver_win32\\chromedriver.exe";
-    private static final String JSON_PATH = "src/offtop/hyperskill/correct-answers.json";
+    private static final String JSON_PATH = "src/offtop/hyperskill_manager/correct-answers.json";
     private static final String STEP_PATH = "https://hyperskill.org/learn/step/";
 
-    private void createDriverChrome() {
+    private void createChromeDriver() {
         // Устанавливаем путь к драйверу браузера
         System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_PATH);
 
@@ -36,7 +36,7 @@ public class AutomatedTest {
 
     // Выполняем авторизацию на сайте
     public void login() {
-        createDriverChrome();
+        createChromeDriver();
 
         driver.get("https://hyperskill.org/login");
 
@@ -55,7 +55,7 @@ public class AutomatedTest {
 
     // Получаем все правильные ответы и по очереди сохраняем в файл
     public void getAnswers() {
-        createDriverChrome();
+        createChromeDriver();
 
         File folder = new File(FOLDER_PATH);
         File[] files = folder.listFiles();
@@ -64,7 +64,13 @@ public class AutomatedTest {
             for (File file : files) {
                 if (!checkMatch(file.getName())) {
                     driver.get(FOLDER_PATH + file.getName());
-                    saveCorrectAnswerToFile(getCorrectAnswer(file.getName()));
+
+                    // Проверяем что это страница с тестом
+                    WebElement element = driver.findElement(By.xpath("//a[@click-event-target='practice']"));
+
+                    if (element.getAttribute("aria-pressed").equals("true")) {
+                        saveCorrectAnswerToFile(getCorrectAnswer(file.getName()));
+                    }
                 }
             }
         }
@@ -74,61 +80,38 @@ public class AutomatedTest {
 
     // Заполняем правильные ответы из файла на сайте
     public void sendAnswers() {
-        Gson gson = new Gson();
-        File file = new File(JSON_PATH);
+        for (Answers answer : getFileData()) {
+            if (!answer.getChecked()) {
+                driver.get(answer.getUrl());
 
-        // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
-        if (file.exists()) {
-            List<Answers> listAnswers;
-
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                Type listType = new TypeToken<List<Answers>>() {
-                }.getType();
-                listAnswers = gson.fromJson(reader, listType);
-                reader.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            for (Answers answer : listAnswers) {
-                if (!answer.getChecked()) {
-                    driver.get(answer.getUrl());
-
-                    switch (answer.getMode()) {
-                        case 1 -> {
-                            sendTestSingle(answer.getAnswerStr());
-                            answer.setChecked(true);
-                        }
-                        case 2 -> {
-                            sendTestMultiple(answer.getAnswerArr());
-                            answer.setChecked(true);
-                        }
-                        case 3 -> {
-                            sendCode(answer.getAnswerStr());
-                            answer.setChecked(true);
-                        }
-                        case 4 -> {
-                            sendText(answer.getAnswerStr());
-                            answer.setChecked(true);
-                        }
-                        case 5 -> {
-                            sendMatch(answer.getAnswerListArr());
-                            answer.setChecked(true);
-                        }
-                        case 6 -> {
-                            sendMatrix(answer.getAnswerBoolean());
-                            answer.setChecked(true);
-                        }
+                switch (answer.getMode()) {
+                    case 1 -> {
+                        sendTestSingle(answer.getAnswerStr());
+                        answer.setChecked(true);
                     }
-
-                    // Задержка между переходами
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                    case 2 -> {
+                        sendTestMultiple(answer.getAnswerArr());
+                        answer.setChecked(true);
+                    }
+                    case 3 -> {
+                        sendCode(answer.getAnswerStr());
+                        answer.setChecked(true);
+                    }
+                    case 4 -> {
+                        sendText(answer.getAnswerStr());
+                        answer.setChecked(true);
+                    }
+                    case 5 -> {
+                        sendMatch(answer.getAnswerListArr());
+                        answer.setChecked(true);
+                    }
+                    case 6 -> {
+                        sendMatrix(answer.getAnswerBoolean());
+                        answer.setChecked(true);
                     }
                 }
+
+                delay();
             }
         }
 
@@ -137,28 +120,10 @@ public class AutomatedTest {
 
     // Проверяем ссылку на наличие в файле
     private boolean checkMatch(String page) {
-        Gson gson = new Gson();
-        File file = new File(JSON_PATH);
-
-        // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
-        if (file.exists() && file.length() != 0) {
-            List<Answers> listAnswers;
-
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                Type listType = new TypeToken<List<Answers>>() {
-                }.getType();
-                listAnswers = gson.fromJson(reader, listType);
-                reader.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            // Проверяем объекты на совпадение в Url
-            for (Answers answer : listAnswers) {
-                if (answer.getUrl().equals(STEP_PATH + page.replace(".html", ""))) {
-                    return true;
-                }
+        // Проверяем объекты на совпадение в Url
+        for (Answers answer : getFileData()) {
+            if (answer.getUrl().equals(STEP_PATH + page.replace(".html", ""))) {
+                return true;
             }
         }
 
@@ -168,29 +133,16 @@ public class AutomatedTest {
     // Сохраняем правильный ответ в файл в формате JSON
     private void saveCorrectAnswerToFile(Answers answer) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        List<Answers> existingData = new ArrayList<>();
         File file = new File(JSON_PATH);
 
-        // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
-        if (file.exists() && file.length() != 0) {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                Type listType = new TypeToken<List<Answers>>() {
-                }.getType();
-                existingData = gson.fromJson(new FileReader(file), listType);
-                reader.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         // Добавляем новые данные к уже существующим данным в памяти
-        existingData.add(answer);
+        List<Answers> listAnswer = getFileData();
+        listAnswer.add(answer);
 
         // Записываем обновленные данные в файл
         try {
             FileWriter writer = new FileWriter(file);
-            gson.toJson(existingData, writer);
+            gson.toJson(listAnswer, writer);
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -235,13 +187,43 @@ public class AutomatedTest {
         return new Answers(page, false, 0, "");
     }
 
+    private List<Answers> getFileData() {
+        Gson gson = new Gson();
+        File file = new File(JSON_PATH);
+        List<Answers> listAnswers = new ArrayList<>();
+
+        // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
+        if (file.exists() && file.length() != 0) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                Type listType = new TypeToken<List<Answers>>() {
+                }.getType();
+                listAnswers = gson.fromJson(reader, listType);
+                reader.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return listAnswers;
+    }
+
+    // Задержка между переходами
+    private void delay() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // Получаем один ответ из теста
     private String getTestSingle() {
         waitDownloadElement("//div[@class='step-problem']");
 
-        WebElement answer = driver.findElement(By.cssSelector("input[type=radio][checked]"));
+        WebElement element = driver.findElement(By.xpath("//input[@type='radio' and @checked]/following-sibling::label/div"));
 
-        return answer.getAttribute("value");
+        return element.getText();
     }
 
     // Выбираем один ответ в тесте
@@ -249,7 +231,7 @@ public class AutomatedTest {
         waitDownloadElement("//div[@class='step-problem']");
 
         Actions actions = new Actions(driver);
-        WebElement input = driver.findElement(By.cssSelector("input[type='radio'][value='" + answer + "']"));
+        WebElement input = driver.findElement(By.xpath("//input[@type='radio']/following-sibling::label/div[normalize-space()='" + answer + "']"));
         actions.moveToElement(input).click().perform();
 
 //        clickOnButtonSend();
@@ -260,10 +242,10 @@ public class AutomatedTest {
         waitDownloadElement("//div[@class='step-problem']");
 
         List<String> correctAnswers = new ArrayList<>();
-        List<WebElement> input = driver.findElements(By.cssSelector("input[type=checkbox][checked]"));
+        List<WebElement> input = driver.findElements(By.xpath("//input[@type='checkbox' and @checked]/following-sibling::label/div"));
 
         for (WebElement answer : input) {
-            correctAnswers.add(answer.getAttribute("value"));
+            correctAnswers.add(answer.getText());
         }
 
         return correctAnswers.toArray(new String[0]);
@@ -275,7 +257,7 @@ public class AutomatedTest {
 
         for (String i : answer) {
             Actions actions = new Actions(driver);
-            WebElement input = driver.findElement(By.cssSelector("input[type='checkbox'][value='" + i + "']"));
+            WebElement input = driver.findElement(By.xpath("//input[@type='checkbox']/following-sibling::label/div[normalize-space()='" + i + "']"));
             actions.moveToElement(input).click().perform();
         }
 
@@ -298,7 +280,8 @@ public class AutomatedTest {
         input.clear();
 
         JavascriptExecutor executor = (JavascriptExecutor) driver;
-        executor.executeScript("arguments[0].innerText = '" + code.replace("\n", "\\n") + "';", input);
+        executor.executeScript("arguments[0].innerText = '" + code.replace("\n", "\\n")
+                .replace("'", "\\'") + "';", input);
 
 //        clickOnButtonSend();
     }
