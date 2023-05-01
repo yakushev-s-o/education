@@ -1,5 +1,11 @@
 [
   {
+    "url": "https://hyperskill.org/learn/step/10977",
+    "checked": false,
+    "mode": 5,
+    "answerStr": "findNemo()"
+  },
+  {
     "url": "https://hyperskill.org/learn/step/10045",
     "checked": false,
     "mode": 1,
@@ -97,12 +103,6 @@
     ]
   },
   {
-    "url": "https://hyperskill.org/learn/step/10977",
-    "checked": false,
-    "mode": 0,
-    "answerStr": ""
-  },
-  {
     "url": "https://hyperskill.org/learn/step/10978",
     "checked": false,
     "mode": 2,
@@ -115,8 +115,8 @@
   {
     "url": "https://hyperskill.org/learn/step/10979",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "Math.pow(a,b)"
   },
   {
     "url": "https://hyperskill.org/learn/step/10980",
@@ -189,7 +189,7 @@
   {
     "url": "https://hyperskill.org/learn/step/11518",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "System.out.println(capricorn.name());",
@@ -339,20 +339,20 @@
   {
     "url": "https://hyperskill.org/learn/step/12801",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "compile error"
   },
   {
     "url": "https://hyperskill.org/learn/step/12977",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "2000"
   },
   {
     "url": "https://hyperskill.org/learn/step/12979",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "boolean"
   },
   {
     "url": "https://hyperskill.org/learn/step/13982",
@@ -425,7 +425,7 @@
   {
     "url": "https://hyperskill.org/learn/step/14950",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "",
@@ -490,7 +490,7 @@
   {
     "url": "https://hyperskill.org/learn/step/15867",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "Functional",
@@ -547,14 +547,14 @@
   {
     "url": "https://hyperskill.org/learn/step/16580",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 3,
+    "answerStr": "public class Main {\n    public static void main(String[] args) {\n        // put your code here\n        String str \u003d \"Hello, learner!\";\n        System.out.println(str);\n    }\n}"
   },
   {
     "url": "https://hyperskill.org/learn/step/16581",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "new"
   },
   {
     "url": "https://hyperskill.org/learn/step/16836",
@@ -571,7 +571,7 @@
   {
     "url": "https://hyperskill.org/learn/step/18141",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "Strong",
@@ -600,8 +600,8 @@
   {
     "url": "https://hyperskill.org/learn/step/18317",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "32"
   },
   {
     "url": "https://hyperskill.org/learn/step/18460",
@@ -629,8 +629,8 @@
   {
     "url": "https://hyperskill.org/learn/step/18463",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "oak"
   },
   {
     "url": "https://hyperskill.org/learn/step/18464",
@@ -721,7 +721,7 @@
   {
     "url": "https://hyperskill.org/learn/step/19901",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "--data Commander Android \\\"Soong\\\"",
@@ -744,7 +744,7 @@
   {
     "url": "https://hyperskill.org/learn/step/19902",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "Monolithic kernel",
@@ -1046,7 +1046,7 @@
   {
     "url": "https://hyperskill.org/learn/step/2123",
     "checked": false,
-    "mode": 6,
+    "mode": 7,
     "answerBoolean": [
       [
         true,
@@ -1233,8 +1233,8 @@
   {
     "url": "https://hyperskill.org/learn/step/2198",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "final"
   },
   {
     "url": "https://hyperskill.org/learn/step/2200",
@@ -1255,13 +1255,13 @@
   {
     "url": "https://hyperskill.org/learn/step/2205",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "final"
   },
   {
     "url": "https://hyperskill.org/learn/step/2209",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "a + b",
@@ -1322,7 +1322,7 @@
   {
     "url": "https://hyperskill.org/learn/step/2223",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "JDK",
@@ -1517,8 +1517,8 @@
   {
     "url": "https://hyperskill.org/learn/step/23735",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 3,
+    "answerStr": "import java.util.Scanner;\n\nclass EmployeeManagement {\n\n    public static String createEmail(String name, String surname) {\n        // write your code here\n        return new StringBuilder().append(name).append(surname).append(\"@work.net\").toString();\n    }\n\n    // Don\u0027t change the code below\n    public static void main(String[] args) {\n        Scanner scanner \u003d new Scanner(System.in);\n        String name \u003d scanner.next();\n        String surname \u003d scanner.next();\n\n        String completeEmail \u003d createEmail(name, surname);\n\n        System.out.println(completeEmail);\n    }\n}"
   },
   {
     "url": "https://hyperskill.org/learn/step/23737",
@@ -1547,8 +1547,8 @@
   {
     "url": "https://hyperskill.org/learn/step/2489",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "jvm"
   },
   {
     "url": "https://hyperskill.org/learn/step/2493",
@@ -1577,7 +1577,7 @@
   {
     "url": "https://hyperskill.org/learn/step/2499",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "// a comment",
@@ -1648,8 +1648,8 @@
   {
     "url": "https://hyperskill.org/learn/step/2512",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "5"
   },
   {
     "url": "https://hyperskill.org/learn/step/2570",
@@ -1728,8 +1728,8 @@
   {
     "url": "https://hyperskill.org/learn/step/2669",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "32 64"
   },
   {
     "url": "https://hyperskill.org/learn/step/2673",
@@ -1762,14 +1762,14 @@
   {
     "url": "https://hyperskill.org/learn/step/2683",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "false"
   },
   {
     "url": "https://hyperskill.org/learn/step/2684",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "true"
   },
   {
     "url": "https://hyperskill.org/learn/step/2690",
@@ -1889,8 +1889,8 @@
   {
     "url": "https://hyperskill.org/learn/step/2751",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "float"
   },
   {
     "url": "https://hyperskill.org/learn/step/2755",
@@ -1905,7 +1905,7 @@
   {
     "url": "https://hyperskill.org/learn/step/2756",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "method(0);",
@@ -1959,8 +1959,8 @@
   {
     "url": "https://hyperskill.org/learn/step/2910",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "notUnicode"
   },
   {
     "url": "https://hyperskill.org/learn/step/2915",
@@ -1974,8 +1974,8 @@
   {
     "url": "https://hyperskill.org/learn/step/2916",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "catDog_3"
   },
   {
     "url": "https://hyperskill.org/learn/step/2918",
@@ -2105,7 +2105,7 @@
   {
     "url": "https://hyperskill.org/learn/step/2964",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "Class",
@@ -2366,8 +2366,8 @@
   {
     "url": "https://hyperskill.org/learn/step/3065",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "class-C"
   },
   {
     "url": "https://hyperskill.org/learn/step/3078",
@@ -2418,7 +2418,7 @@
   {
     "url": "https://hyperskill.org/learn/step/3224",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "String",
@@ -2685,8 +2685,8 @@
   {
     "url": "https://hyperskill.org/learn/step/3424",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "extends"
   },
   {
     "url": "https://hyperskill.org/learn/step/3448",
@@ -2992,7 +2992,7 @@
   {
     "url": "https://hyperskill.org/learn/step/5021",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "\u0027\\n\u0027",
@@ -3072,7 +3072,7 @@
   {
     "url": "https://hyperskill.org/learn/step/5549",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "2",
@@ -3113,7 +3113,7 @@
   {
     "url": "https://hyperskill.org/learn/step/5626",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "100010",
@@ -3172,7 +3172,7 @@
   {
     "url": "https://hyperskill.org/learn/step/6693",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "protected",
@@ -3210,8 +3210,8 @@
   {
     "url": "https://hyperskill.org/learn/step/6698",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "1221"
   },
   {
     "url": "https://hyperskill.org/learn/step/6700",
@@ -3237,7 +3237,7 @@
   {
     "url": "https://hyperskill.org/learn/step/6868",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "1 kilobyte",
@@ -3417,7 +3417,7 @@
   {
     "url": "https://hyperskill.org/learn/step/8794",
     "checked": false,
-    "mode": 5,
+    "mode": 6,
     "answerListArr": [
       [
         "AD",
@@ -3436,8 +3436,8 @@
   {
     "url": "https://hyperskill.org/learn/step/8795",
     "checked": false,
-    "mode": 0,
-    "answerStr": ""
+    "mode": 5,
+    "answerStr": "5E"
   },
   {
     "url": "https://hyperskill.org/learn/step/8796",
@@ -3449,12 +3449,6 @@
       "3D",
       "ABBA"
     ]
-  },
-  {
-    "url": "https://hyperskill.org/learn/step/8797",
-    "checked": false,
-    "mode": 0,
-    "answerStr": ""
   },
   {
     "url": "https://hyperskill.org/learn/step/8798",

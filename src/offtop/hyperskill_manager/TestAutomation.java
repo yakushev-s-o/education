@@ -66,9 +66,9 @@ public class TestAutomation {
                     driver.get(FOLDER_PATH + file.getName());
 
                     // Проверяем что это страница с тестом
-                    WebElement element = driver.findElement(By.xpath("//a[@click-event-target='practice']"));
+                    WebElement element = driver.findElement(By.cssSelector("[click-event-target='practice']"));
 
-                    if (element.getAttribute("aria-pressed").equals("true")) {
+                    if (element.getAttribute("aria-pressed").equals("true") && checkCorrect()) {
                         saveCorrectAnswerToFile(getCorrectAnswer(file.getName()));
                     }
                 }
@@ -84,30 +84,36 @@ public class TestAutomation {
             if (!answer.getChecked()) {
                 driver.get(answer.getUrl());
 
-                switch (answer.getMode()) {
-                    case 1 -> {
-                        sendTestSingle(answer.getAnswerStr());
-                        answer.setChecked(true);
-                    }
-                    case 2 -> {
-                        sendTestMultiple(answer.getAnswerArr());
-                        answer.setChecked(true);
-                    }
-                    case 3 -> {
-                        sendCode(answer.getAnswerStr());
-                        answer.setChecked(true);
-                    }
-                    case 4 -> {
-                        sendText(answer.getAnswerStr());
-                        answer.setChecked(true);
-                    }
-                    case 5 -> {
-                        sendMatch(answer.getAnswerListArr());
-                        answer.setChecked(true);
-                    }
-                    case 6 -> {
-                        sendMatrix(answer.getAnswerBoolean());
-                        answer.setChecked(true);
+                if (!checkCorrect()) {
+                    switch (answer.getMode()) {
+                        case 1 -> {
+                            sendTestSingle(answer.getAnswerStr());
+                            answer.setChecked(true);
+                        }
+                        case 2 -> {
+                            sendTestMultiple(answer.getAnswerArr());
+                            answer.setChecked(true);
+                        }
+                        case 3 -> {
+                            sendCode(answer.getAnswerStr());
+                            answer.setChecked(true);
+                        }
+                        case 4 -> {
+                            sendTextNum(answer.getAnswerStr());
+                            answer.setChecked(true);
+                        }
+                        case 5 -> {
+                            sendTextShort(answer.getAnswerStr());
+                            answer.setChecked(true);
+                        }
+                        case 6 -> {
+                            sendMatch(answer.getAnswerListArr());
+                            answer.setChecked(true);
+                        }
+                        case 7 -> {
+                            sendMatrix(answer.getAnswerBoolean());
+                            answer.setChecked(true);
+                        }
                     }
                 }
 
@@ -118,9 +124,8 @@ public class TestAutomation {
         driver.quit();
     }
 
-    // Проверяем ссылку на наличие в файле
+    // Проверяем ссылку на совпадение в файле
     private boolean checkMatch(String page) {
-        // Проверяем объекты на совпадение в Url
         for (Answers answer : getFileData()) {
             if (answer.getUrl().equals(STEP_PATH + page.replace(".html", ""))) {
                 return true;
@@ -155,33 +160,30 @@ public class TestAutomation {
 
         final String SINGLE = "Select one option from the list";
         final String MULTIPLE = "Select one or more options from the list";
-        final String CODE = "Write a program in Java 17";
-        final String TEXT = "Enter a number";
+        final String CODE = "Write a program in Java";
+        final String TEXT_NUM = "Enter a number";
+        final String TEXT_SHORT = "Enter a short text";
         final String MATCH = "Match the items from left and right columns";
         final String MATRIX = "Choose one or more options for each row";
 
         WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
         String page = STEP_PATH + srcPage.replace(".html", "");
 
-        switch (element.getText()) {
-            case SINGLE -> {
-                return new Answers(page, false, 1, getTestSingle());
-            }
-            case MULTIPLE -> {
-                return new Answers(page, false, 2, getTestMultiple());
-            }
-            case CODE -> {
-                return new Answers(page, false, 3, getCode());
-            }
-            case TEXT -> {
-                return new Answers(page, false, 4, getText());
-            }
-            case MATCH -> {
-                return new Answers(page, false, 5, getMatch());
-            }
-            case MATRIX -> {
-                return new Answers(page, false, 6, getMatrix());
-            }
+        String text = element.getText();
+        if (text.equals(SINGLE)) {
+            return new Answers(page, false, 1, getTestSingle());
+        } else if (text.equals(MULTIPLE)) {
+            return new Answers(page, false, 2, getTestMultiple());
+        } else if (text.contains(CODE)) {
+            return new Answers(page, false, 3, getCode());
+        } else if (text.equals(TEXT_NUM)) {
+            return new Answers(page, false, 4, getTextNum());
+        } else if (text.equals(TEXT_SHORT)) {
+            return new Answers(page, false, 5, getTextShort());
+        } else if (text.equals(MATCH)) {
+            return new Answers(page, false, 6, getMatch());
+        } else if (text.equals(MATRIX)) {
+            return new Answers(page, false, 7, getMatrix());
         }
 
         return new Answers(page, false, 0, "");
@@ -231,8 +233,13 @@ public class TestAutomation {
         waitDownloadElement("//div[@class='step-problem']");
 
         Actions actions = new Actions(driver);
-        WebElement input = driver.findElement(By.xpath("//input[@type='radio']/following-sibling::label/div[normalize-space()='" + answer + "']"));
-        actions.moveToElement(input).click().perform();
+        List<WebElement> elements = driver.findElements(By.xpath("//label[@class='custom-control-label']"));
+
+        for (WebElement element : elements) {
+            if (element.getText().equals(answer)) {
+                actions.moveToElement(element).click().perform();
+            }
+        }
 
 //        clickOnButtonSend();
     }
@@ -287,18 +294,38 @@ public class TestAutomation {
     }
 
     // Получаем ответ из текстового поля
-    private String getText() {
+    private String getTextNum() {
         waitDownloadElement("//div[@class='step-problem']");
 
         WebElement input = driver.findElement(By.xpath("//input[@type='number']"));
+
         return input.getAttribute("value");
     }
 
     // Записываем ответ в текстовое поле
-    private void sendText(String answer) {
+    private void sendTextNum(String answer) {
         waitDownloadElement("//div[@class='step-problem']");
 
         WebElement input = driver.findElement(By.xpath("//input[@type='number']"));
+        input.sendKeys(answer);
+
+//        clickOnButtonSend();
+    }
+
+    // Получаем ответ из текстового поля
+    private String getTextShort() {
+        waitDownloadElement("//div[@class='step-problem']");
+
+        WebElement input = driver.findElement(By.xpath("//textarea"));
+
+        return input.getText();
+    }
+
+    // Записываем ответ в текстовое поле
+    private void sendTextShort(String answer) {
+        waitDownloadElement("//div[@class='step-problem']");
+
+        WebElement input = driver.findElement(By.xpath("//textarea"));
         input.sendKeys(answer);
 
 //        clickOnButtonSend();
@@ -409,6 +436,19 @@ public class TestAutomation {
         }
 
 //        clickOnButtonSend();
+    }
+
+    // Проверяем тест на Correct
+    private boolean checkCorrect() {
+        waitDownloadElement("//div[@class='step-problem']");
+
+        try {
+            driver.findElement(By.xpath("//strong[@class='text-success' and text()=' Correct. ']"));
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }
 
     // Нажимаем на кнопку "Send"
