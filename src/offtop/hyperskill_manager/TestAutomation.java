@@ -1,8 +1,7 @@
 package offtop.hyperskill_manager;
 
 import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -14,6 +13,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,11 @@ public class TestAutomation {
         // Создаем экземпляр драйвера
         driver = new ChromeDriver();
         driver.manage().window().maximize();
+
+//        ChromeOptions options = new ChromeOptions();
+//        options.addArguments("--headless");
+//        options.addArguments("--disable-gpu");
+//        driver = new ChromeDriver(options);
     }
 
     // Выполняем авторизацию на сайте
@@ -51,6 +56,33 @@ public class TestAutomation {
         signInButton.click();
 
         waitDownloadElement("//div[@class='user-avatar']");
+    }
+
+    // Получаем список топиков
+    public List<String> getDescendants() {
+        String url = "https://hyperskill.org/api/topic-relations?format=json&track_id=12";
+
+        List<String> list = new ArrayList<>();
+
+        try (InputStream inputStream = new URL(url).openStream()) {
+            JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            JsonArray topicRelationsArr = jsonObject.getAsJsonArray("topic-relations");
+
+            JsonObject objWithNullParentId;
+            for (JsonElement element : topicRelationsArr) {
+                JsonObject obj = element.getAsJsonObject();
+                if (obj.get("parent_id").isJsonNull()) {
+                    objWithNullParentId = obj;
+                    JsonArray descendantsArr = objWithNullParentId.getAsJsonArray("descendants");
+                    list.add(String.valueOf(descendantsArr));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
     // Получаем все правильные ответы и по очереди сохраняем в файл
@@ -189,6 +221,7 @@ public class TestAutomation {
         return new Answers(page, false, 0, "");
     }
 
+    // Получаем список объектов Answers из файла
     private List<Answers> getFileData() {
         Gson gson = new Gson();
         File file = new File(JSON_PATH);
