@@ -15,7 +15,8 @@ public class Main {
                     1. Сортировка страниц
                     2. Получить правильные ответы
                     3. Ответить на тесты
-                    4. Выйти""");
+                    4. Получить список тем и заданий
+                    5. Выйти""");
 
             int mode = sc.nextInt();
 
@@ -27,6 +28,8 @@ public class Main {
                 test.login();
                 test.sendAnswers();
             } else if (mode == 4) {
+                test.getSteps(test.getTopics(12));
+            } else if (mode == 5) {
                 System.exit(0);
             }
         }

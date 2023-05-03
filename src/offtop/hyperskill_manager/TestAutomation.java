@@ -24,6 +24,7 @@ public class TestAutomation {
     private static final String CHROMEDRIVER_PATH = "C:\\tools\\chromedriver_win32\\chromedriver.exe";
     private static final String JSON_PATH = "src/offtop/hyperskill_manager/correct-answers.json";
     private static final String STEP_PATH = "https://hyperskill.org/learn/step/";
+    private static final String STEP_LIST_PATH = "src/offtop/hyperskill_manager/step_list.json";
 
     private void createChromeDriver() {
         // Устанавливаем путь к драйверу браузера
@@ -59,30 +60,136 @@ public class TestAutomation {
     }
 
     // Получаем список топиков
-    public List<String> getDescendants() {
-        String url = "https://hyperskill.org/api/topic-relations?format=json&track_id=12";
+    public List<String> getTopics(int track) {
+        List<String> listTopic = new ArrayList<>();
 
-        List<String> list = new ArrayList<>();
+        int i = 1;
+        boolean isNext = true;
 
-        try (InputStream inputStream = new URL(url).openStream()) {
-            JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            JsonArray topicRelationsArr = jsonObject.getAsJsonArray("topic-relations");
+        while (isNext) {
+            String url = "https://hyperskill.org/api/topic-relations?format=json&track_id=" + track + "&page_size=100&page=" + i++ + "";
 
-            JsonObject objWithNullParentId;
-            for (JsonElement element : topicRelationsArr) {
-                JsonObject obj = element.getAsJsonObject();
-                if (obj.get("parent_id").isJsonNull()) {
-                    objWithNullParentId = obj;
-                    JsonArray descendantsArr = objWithNullParentId.getAsJsonArray("descendants");
-                    list.add(String.valueOf(descendantsArr));
+            try (InputStream inputStream = new URL(url).openStream()) {
+                JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+                JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+                JsonObject meta = jsonObject.getAsJsonObject("meta");
+
+                if (!meta.get("has_next").getAsBoolean()) {
+                    isNext = false;
                 }
+
+                JsonArray topicRelationsArr = jsonObject.getAsJsonArray("topic-relations");
+
+                for (JsonElement element : topicRelationsArr) {
+                    JsonObject obj = element.getAsJsonObject();
+
+                    if (obj.get("parent_id").isJsonNull()) {
+                        JsonArray descendantsArr = obj.getAsJsonArray("descendants");
+
+                        for (JsonElement s : descendantsArr) {
+                            listTopic.add(String.valueOf(s));
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
-        return list;
+        return listTopic;
+    }
+
+    // Получаем список тем и заданий и сохраняем в файл
+    public void getSteps(List<String> topics) {
+        for (String topic : topics) {
+
+            int i = 1;
+            boolean isNext = true;
+
+            while (isNext) {
+                String url = "https://hyperskill.org/api/steps?topic=" + topic + "&page_size=100&page=" + i + "";
+
+                try (InputStream inputStream = new URL(url).openStream()) {
+                    JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+                    JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+                    JsonObject meta = jsonObject.getAsJsonObject("meta");
+
+                    if (!meta.get("has_next").getAsBoolean()) {
+                        isNext = false;
+                    }
+
+                    JsonArray topicRelationsArr = jsonObject.getAsJsonArray("steps");
+
+                    int id = 0;
+                    String title = "";
+                    List<String> listStep = new ArrayList<>();
+
+                    for (JsonElement element : topicRelationsArr) {
+                        JsonObject obj = element.getAsJsonObject();
+
+                        if (obj.get("type").getAsString().equals("theory")) {
+                            id = obj.get("topic_theory").getAsInt();
+                            title = obj.get("title").getAsString();
+                        }
+                    }
+
+                    for (JsonElement element : topicRelationsArr) {
+                        JsonObject obj = element.getAsJsonObject();
+
+                        if (obj.get("type").getAsString().equals("practice")) {
+                            listStep.add(obj.get("id").getAsString());
+                        }
+                    }
+
+                    saveStepToFile(new Step(id, title, listStep));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // Сохраняем темы и задания в файл
+    private void saveStepToFile(Step step) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file = new File(STEP_LIST_PATH);
+
+        // Добавляем новые данные к уже существующим данным в памяти
+        List<Step> stepList = getFileDataStep();
+        stepList.add(step);
+
+        // Записываем обновленные данные в файл
+        try {
+            FileWriter writer = new FileWriter(file);
+            gson.toJson(stepList, writer);
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Получаем данные из файла
+    private List<Step> getFileDataStep() {
+        Gson gson = new Gson();
+        File file = new File(STEP_LIST_PATH);
+        List<Step> stepList = new ArrayList<>();
+
+        // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
+        if (file.exists() && file.length() != 0) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                Type listType = new TypeToken<List<Step>>() {
+                }.getType();
+                stepList = gson.fromJson(reader, listType);
+                reader.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return stepList;
     }
 
     // Получаем все правильные ответы и по очереди сохраняем в файл
@@ -112,7 +219,7 @@ public class TestAutomation {
 
     // Заполняем правильные ответы из файла на сайте
     public void sendAnswers() {
-        for (Answers answer : getFileData()) {
+        for (Answer answer : getFileData()) {
             if (!answer.getChecked()) {
                 driver.get(answer.getUrl());
 
@@ -158,7 +265,7 @@ public class TestAutomation {
 
     // Проверяем ссылку на совпадение в файле
     private boolean checkMatch(String page) {
-        for (Answers answer : getFileData()) {
+        for (Answer answer : getFileData()) {
             if (answer.getUrl().equals(STEP_PATH + page.replace(".html", ""))) {
                 return true;
             }
@@ -168,12 +275,12 @@ public class TestAutomation {
     }
 
     // Сохраняем правильный ответ в файл в формате JSON
-    private void saveCorrectAnswerToFile(Answers answer) {
+    private void saveCorrectAnswerToFile(Answer answer) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         File file = new File(JSON_PATH);
 
         // Добавляем новые данные к уже существующим данным в памяти
-        List<Answers> listAnswer = getFileData();
+        List<Answer> listAnswer = getFileData();
         listAnswer.add(answer);
 
         // Записываем обновленные данные в файл
@@ -187,7 +294,7 @@ public class TestAutomation {
     }
 
     // Получаем правильный ответ используя подходящий метод
-    private Answers getCorrectAnswer(String srcPage) {
+    private Answer getCorrectAnswer(String srcPage) {
         waitDownloadElement("//div[@class='step-problem']");
 
         final String SINGLE = "Select one option from the list";
@@ -203,35 +310,35 @@ public class TestAutomation {
 
         String text = element.getText();
         if (text.equals(SINGLE)) {
-            return new Answers(page, false, 1, getTestSingle());
+            return new Answer(page, false, 1, getTestSingle());
         } else if (text.equals(MULTIPLE)) {
-            return new Answers(page, false, 2, getTestMultiple());
+            return new Answer(page, false, 2, getTestMultiple());
         } else if (text.contains(CODE)) {
-            return new Answers(page, false, 3, getCode());
+            return new Answer(page, false, 3, getCode());
         } else if (text.equals(TEXT_NUM)) {
-            return new Answers(page, false, 4, getTextNum());
+            return new Answer(page, false, 4, getTextNum());
         } else if (text.equals(TEXT_SHORT)) {
-            return new Answers(page, false, 5, getTextShort());
+            return new Answer(page, false, 5, getTextShort());
         } else if (text.equals(MATCH)) {
-            return new Answers(page, false, 6, getMatch());
+            return new Answer(page, false, 6, getMatch());
         } else if (text.equals(MATRIX)) {
-            return new Answers(page, false, 7, getMatrix());
+            return new Answer(page, false, 7, getMatrix());
         }
 
-        return new Answers(page, false, 0, "");
+        return new Answer(page, false, 0, "");
     }
 
     // Получаем список объектов Answers из файла
-    private List<Answers> getFileData() {
+    private List<Answer> getFileData() {
         Gson gson = new Gson();
         File file = new File(JSON_PATH);
-        List<Answers> listAnswers = new ArrayList<>();
+        List<Answer> listAnswers = new ArrayList<>();
 
         // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
         if (file.exists() && file.length() != 0) {
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(file));
-                Type listType = new TypeToken<List<Answers>>() {
+                Type listType = new TypeToken<List<Answer>>() {
                 }.getType();
                 listAnswers = gson.fromJson(reader, listType);
                 reader.close();

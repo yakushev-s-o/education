@@ -2,7 +2,7 @@ package offtop.hyperskill_manager;
 
 import java.util.List;
 
-public class Answers {
+public class Answer {
     private final String url;
     private boolean checked;
     private final int mode;
@@ -11,28 +11,28 @@ public class Answers {
     private List<String[]> answerListArr;
     private boolean[][] answerBoolean;
 
-    public Answers(String url, boolean checked, int mode, String answerStr) {
+    public Answer(String url, boolean checked, int mode, String answerStr) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
         this.answerStr = answerStr;
     }
 
-    public Answers(String url, boolean checked, int mode, String[] answerArr) {
+    public Answer(String url, boolean checked, int mode, String[] answerArr) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
         this.answerArr = answerArr;
     }
 
-    public Answers(String url, boolean checked, int mode, List<String[]> answerListArr) {
+    public Answer(String url, boolean checked, int mode, List<String[]> answerListArr) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
         this.answerListArr = answerListArr;
     }
 
-    public Answers(String url, boolean checked, int mode, boolean[][] answerBoolean) {
+    public Answer(String url, boolean checked, int mode, boolean[][] answerBoolean) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
