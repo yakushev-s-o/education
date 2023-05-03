@@ -24,7 +24,7 @@ public class TestAutomation {
     private static final String CHROMEDRIVER_PATH = "C:\\tools\\chromedriver_win32\\chromedriver.exe";
     private static final String JSON_PATH = "src/offtop/hyperskill_manager/correct-answers.json";
     private static final String STEP_PATH = "https://hyperskill.org/learn/step/";
-    private static final String STEP_LIST_PATH = "src/offtop/hyperskill_manager/step_list.json";
+    private static final String STEP_LIST_PATH = "offtop/hyperskill_manager/step-list.json";
 
     private void createChromeDriver() {
         // Устанавливаем путь к драйверу браузера
@@ -66,27 +66,33 @@ public class TestAutomation {
         int i = 1;
         boolean isNext = true;
 
+        // Пока есть следующая страница выполняем цикл
         while (isNext) {
             String url = "https://hyperskill.org/api/topic-relations?format=json&track_id=" + track + "&page_size=100&page=" + i++ + "";
 
+            // Получаем JSON-объект с данными
             try (InputStream inputStream = new URL(url).openStream()) {
                 JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
 
+                // Проверяем, есть ли следующая страница с данными
                 JsonObject meta = jsonObject.getAsJsonObject("meta");
 
                 if (!meta.get("has_next").getAsBoolean()) {
                     isNext = false;
                 }
 
+                // Получаем массив топиков
                 JsonArray topicRelationsArr = jsonObject.getAsJsonArray("topic-relations");
 
                 for (JsonElement element : topicRelationsArr) {
                     JsonObject obj = element.getAsJsonObject();
 
+                    // Проверяем, является ли топик родительским
                     if (obj.get("parent_id").isJsonNull()) {
                         JsonArray descendantsArr = obj.getAsJsonArray("descendants");
 
+                        // Получаем массив дочерних топиков
                         for (JsonElement s : descendantsArr) {
                             listTopic.add(String.valueOf(s));
                         }
@@ -107,89 +113,52 @@ public class TestAutomation {
             int i = 1;
             boolean isNext = true;
 
+            // Пока есть следующая страница выполняем цикл
             while (isNext) {
-                String url = "https://hyperskill.org/api/steps?topic=" + topic + "&page_size=100&page=" + i + "";
+                String url = "https://hyperskill.org/api/steps?format=json&topic=" + topic + "&page_size=100&page=" + i + "";
 
+                // Получаем JSON-объект с данными
                 try (InputStream inputStream = new URL(url).openStream()) {
                     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
 
+                    // Проверяем, есть ли следующая страница с данными
                     JsonObject meta = jsonObject.getAsJsonObject("meta");
 
                     if (!meta.get("has_next").getAsBoolean()) {
                         isNext = false;
                     }
 
-                    JsonArray topicRelationsArr = jsonObject.getAsJsonArray("steps");
-
                     int id = 0;
                     String title = "";
                     List<String> listStep = new ArrayList<>();
 
+                    // Получаем массив шагов
+                    JsonArray topicRelationsArr = jsonObject.getAsJsonArray("steps");
+
                     for (JsonElement element : topicRelationsArr) {
                         JsonObject obj = element.getAsJsonObject();
 
+                        // Проверяем тип шага (теория или практика)
                         if (obj.get("type").getAsString().equals("theory")) {
+                            // Если тип - теория, то получаем ID теории и название
                             id = obj.get("topic_theory").getAsInt();
                             title = obj.get("title").getAsString();
-                        }
-                    }
-
-                    for (JsonElement element : topicRelationsArr) {
-                        JsonObject obj = element.getAsJsonObject();
-
-                        if (obj.get("type").getAsString().equals("practice")) {
+                        } else if (obj.get("type").getAsString().equals("practice")) {
+                            // Если - практика, то добавляем ID практики
                             listStep.add(obj.get("id").getAsString());
                         }
                     }
 
-                    saveStepToFile(new Step(id, title, listStep));
+                    // Получаем текущий список шагов из файла
+                    List<Step> listSteps = getFileData(new TypeToken<List<Step>>() {}.getType(), STEP_LIST_PATH);
+                    // Добавляем новый шаг в список и записываем в файл
+                    saveToFile(new Step(id, title, listStep), listSteps, STEP_LIST_PATH);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
-    }
-
-    // Сохраняем темы и задания в файл
-    private void saveStepToFile(Step step) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        File file = new File(STEP_LIST_PATH);
-
-        // Добавляем новые данные к уже существующим данным в памяти
-        List<Step> stepList = getFileDataStep();
-        stepList.add(step);
-
-        // Записываем обновленные данные в файл
-        try {
-            FileWriter writer = new FileWriter(file);
-            gson.toJson(stepList, writer);
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Получаем данные из файла
-    private List<Step> getFileDataStep() {
-        Gson gson = new Gson();
-        File file = new File(STEP_LIST_PATH);
-        List<Step> stepList = new ArrayList<>();
-
-        // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
-        if (file.exists() && file.length() != 0) {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                Type listType = new TypeToken<List<Step>>() {
-                }.getType();
-                stepList = gson.fromJson(reader, listType);
-                reader.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return stepList;
     }
 
     // Получаем все правильные ответы и по очереди сохраняем в файл
@@ -201,6 +170,7 @@ public class TestAutomation {
 
         if (files != null) {
             for (File file : files) {
+                // Пропускаем если есть совпадение ссылки в файле
                 if (!checkMatch(file.getName())) {
                     driver.get(FOLDER_PATH + file.getName());
 
@@ -208,7 +178,10 @@ public class TestAutomation {
                     WebElement element = driver.findElement(By.cssSelector("[click-event-target='practice']"));
 
                     if (element.getAttribute("aria-pressed").equals("true") && checkCorrect()) {
-                        saveCorrectAnswerToFile(getCorrectAnswer(file.getName()));
+                        // Получаем список ответов из файла
+                        List<Answer> listAnswers = getFileData(new TypeToken<List<Answer>>() {}.getType(), JSON_PATH);
+                        // Добавляем новый ответ в список и записываем файл
+                        saveToFile(getCorrectAnswer(file.getName()), listAnswers, JSON_PATH);
                     }
                 }
             }
@@ -219,7 +192,11 @@ public class TestAutomation {
 
     // Заполняем правильные ответы из файла на сайте
     public void sendAnswers() {
-        for (Answer answer : getFileData()) {
+        // Получаем список ответов из файла
+        List<Answer> answers = getFileData(new TypeToken<List<Answer>>() {
+        }.getType(), JSON_PATH);
+
+        for (Answer answer : answers) {
             if (!answer.getChecked()) {
                 driver.get(answer.getUrl());
 
@@ -265,32 +242,17 @@ public class TestAutomation {
 
     // Проверяем ссылку на совпадение в файле
     private boolean checkMatch(String page) {
-        for (Answer answer : getFileData()) {
+        // Получаем список ответов из файла
+        List<Answer> answers = getFileData(new TypeToken<List<Answer>>() {
+        }.getType(), JSON_PATH);
+
+        for (Answer answer : answers) {
             if (answer.getUrl().equals(STEP_PATH + page.replace(".html", ""))) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    // Сохраняем правильный ответ в файл в формате JSON
-    private void saveCorrectAnswerToFile(Answer answer) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        File file = new File(JSON_PATH);
-
-        // Добавляем новые данные к уже существующим данным в памяти
-        List<Answer> listAnswer = getFileData();
-        listAnswer.add(answer);
-
-        // Записываем обновленные данные в файл
-        try {
-            FileWriter writer = new FileWriter(file);
-            gson.toJson(listAnswer, writer);
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     // Получаем правильный ответ используя подходящий метод
@@ -309,6 +271,7 @@ public class TestAutomation {
         String page = STEP_PATH + srcPage.replace(".html", "");
 
         String text = element.getText();
+
         if (text.equals(SINGLE)) {
             return new Answer(page, false, 1, getTestSingle());
         } else if (text.equals(MULTIPLE)) {
@@ -328,26 +291,42 @@ public class TestAutomation {
         return new Answer(page, false, 0, "");
     }
 
-    // Получаем список объектов Answers из файла
-    private List<Answer> getFileData() {
+    // Получаем список объектов из файла
+    private <T> List<T> getFileData(Type type, String path) {
         Gson gson = new Gson();
-        File file = new File(JSON_PATH);
-        List<Answer> listAnswers = new ArrayList<>();
+        File file = new File(path);
+        List<T> list = new ArrayList<>();
 
         // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
         if (file.exists() && file.length() != 0) {
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(file));
-                Type listType = new TypeToken<List<Answer>>() {
-                }.getType();
-                listAnswers = gson.fromJson(reader, listType);
+                list = gson.fromJson(reader, type);
                 reader.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        return listAnswers;
+        return list;
+    }
+
+    // Сохраняем объект в файл в формате JSON
+    private <T> void saveToFile(T answer, List<T> list, String path) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file = new File(path);
+
+        // Добавляем новые данные к уже существующим в памяти
+        list.add(answer);
+
+        // Записываем обновленные данные в файл
+        try {
+            FileWriter writer = new FileWriter(file);
+            gson.toJson(list, writer);
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Задержка между переходами
@@ -416,6 +395,7 @@ public class TestAutomation {
         waitDownloadElement("//div[@class='step-problem']");
 
         WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
+
         return input.getText();
     }
 
@@ -501,6 +481,7 @@ public class TestAutomation {
             String text1 = element1.getText();
 
             String[] res = null;
+
             for (String[] ans : correctAnswers) {
                 res = ans;
 
@@ -510,6 +491,7 @@ public class TestAutomation {
             }
 
             boolean checkTrue = true;
+
             while (checkTrue) {
                 for (int j = 1; j <= correctAnswers.size(); j++) {
                     String answer = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j + "]/div/span";
@@ -546,6 +528,7 @@ public class TestAutomation {
         int columnCount = columns.size() - 1;
 
         boolean[][] matrix = new boolean[rowCount][columnCount];
+
         for (int i = 1; i <= rowCount; i++) {
             for (int j = 1; j <= columnCount; j++) {
                 String s = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/table/tbody/tr" +
