@@ -151,7 +151,8 @@ public class TestAutomation {
                     }
 
                     // Получаем текущий список шагов из файла
-                    List<Step> listSteps = getFileData(new TypeToken<List<Step>>() {}.getType(), STEP_LIST_PATH);
+                    List<Step> listSteps = getFileData(new TypeToken<List<Step>>() {
+                    }.getType(), STEP_LIST_PATH);
                     // Добавляем новый шаг в список и записываем в файл
                     saveToFile(new Step(id, title, listStep), listSteps, STEP_LIST_PATH);
                 } catch (IOException e) {
@@ -179,7 +180,8 @@ public class TestAutomation {
 
                     if (element.getAttribute("aria-pressed").equals("true") && checkCorrect()) {
                         // Получаем список ответов из файла
-                        List<Answer> listAnswers = getFileData(new TypeToken<List<Answer>>() {}.getType(), JSON_PATH);
+                        List<Answer> listAnswers = getFileData(new TypeToken<List<Answer>>() {
+                        }.getType(), JSON_PATH);
                         // Добавляем новый ответ в список и записываем файл
                         saveToFile(getCorrectAnswer(file.getName()), listAnswers, JSON_PATH);
                     }
@@ -197,7 +199,7 @@ public class TestAutomation {
         }.getType(), JSON_PATH);
 
         for (Answer answer : answers) {
-            if (!answer.getChecked()) {
+            if (!answer.isChecked()) {
                 driver.get(answer.getUrl());
 
                 if (!checkCorrect()) {
@@ -227,7 +229,7 @@ public class TestAutomation {
                             answer.setChecked(true);
                         }
                         case 7 -> {
-                            sendMatrix(answer.getAnswerBoolean());
+                            sendMatrix(answer.getMatrixAnswer());
                             answer.setChecked(true);
                         }
                     }
@@ -265,7 +267,8 @@ public class TestAutomation {
         final String TEXT_NUM = "Enter a number";
         final String TEXT_SHORT = "Enter a short text";
         final String MATCH = "Match the items from left and right columns";
-        final String MATRIX = "Choose one or more options for each row";
+        final String MATRIX_MORE = "Choose one or more options for each row";
+        final String MATRIX_ONE = "Choose one option for each row";
 
         WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
         String page = STEP_PATH + srcPage.replace(".html", "");
@@ -284,7 +287,7 @@ public class TestAutomation {
             return new Answer(page, false, 5, getTextShort());
         } else if (text.equals(MATCH)) {
             return new Answer(page, false, 6, getMatch());
-        } else if (text.equals(MATRIX)) {
+        } else if (text.equals(MATRIX_MORE) || text.equals(MATRIX_ONE)) {
             return new Answer(page, false, 7, getMatrix());
         }
 
@@ -452,7 +455,7 @@ public class TestAutomation {
     }
 
     // Получаем список правильных ответов из теста с сопоставлением
-    private List<String[]> getMatch() {
+    private String[][] getMatch() {
         waitDownloadElement("//div[@class='step-problem']");
 
         List<String[]> correctAnswers = new ArrayList<>();
@@ -478,14 +481,14 @@ public class TestAutomation {
             correctAnswers.add(pairs);
         }
 
-        return correctAnswers;
+        return correctAnswers.toArray(new String[0][]);
     }
 
     // Выбираем ответы в тесте с сопоставлением
-    private void sendMatch(List<String[]> correctAnswers) {
+    private void sendMatch(String[][] correctAnswers) {
         waitDownloadElement("//div[@class='step-problem']");
 
-        for (int i = 1; i <= correctAnswers.size(); i++) {
+        for (int i = 1; i <= correctAnswers[i].length; i++) {
             String question = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[1]/div[" + i + "]/span";
             WebElement element1 = driver.findElement(By.xpath(question));
             String text1 = element1.getText();
@@ -503,7 +506,7 @@ public class TestAutomation {
             boolean checkTrue = true;
 
             while (checkTrue) {
-                for (int j = 1; j <= correctAnswers.size(); j++) {
+                for (int j = 1; j <= correctAnswers[i].length; j++) {
                     String answer = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j + "]/div/span";
                     String upArrow = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/div[2]/div/div[" + j +
                             "]/div/div[2]/button[" + 1 + "]";
@@ -528,45 +531,51 @@ public class TestAutomation {
     }
 
     // Получить матрицу правильных ответов из теста
-    private boolean[][] getMatrix() {
+    private List<Matrix> getMatrix() {
         waitDownloadElement("//div[@class='step-problem']");
 
+        WebElement thead = driver.findElement(By.tagName("thead"));
+        List<WebElement> head = thead.findElements(By.tagName("tr"));
+        List<WebElement> columnsArr = head.get(0).findElements(By.tagName("th"));
+
         WebElement tbody = driver.findElement(By.tagName("tbody"));
-        List<WebElement> rows = tbody.findElements(By.tagName("tr"));
-        int rowCount = rows.size();
-        List<WebElement> columns = rows.get(0).findElements(By.tagName("td"));
-        int columnCount = columns.size() - 1;
+        List<WebElement> rowArr = tbody.findElements(By.tagName("tr"));
 
-        boolean[][] matrix = new boolean[rowCount][columnCount];
+        List<Matrix> matrixList = new ArrayList<>();
 
-        for (int i = 1; i <= rowCount; i++) {
-            for (int j = 1; j <= columnCount; j++) {
+        for (int i = 1; i < columnsArr.size(); i++) {
+            for (int j = 1; j < rowArr.size() + 1; j++) {
                 String s = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/table/tbody/tr" +
                         "[" + i + "]/td[" + (j + 1) + "]/div/div";
                 WebElement checkbox = driver.findElement(By.xpath(s));
+                boolean check = "custom-checkbox checked disabled".equals(checkbox.getAttribute("class"));
+                List<WebElement> nameRow = rowArr.get(i - 1).findElements(By.tagName("td"));
 
-                matrix[i - 1][j - 1] = "custom-checkbox checked disabled".equals(checkbox.getAttribute("class"));
+                matrixList.add(new Matrix(nameRow.get(0).getText(), columnsArr.get(j).getText(), check));
             }
         }
 
-        return matrix;
+        // /html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/table/thead/tr/th[" + 2 + "]/span
+        // /html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/table/tbody/tr[" + 1 + "]/td[1]/span
+
+        return matrixList;
     }
 
     // Выбираем правильные ответы в тесте с матрицей
-    private void sendMatrix(boolean[][] correctAnswer) {
+    private void sendMatrix(List<Matrix> correctAnswer) {
         waitDownloadElement("//div[@class='step-problem']");
 
-        for (int i = 1; i <= correctAnswer.length; i++) {
-            for (int j = 1; j <= correctAnswer[i - 1].length; j++) {
-                String s = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/table/tbody/tr" +
-                        "[" + i + "]/td[" + (j + 1) + "]/div/div";
-                WebElement checkbox = driver.findElement(By.xpath(s));
-
-                if (correctAnswer[i - 1][j - 1]) {
-                    checkbox.click();
-                }
-            }
-        }
+//        for (int i = 1; i <= correctAnswer.length; i++) {
+//            for (int j = 1; j <= correctAnswer[i - 1].length; j++) {
+//                String s = "/html/body/div[1]/div[1]/div/div[1]/div/div[4]/div/div/div[1]/div/div/table/tbody/tr" +
+//                        "[" + i + "]/td[" + (j + 1) + "]/div/div";
+//                WebElement checkbox = driver.findElement(By.xpath(s));
+//
+//                if (correctAnswer[i - 1][j - 1]) {
+//                    checkbox.click();
+//                }
+//            }
+//        }
 
 //        clickOnButtonSend();
     }

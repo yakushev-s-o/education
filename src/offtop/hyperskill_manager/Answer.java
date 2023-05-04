@@ -8,8 +8,8 @@ public class Answer {
     private final int mode;
     private String answerStr;
     private String[] answerArr;
-    private List<String[]> answerListArr;
-    private boolean[][] answerBoolean;
+    private String[][] answerListArr;
+    private List<Matrix> matrix;
 
     public Answer(String url, boolean checked, int mode, String answerStr) {
         this.url = url;
@@ -25,18 +25,18 @@ public class Answer {
         this.answerArr = answerArr;
     }
 
-    public Answer(String url, boolean checked, int mode, List<String[]> answerListArr) {
+    public Answer(String url, boolean checked, int mode, String[][] answerListArr) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
         this.answerListArr = answerListArr;
     }
 
-    public Answer(String url, boolean checked, int mode, boolean[][] answerBoolean) {
+    public Answer(String url, boolean checked, int mode, List<Matrix> matrix) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
-        this.answerBoolean = answerBoolean;
+        this.matrix = matrix;
     }
 
     public String getUrl() {
@@ -47,8 +47,8 @@ public class Answer {
         this.checked = checked;
     }
 
-    public boolean getChecked() {
-        return this.checked;
+    public boolean isChecked() {
+        return checked;
     }
 
     public int getMode() {
@@ -63,11 +63,11 @@ public class Answer {
         return answerArr;
     }
 
-    public List<String[]> getAnswerListArr() {
+    public String[][] getAnswerListArr() {
         return answerListArr;
     }
 
-    public boolean[][] getAnswerBoolean() {
-        return answerBoolean;
+    public List<Matrix> getMatrixAnswer() {
+        return matrix;
     }
 }
