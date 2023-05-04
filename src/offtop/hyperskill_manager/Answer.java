@@ -9,7 +9,7 @@ public class Answer {
     private String answerStr;
     private String[] answerArr;
     private String[][] answerListArr;
-    private List<Matrix> matrix;
+    private List<Matrix> matrixList;
 
     public Answer(String url, boolean checked, int mode, String answerStr) {
         this.url = url;
@@ -32,11 +32,11 @@ public class Answer {
         this.answerListArr = answerListArr;
     }
 
-    public Answer(String url, boolean checked, int mode, List<Matrix> matrix) {
+    public Answer(String url, boolean checked, int mode, List<Matrix> matrixList) {
         this.url = url;
         this.checked = checked;
         this.mode = mode;
-        this.matrix = matrix;
+        this.matrixList = matrixList;
     }
 
     public String getUrl() {
@@ -68,6 +68,6 @@ public class Answer {
     }
 
     public List<Matrix> getMatrixAnswer() {
-        return matrix;
+        return matrixList;
     }
 }

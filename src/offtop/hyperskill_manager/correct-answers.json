@@ -1,24 +1,9 @@
 [
   {
-    "url": "https://hyperskill.org/learn/step/15238",
-    "checked": false,
-    "mode": 1,
-    "answerStr": "if (hasEnoughMoney)"
-  },
-  {
-    "url": "https://hyperskill.org/learn/step/1982",
-    "checked": false,
-    "mode": 2,
-    "answerArr": [
-      "The construction if ... else if ... else if ... is possible in Java.",
-      "The result of an expression in the condition always has the boolean type."
-    ]
-  },
-  {
     "url": "https://hyperskill.org/learn/step/2123",
     "checked": false,
     "mode": 7,
-    "matrix": [
+    "matrixList": [
       {
         "name_row": "class (not nested)",
         "name_columns": "public",
@@ -100,36 +85,5 @@
         "check": true
       }
     ]
-  },
-  {
-    "url": "https://hyperskill.org/learn/step/2165",
-    "checked": false,
-    "mode": 3,
-    "answerStr": "import java.util.Scanner;\n\nclass Main {\n    public static void main(String[] args) {\n        Scanner scanner \u003d new Scanner(System.in);\n        // start coding here\n        int n \u003d scanner.nextInt();\n        if (n \u003c\u003d 12 \u0026\u0026 n \u003e -15) {\n            System.out.println(\"True\");\n        } else if (n \u003e 14 \u0026\u0026 n \u003c 17) {\n            System.out.println(\"True\");\n        } else if (n \u003e\u003d 19) {\n            System.out.println(\"True\");\n        } else {\n            System.out.println(\"False\");\n        }\n    }\n}"
-  },
-  {
-    "url": "https://hyperskill.org/learn/step/2499",
-    "checked": false,
-    "mode": 6,
-    "answerListArr": [
-      [
-        "// a comment",
-        "end-of-line comment"
-      ],
-      [
-        "/* a comment */",
-        "multi-line comment"
-      ],
-      [
-        "/** a comment */",
-        "doc comment"
-      ]
-    ]
-  },
-  {
-    "url": "https://hyperskill.org/learn/step/3412",
-    "checked": false,
-    "mode": 4,
-    "answerStr": "35"
   }
 ]
