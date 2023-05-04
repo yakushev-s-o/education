@@ -261,7 +261,7 @@ public class TestAutomation {
 
         final String SINGLE = "Select one option from the list";
         final String MULTIPLE = "Select one or more options from the list";
-        final String CODE = "Write a program in Java";
+        final String CODE = "Write a program in";
         final String TEXT_NUM = "Enter a number";
         final String TEXT_SHORT = "Enter a short text";
         final String MATCH = "Match the items from left and right columns";
@@ -464,8 +464,18 @@ public class TestAutomation {
             WebElement element1 = driver.findElement(By.xpath(question));
             WebElement element2 = driver.findElement(By.xpath(answer));
 
-            String[] s = new String[]{element1.getText(), element2.getText()};
-            correctAnswers.add(s);
+            String[] pairs;
+
+            // Если текст не найден, ищем изображение
+            if (element1.getText().equals("")) {
+                String questionImg = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/div[1]/div[" + i + "]/span/img";
+                element1 = driver.findElement(By.xpath(questionImg));
+                pairs = new String[]{element1.getAttribute("src"), element2.getText()};
+            } else {
+                pairs = new String[]{element1.getText(), element2.getText()};
+            }
+
+            correctAnswers.add(pairs);
         }
 
         return correctAnswers;
