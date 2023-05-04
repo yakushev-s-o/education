@@ -5,83 +5,180 @@
     "mode": 7,
     "matrixList": [
       {
-        "name_row": "class (not nested)",
-        "name_columns": "public",
+        "name_row": "public",
+        "name_columns": "class (not nested)",
         "check": true
       },
       {
-        "name_row": "class (not nested)",
-        "name_columns": "protected",
+        "name_row": "protected",
+        "name_columns": "class (not nested)",
         "check": false
       },
       {
-        "name_row": "class (not nested)",
-        "name_columns": "private",
+        "name_row": "private",
+        "name_columns": "class (not nested)",
         "check": false
       },
       {
-        "name_row": "class (not nested)",
-        "name_columns": "no modifier",
+        "name_row": "no modifier",
+        "name_columns": "class (not nested)",
         "check": true
       },
       {
-        "name_row": "field",
-        "name_columns": "public",
+        "name_row": "public",
+        "name_columns": "field",
         "check": true
       },
       {
-        "name_row": "field",
-        "name_columns": "protected",
+        "name_row": "protected",
+        "name_columns": "field",
         "check": true
       },
       {
-        "name_row": "field",
-        "name_columns": "private",
+        "name_row": "private",
+        "name_columns": "field",
         "check": true
       },
       {
-        "name_row": "field",
-        "name_columns": "no modifier",
+        "name_row": "no modifier",
+        "name_columns": "field",
         "check": true
       },
       {
-        "name_row": "method",
-        "name_columns": "public",
+        "name_row": "public",
+        "name_columns": "method",
         "check": true
       },
       {
-        "name_row": "method",
-        "name_columns": "protected",
+        "name_row": "protected",
+        "name_columns": "method",
         "check": true
       },
       {
-        "name_row": "method",
-        "name_columns": "private",
+        "name_row": "private",
+        "name_columns": "method",
         "check": true
       },
       {
-        "name_row": "method",
-        "name_columns": "no modifier",
+        "name_row": "no modifier",
+        "name_columns": "method",
         "check": true
       },
       {
-        "name_row": "constructor",
-        "name_columns": "public",
+        "name_row": "public",
+        "name_columns": "constructor",
         "check": true
       },
       {
-        "name_row": "constructor",
-        "name_columns": "protected",
+        "name_row": "protected",
+        "name_columns": "constructor",
         "check": true
       },
       {
-        "name_row": "constructor",
-        "name_columns": "private",
+        "name_row": "private",
+        "name_columns": "constructor",
         "check": true
       },
       {
-        "name_row": "constructor",
-        "name_columns": "no modifier",
+        "name_row": "no modifier",
+        "name_columns": "constructor",
+        "check": true
+      }
+    ]
+  },
+  {
+    "url": "https://hyperskill.org/learn/step/2248",
+    "checked": false,
+    "mode": 7,
+    "matrixList": [
+      {
+        "name_row": "toString(int num)",
+        "name_columns": "float val \u003d 2F; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "toString(long num)",
+        "name_columns": "float val \u003d 2F; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "None of these",
+        "name_columns": "float val \u003d 2F; toString(val);",
+        "check": true
+      },
+      {
+        "name_row": "toString(int num)",
+        "name_columns": "long val \u003d 2L; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "toString(long num)",
+        "name_columns": "long val \u003d 2L; toString(val);",
+        "check": true
+      },
+      {
+        "name_row": "None of these",
+        "name_columns": "long val \u003d 2L; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "toString(int num)",
+        "name_columns": "int val \u003d 2; toString(val);",
+        "check": true
+      },
+      {
+        "name_row": "toString(long num)",
+        "name_columns": "int val \u003d 2; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "None of these",
+        "name_columns": "int val \u003d 2; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "toString(int num)",
+        "name_columns": "byte val \u003d 2; toString(val);",
+        "check": true
+      },
+      {
+        "name_row": "toString(long num)",
+        "name_columns": "byte val \u003d 2; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "None of these",
+        "name_columns": "byte val \u003d 2; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "toString(int num)",
+        "name_columns": "char val \u003d 2; toString(val);",
+        "check": true
+      },
+      {
+        "name_row": "toString(long num)",
+        "name_columns": "char val \u003d 2; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "None of these",
+        "name_columns": "char val \u003d 2; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "toString(int num)",
+        "name_columns": "double val \u003d 2; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "toString(long num)",
+        "name_columns": "double val \u003d 2; toString(val);",
+        "check": false
+      },
+      {
+        "name_row": "None of these",
+        "name_columns": "double val \u003d 2; toString(val);",
         "check": true
       }
     ]

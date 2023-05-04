@@ -543,15 +543,16 @@ public class TestAutomation {
 
         List<Matrix> matrixList = new ArrayList<>();
 
-        for (int i = 1; i < columnsArr.size(); i++) {
-            for (int j = 1; j < rowArr.size() + 1; j++) {
+        for (int i = 1; i < rowArr.size() + 1; i++) {
+            for (int j = 1; j < columnsArr.size(); j++) {
                 String s = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/table/tbody/tr" +
                         "[" + i + "]/td[" + (j + 1) + "]/div/div";
                 WebElement checkbox = driver.findElement(By.xpath(s));
-                boolean check = "custom-checkbox checked disabled".equals(checkbox.getAttribute("class"));
+                boolean check = "custom-checkbox checked disabled".equals(checkbox.getAttribute("class")) ||
+                        "custom-radio checked disabled".equals(checkbox.getAttribute("class"));
                 List<WebElement> nameRow = rowArr.get(i - 1).findElements(By.tagName("td"));
 
-                matrixList.add(new Matrix(nameRow.get(0).getText(), columnsArr.get(j).getText(), check));
+                matrixList.add(new Matrix(columnsArr.get(j).getText(), nameRow.get(0).getText(), check));
             }
         }
 
@@ -569,8 +570,8 @@ public class TestAutomation {
         WebElement tbody = driver.findElement(By.tagName("tbody"));
         List<WebElement> rowArr = tbody.findElements(By.tagName("tr"));
 
-        for (int i = 1; i < columnsArr.size(); i++) {
-            for (int j = 1; j < rowArr.size() + 1; j++) {
+        for (int i = 1; i < rowArr.size() + 1; i++) {
+            for (int j = 1; j < columnsArr.size(); j++) {
                 List<WebElement> nameRow = rowArr.get(i - 1).findElements(By.tagName("td"));
 
                 for (Matrix matrix : matrixList) {
