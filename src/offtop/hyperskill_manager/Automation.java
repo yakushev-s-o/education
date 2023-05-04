@@ -18,13 +18,13 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestAutomation {
+public class Automation {
     private static WebDriver driver;
     private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test/learn/step/";
     private static final String CHROMEDRIVER_PATH = "C:\\tools\\chromedriver_win32\\chromedriver.exe";
-    private static final String JSON_PATH = "src/offtop/hyperskill_manager/correct-answers.json";
+    private static final String JSON_PATH = "src/offtop/hyperskill_manager/answer-list.json";
     private static final String STEP_PATH = "https://hyperskill.org/learn/step/";
-    private static final String STEP_LIST_PATH = "offtop/hyperskill_manager/step-list.json";
+    private static final String STEP_LIST_PATH = "src/offtop/hyperskill_manager/step-list.json";
 
     private void createChromeDriver() {
         // Устанавливаем путь к драйверу браузера
@@ -552,7 +552,7 @@ public class TestAutomation {
                         "custom-radio checked disabled".equals(checkbox.getAttribute("class"));
                 List<WebElement> nameRow = rowArr.get(i - 1).findElements(By.tagName("td"));
 
-                matrixList.add(new Matrix(columnsArr.get(j).getText(), nameRow.get(0).getText(), check));
+                matrixList.add(new Matrix(nameRow.get(0).getText(), columnsArr.get(j).getText(), check));
             }
         }
 
@@ -575,9 +575,12 @@ public class TestAutomation {
                 List<WebElement> nameRow = rowArr.get(i - 1).findElements(By.tagName("td"));
 
                 for (Matrix matrix : matrixList) {
-                    if (matrix.getName_columns().equals(columnsArr.get(j).getText()) &&
-                            matrix.getName_row().equals(nameRow.get(0).getText())) {
-                        System.out.println(matrix.check);
+                    if (matrix.getName_row().equals(nameRow.get(0).getText()) &&
+                            matrix.getName_columns().equals(columnsArr.get(j).getText()) && matrix.isCheck()) {
+                        String s = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/table/tbody/tr" +
+                                "[" + i + "]/td[" + (j + 1) + "]/div/div";
+                        WebElement checkbox = driver.findElement(By.xpath(s));
+                        checkbox.click();
                     }
                 }
             }

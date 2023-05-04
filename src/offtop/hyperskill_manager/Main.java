@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        TestAutomation test = new TestAutomation();
+        Automation test = new Automation();
         PageSorting pages = new PageSorting();
 
         Scanner sc = new Scanner(System.in);

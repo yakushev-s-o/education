@@ -3,7 +3,7 @@ package offtop.hyperskill_manager;
 public class Matrix {
     private final String name_row;
     private final String name_columns;
-    boolean check;
+    private final boolean check;
 
     public Matrix(String name_row, String name_columns, boolean check) {
         this.name_row = name_row;

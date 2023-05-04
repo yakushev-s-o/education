@@ -1,0 +1,175 @@
+[
+  {
+    "url": "https://hyperskill.org/learn/step/14950",
+    "checked": false,
+    "mode": 6,
+    "answerListArr": [
+      [
+        "data:image/png;base64,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\u003d\u003d",
+        "Check if a task assignment is done right for the quizzes and programming tasks"
+      ],
+      [
+        "data:image/png;base64,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",
+        "Go to the previous/next task"
+      ],
+      [
+        "data:image/png;base64,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\u003d\u003d",
+        "Drop all the task changes and start anew"
+      ],
+      [
+        "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAqCAIAAABOVI4xAAAEBWlDQ1BpY2MAADiNjVVdaBxVFD67c2cjJM5TbDSFdKg/DSUNk1Y0obS6f93dNm6WSTbaIuhk9u7OmMnOODO7/aFPRVB8MeqbFMS/t4AgKPUP2z60L5UKJdrUICg+tPiDUOiLpuuZOzOZabqx3mXufPOd75577rln7wXouapYlpEUARaari0XMuJzh4+IPSuQhIegFwahV1EdK12pTAI2Twt3tVvfQ8J7X9nV3f6frbdGHRUgcR9is+aoC4iPAfCnVct2AXr6kR8/6loe9mLotzFAxC96uOFj18NzPn6NaWbkLOLTiAVVU2qIlxCPzMX4Rgz7MbDWX6BNauuq6OWiYpt13aCxcO9h/p9twWiF823Dp8+Znz6E72Fc+ys1JefhUcRLqpKfRvwI4mttfbYc4NuWm5ERPwaQ3N6ar6YR70RcrNsHqr6fpK21iiF+54Q28yziLYjPN+fKU8HYq6qTxZzBdsS3NVry8jsEwIm6W5rxx3L7bVOe8ufl6jWay3t5RPz6vHlI9n1ynznt6Xzo84SWLQf8pZeUgxXEg4h/oUZB9ufi/rHcShADGWoa5Ul/LpKjDlsv411tpujPSwwXN9QfSxbr+oFSoP9Es4tygK9ZBqtRjI1P2i256uv5UcXOF3yffIU2q4F/vg2zCQUomDCHvQpNWAMRZChABt8W2Gipgw4GMhStFBmKX6FmFxvnwDzyOrSZzcG+wpT+yMhfg/m4zrQqZIc+ghayGvyOrBbTZfGrhVxjEz9+LDcCPyYZIBLZg89eMkn2kXEyASJ5ijxN9pMcshNk7/rYSmxFXjw31v28jDNSpptF3Tm0u6Bg/zMqTFxT16wsDraGI8sp+wVdvfzGX7Fc6Sw3UbbiGZ26V875X/nr/DL2K/xqpOB/5Ffxt3LHWsy7skzD7GxYc3dVGm0G4xbw0ZnFicUd83Hx5FcPRn6WyZnnr/RdPFlvLg5GrJcF+mr5VhlOjUSs9IP0h7QsvSd9KP3Gvc19yn3Nfc59wV0CkTvLneO+4S5wH3NfxvZq8xpa33sWeRi3Z+mWa6xKISNsFR4WcsI24VFhMvInDAhjQlHYgZat6/sWny+ePR0OYx/mp/tcvi5WAYn7sQL0Tf5VVVTpcJQpHVZvTTi+QROMJENkjJQ2VPe4V/OhIpVP5VJpEFM7UxOpsdRBD4ezpnagbQL7/B3VqW6yUurSY959AlnTOm7rDc0Vd0vSk2IarzYqlprq6IioGIbITI5oU4fabVobBe/e9I/0mzK7DxNbLkec+wzAvj/x7Psu4o60AJYcgIHHI24Yz8oH3gU484TastvBHZFIfAvg1Pfs9r/6Mnh+/dTp3MRzrOctgLU3O52/3+901j5A/6sAZ41/AaCffFXthGDhAAAAA3NCSVQICAjb4U/gAAAAtElEQVRYhWP8//8/w0AApgGxddTiUYuHpcUs+KUPHDtJFWscrMzRREZeUI9aPGrxqMWjFo9aPGrxqMVwQKAFgtlywAOev3x1+/7Df//+EaOYmj6WFBcz0tXiYGent8UMDAw83Nwm+jrCggL0tpiBgYGFhUVXU11BVpreFkOAgqyMnpYGCwvONETDVC0kwG+ir8PDzY1VlpHW/eN///7dvv9QXVmR3hbjAiOv5Bq1eNTi4WcxAHw1H78ZucT2AAAAAElFTkSuQmCC",
+        "View the task page on Hyperskill and leave a comment"
+      ]
+    ]
+  },
+  {
+    "url": "https://hyperskill.org/learn/step/2248",
+    "checked": false,
+    "mode": 7,
+    "matrixList": [
+      {
+        "name_row": "float val \u003d 2F; toString(val);",
+        "name_columns": "toString(int num)",
+        "check": false
+      },
+      {
+        "name_row": "float val \u003d 2F; toString(val);",
+        "name_columns": "toString(long num)",
+        "check": false
+      },
+      {
+        "name_row": "float val \u003d 2F; toString(val);",
+        "name_columns": "None of these",
+        "check": true
+      },
+      {
+        "name_row": "long val \u003d 2L; toString(val);",
+        "name_columns": "toString(int num)",
+        "check": false
+      },
+      {
+        "name_row": "long val \u003d 2L; toString(val);",
+        "name_columns": "toString(long num)",
+        "check": true
+      },
+      {
+        "name_row": "long val \u003d 2L; toString(val);",
+        "name_columns": "None of these",
+        "check": false
+      },
+      {
+        "name_row": "int val \u003d 2; toString(val);",
+        "name_columns": "toString(int num)",
+        "check": true
+      },
+      {
+        "name_row": "int val \u003d 2; toString(val);",
+        "name_columns": "toString(long num)",
+        "check": false
+      },
+      {
+        "name_row": "int val \u003d 2; toString(val);",
+        "name_columns": "None of these",
+        "check": false
+      },
+      {
+        "name_row": "byte val \u003d 2; toString(val);",
+        "name_columns": "toString(int num)",
+        "check": true
+      },
+      {
+        "name_row": "byte val \u003d 2; toString(val);",
+        "name_columns": "toString(long num)",
+        "check": false
+      },
+      {
+        "name_row": "byte val \u003d 2; toString(val);",
+        "name_columns": "None of these",
+        "check": false
+      },
+      {
+        "name_row": "char val \u003d 2; toString(val);",
+        "name_columns": "toString(int num)",
+        "check": true
+      },
+      {
+        "name_row": "char val \u003d 2; toString(val);",
+        "name_columns": "toString(long num)",
+        "check": false
+      },
+      {
+        "name_row": "char val \u003d 2; toString(val);",
+        "name_columns": "None of these",
+        "check": false
+      },
+      {
+        "name_row": "double val \u003d 2; toString(val);",
+        "name_columns": "toString(int num)",
+        "check": false
+      },
+      {
+        "name_row": "double val \u003d 2; toString(val);",
+        "name_columns": "toString(long num)",
+        "check": false
+      },
+      {
+        "name_row": "double val \u003d 2; toString(val);",
+        "name_columns": "None of these",
+        "check": true
+      }
+    ]
+  },
+  {
+    "url": "https://hyperskill.org/learn/step/3478",
+    "checked": false,
+    "mode": 7,
+    "matrixList": [
+      {
+        "name_row": "incorrect keyword",
+        "name_columns": "compile-time",
+        "check": true
+      },
+      {
+        "name_row": "incorrect keyword",
+        "name_columns": "run-time (\"bugs\")",
+        "check": false
+      },
+      {
+        "name_row": "incorrect text output",
+        "name_columns": "compile-time",
+        "check": false
+      },
+      {
+        "name_row": "incorrect text output",
+        "name_columns": "run-time (\"bugs\")",
+        "check": true
+      },
+      {
+        "name_row": "missed semi-colon",
+        "name_columns": "compile-time",
+        "check": true
+      },
+      {
+        "name_row": "missed semi-colon",
+        "name_columns": "run-time (\"bugs\")",
+        "check": false
+      },
+      {
+        "name_row": "a program cannot open a file",
+        "name_columns": "compile-time",
+        "check": false
+      },
+      {
+        "name_row": "a program cannot open a file",
+        "name_columns": "run-time (\"bugs\")",
+        "check": true
+      }
+    ]
+  },
+  {
+    "url": "https://hyperskill.org/learn/step/8301",
+    "checked": false,
+    "mode": 0,
+    "answerStr": ""
+  }
+]
