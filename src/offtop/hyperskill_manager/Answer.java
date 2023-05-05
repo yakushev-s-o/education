@@ -11,30 +11,30 @@ public class Answer {
     private String[][] answerListArr;
     private List<Matrix> matrixList;
 
-    public Answer(String url, boolean checked, int mode, String answerStr) {
+    public Answer(String url, int mode, String answerStr) {
         this.url = url;
-        this.checked = checked;
+        this.checked = false;
         this.mode = mode;
         this.answerStr = answerStr;
     }
 
-    public Answer(String url, boolean checked, int mode, String[] answerArr) {
+    public Answer(String url, int mode, String[] answerArr) {
         this.url = url;
-        this.checked = checked;
+        this.checked = false;
         this.mode = mode;
         this.answerArr = answerArr;
     }
 
-    public Answer(String url, boolean checked, int mode, String[][] answerListArr) {
+    public Answer(String url, int mode, String[][] answerListArr) {
         this.url = url;
-        this.checked = checked;
+        this.checked = false;
         this.mode = mode;
         this.answerListArr = answerListArr;
     }
 
-    public Answer(String url, boolean checked, int mode, List<Matrix> matrixList) {
+    public Answer(String url, int mode, List<Matrix> matrixList) {
         this.url = url;
-        this.checked = checked;
+        this.checked = false;
         this.mode = mode;
         this.matrixList = matrixList;
     }
@@ -48,7 +48,7 @@ public class Answer {
     }
 
     public boolean isChecked() {
-        return checked;
+        return this.checked;
     }
 
     public int getMode() {
