@@ -50,13 +50,13 @@ public class Automation {
 
         WebElement emailField = driver.findElement(By.xpath("//input[@type='email']"));
         WebElement passwordField = driver.findElement(By.xpath("//input[@type='password']"));
-        WebElement signInButton = driver.findElement(By.cssSelector("button[data-cy='submitButton']"));
+        WebElement signInButton = driver.findElement(By.xpath("//button[@data-cy='submitButton']"));
 
         emailField.sendKeys("yakushev.s.o@ya.ru");
         passwordField.sendKeys("{yx#e%B9~SGl4@Cr");
         signInButton.click();
 
-        waitDownloadElement("//div[@class='user-avatar']");
+        waitDownloadElement("//h1[@data-cy='curriculum-header']");
     }
 
     // Получаем список топиков
@@ -162,6 +162,9 @@ public class Automation {
         }
     }
 
+    // https://hyperskill.org/api/attempts?step=8301&user=446365361
+    // https://hyperskill.org/api/submissions?step=8301&user=446365361
+
     // Получаем все правильные ответы и по очереди сохраняем в файл
     public void getAnswers() {
         createChromeDriver();
@@ -229,6 +232,10 @@ public class Automation {
                             answer.setChecked(true);
                         }
                         case 7 -> {
+                            sendSort(answer.getAnswerArr());
+                            answer.setChecked(true);
+                        }
+                        case 8 -> {
                             sendMatrix(answer.getMatrixAnswer());
                             answer.setChecked(true);
                         }
@@ -239,7 +246,7 @@ public class Automation {
             }
         }
 
-        driver.quit();
+//        driver.quit();
     }
 
     // Проверяем ссылку на совпадение в файле
@@ -267,6 +274,7 @@ public class Automation {
         final String TEXT_NUM = "Enter a number";
         final String TEXT_SHORT = "Enter a short text";
         final String MATCH = "Match the items from left and right columns";
+        final String SORT = "Put the items in the correct order";
         final String MATRIX_MORE = "Choose one or more options for each row";
         final String MATRIX_ONE = "Choose one option for each row";
 
@@ -287,11 +295,13 @@ public class Automation {
             return new Answer(page, false, 5, getTextShort());
         } else if (text.equals(MATCH)) {
             return new Answer(page, false, 6, getMatch());
+        } else if (text.equals(SORT)) {
+            return new Answer(page, false, 7, getSort());
         } else if (text.equals(MATRIX_MORE) || text.equals(MATRIX_ONE)) {
-            return new Answer(page, false, 7, getMatrix());
+            return new Answer(page, false, 8, getMatrix());
         }
 
-        return new Answer(page, false, 0, "");
+        return new Answer(page, false, 0, "ANSWER_NOT_FOUND");
     }
 
     // Получаем список объектов из файла
@@ -517,8 +527,9 @@ public class Automation {
 
                     if (text2.equals(res[1])) {
                         if (i != j) {
+                            Actions actions = new Actions(driver);
                             WebElement arrow = driver.findElement(By.xpath(i < j ? upArrow : downArrow));
-                            arrow.click();
+                            actions.moveToElement(arrow).click().perform();
                         } else {
                             checkTrue = false;
                         }
@@ -527,7 +538,54 @@ public class Automation {
             }
         }
 
-        // sendAnswer();
+        // clickOnButtonSend();
+    }
+
+    // Выбираем ответы в тесте с сортировкой
+    private void sendSort(String[] correctAnswers) {
+        waitDownloadElement("//div[@class='step-problem']");
+
+        for (int i = 1; i <= correctAnswers.length; i++) {
+            boolean checkTrue = true;
+
+            while (checkTrue) {
+                for (int j = 1; j <= correctAnswers.length; j++) {
+                    String upArrow = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/div/span/div[" + j + "]/div[3]/button[" + 1 + "]";
+                    String downArrow = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/div/span/div[" + j + "]/div[3]/button[" + 2 + "]";
+
+                    String answer = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/div/span/div[" + j + "]/div[2]/span";
+                    WebElement element = driver.findElement(By.xpath(answer));
+
+                    if (element.getText().equals(correctAnswers[i - 1])) {
+                        if (i != j) {
+                            Actions actions = new Actions(driver);
+                            WebElement arrow = driver.findElement(By.xpath(i < j ? upArrow : downArrow));
+                            actions.moveToElement(arrow).click().perform();
+                        } else {
+                            checkTrue = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        // clickOnButtonSend();
+    }
+
+    // Получаем список правильных ответов из теста с сортировкой
+    private String[] getSort() {
+        waitDownloadElement("//div[@class='step-problem']");
+
+        List<String> correctAnswers = new ArrayList<>();
+        List<WebElement> count = driver.findElements(By.xpath("//div[@class='line-value']/span"));
+
+        for (int i = 1; i <= count.size(); i++) {
+            String answer = "/html/body/div[1]/div[1]/div/div/div/div[4]/div/div/div[1]/div[1]/div/div/span/div[" + i + "]/div[2]/span";
+            WebElement element = driver.findElement(By.xpath(answer));
+            correctAnswers.add(element.getText());
+        }
+
+        return correctAnswers.toArray(new String[0]);
     }
 
     // Получить матрицу правильных ответов из теста
