@@ -393,15 +393,24 @@ public class Automation {
     private void sendTestMultiple(String[] answer) {
         for (String i : answer) {
             Actions actions = new Actions(driver);
-
             WebElement input;
 
-            try {
-                input = driver.findElement(By.xpath("//div[contains(text(), '" + i + "')]"));
-            } catch (Exception e) {
-                input = driver.findElement(By.xpath("//label[contains(., \"" + i + "\")]"));
-            }
+            if (i.contains("\n")) {
+                StringBuilder str = new StringBuilder("//label[@class=\"custom-control-label\"]");
+                String[] textAnswer = i.split("\n");
 
+                for (String value : textAnswer) {
+                    str.append("[contains(normalize-space(),'").append(value).append("')]");
+                }
+
+                input = driver.findElement(By.xpath(String.valueOf(str)));
+            } else {
+                if (i.contains("'")) {
+                    input = driver.findElement(By.xpath("//label[@class=\"custom-control-label\"][normalize-space()=\"" + i + "\"]"));
+                } else {
+                    input = driver.findElement(By.xpath("//label[@class=\"custom-control-label\"][normalize-space()='" + i + "']"));
+                }
+            }
 
             actions.moveToElement(input).click().perform();
         }
