@@ -23,8 +23,11 @@ public class Main {
             if (mode == 1) {
                 pages.run();
             } else if (mode == 2) {
+                test.createDriver(true);
+                test.login();
                 test.getAnswers();
             } else if (mode == 3) {
+                test.createDriver(false);
                 test.login();
                 test.sendAnswers();
             } else if (mode == 4) {

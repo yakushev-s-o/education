@@ -2,8 +2,12 @@ package offtop.hyperskill_manager;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -17,30 +21,29 @@ import java.util.List;
 
 public class Automation {
     private static WebDriver driver;
-    private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test/learn/step/";
     private static final String CHROMEDRIVER_PATH = "C:\\tools\\chromedriver_win32\\chromedriver.exe";
+    private static final String SITE_LINK = "https://hyperskill.org/learn/step/";
     private static final String JSON_PATH = "src/offtop/hyperskill_manager/answer-list.json";
-    private static final String STEP_PATH = "https://hyperskill.org/learn/step/";
-    private static final String STEP_LIST_PATH = "src/offtop/hyperskill_manager/step-list.json";
+    private static final String STEP_PATH = "src/offtop/hyperskill_manager/step-list.json";
 
-    private void createChromeDriver() {
+    public void createDriver(boolean hide) {
         // Устанавливаем путь к драйверу браузера
         System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_PATH);
 
-        // Создаем экземпляр драйвера
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
-
-//        ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--headless");
-//        options.addArguments("--disable-gpu");
-//        driver = new ChromeDriver(options);
+        // Создаем экземпляр драйвера в фоне если true
+        if (hide) {
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--headless");
+            options.addArguments("--disable-gpu");
+            driver = new ChromeDriver(options);
+        } else {
+            driver = new ChromeDriver();
+            driver.manage().window().maximize();
+        }
     }
 
     // Выполняем авторизацию на сайте
     public void login() {
-        createChromeDriver();
-
         driver.get("https://hyperskill.org/login");
 
         waitDownloadElement("//input[@type='email']");
@@ -149,9 +152,9 @@ public class Automation {
 
                     // Получаем текущий список шагов из файла
                     List<Step> listSteps = getFileData(new TypeToken<List<Step>>() {
-                    }.getType(), STEP_LIST_PATH);
+                    }.getType(), STEP_PATH);
                     // Добавляем новый шаг в список и записываем в файл
-                    saveToFile(new Step(id, title, listStep), listSteps, STEP_LIST_PATH);
+                    saveToFile(new Step(id, title, listStep), listSteps, STEP_PATH);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -164,29 +167,30 @@ public class Automation {
 
     // Получаем все правильные ответы и по очереди сохраняем в файл
     public void getAnswers() {
-        createChromeDriver();
+        // Получаем список шагов из файла
+        List<Step> listStep = getFileData(new TypeToken<List<Step>>() {
+        }.getType(), STEP_PATH);
 
-        File folder = new File(FOLDER_PATH);
-        File[] files = folder.listFiles();
-
-        if (files != null) {
-            for (File file : files) {
+        for (Step steps : listStep) {
+            for (String step : steps.getStepList()) {
                 // Пропускаем если есть совпадение ссылки в файле
-                if (!checkMatch(file.getName())) {
-                    driver.get(FOLDER_PATH + file.getName());
+                if (!checkMatch(step)) {
+                    driver.get(SITE_LINK + step);
 
                     // Проверяем загрузилась ли страница
-                    if (waitDownloadElement("//div[@class='step-problem']")) {
-                        // Проверяем что это страница с тестом
-                        WebElement element = driver.findElement(By.cssSelector("[click-event-target='practice']"));
+                    waitDownloadElement("//div[@class='step-problem']");
 
-                        if (element.getAttribute("aria-pressed").equals("true") && checkCorrect()) {
-                            // Получаем список ответов из файла
-                            List<Answer> listAnswers = getFileData(new TypeToken<List<Answer>>() {
-                            }.getType(), JSON_PATH);
-                            // Добавляем новый ответ в список и записываем файл
-                            saveToFile(getCorrectAnswer(file.getName()), listAnswers, JSON_PATH);
-                        }
+                    // Проверяем что это страница с тестом
+                    WebElement element = driver.findElement(By.cssSelector("[click-event-target='practice']"));
+                    boolean checkTest = element.getAttribute("aria-pressed").equals("true");
+
+                    // Проверяем что тест решен
+                    if (checkTest && checkCorrect()) {
+                        // Получаем список ответов из файла
+                        List<Answer> listAnswers = getFileData(new TypeToken<List<Answer>>() {
+                        }.getType(), JSON_PATH);
+                        // Добавляем новый ответ в список и записываем файл
+                        saveToFile(getCorrectAnswer(step), listAnswers, JSON_PATH);
                     }
                 }
             }
@@ -206,29 +210,27 @@ public class Automation {
                 driver.get(answer.getUrl());
 
                 // Проверяем загрузилась ли страница
-                if (waitDownloadElement("//div[@class='step-problem']")) {
-                    delay();
+                waitDownloadElement("//div[@class='step-problem']");
 
-                    if (!checkCorrect()) {
-                        switch (answer.getMode()) {
-                            case 1 -> sendTestSingle(answer.getAnswerStr());
-                            case 2 -> sendTestMultiple(answer.getAnswerArr());
-                            case 3 -> sendCode(answer.getAnswerStr());
-                            case 4 -> sendTextNum(answer.getAnswerStr());
-                            case 5 -> sendTextShort(answer.getAnswerStr());
-                            case 6 -> sendMatch(answer.getAnswerListArr());
-                            case 7 -> sendSort(answer.getAnswerArr());
-                            case 8 -> sendMatrix(answer.getMatrixAnswer());
-                        }
-
+                if (!checkCorrect()) {
+                    switch (answer.getMode()) {
+                        case 1 -> sendTestSingle(answer.getAnswerStr());
+                        case 2 -> sendTestMultiple(answer.getAnswerArr());
+                        case 3 -> sendCode(answer.getAnswerStr());
+                        case 4 -> sendTextNum(answer.getAnswerStr());
+                        case 5 -> sendTextShort(answer.getAnswerStr());
+                        case 6 -> sendMatch(answer.getAnswerListArr());
+                        case 7 -> sendSort(answer.getAnswerArr());
+                        case 8 -> sendMatrix(answer.getMatrixAnswer());
                     }
 
-                    // Устанавливаем значение проверенно
-                    setChecked(answer);
-
-                    // Задержка между страницами 1 секунда
-                    delay();
                 }
+
+                // Устанавливаем значение проверенно
+                setChecked(answer);
+
+                // Задержка между страницами 0.5 секунды
+                delay();
             }
         }
 
@@ -264,7 +266,7 @@ public class Automation {
         }.getType(), JSON_PATH);
 
         for (Answer answer : answers) {
-            if (answer.getUrl().equals(STEP_PATH + page.replace(".html", ""))) {
+            if (answer.getUrl().equals(SITE_LINK + page)) {
                 return true;
             }
         }
@@ -273,7 +275,7 @@ public class Automation {
     }
 
     // Получаем правильный ответ используя подходящий метод
-    private Answer getCorrectAnswer(String srcPage) {
+    private Answer getCorrectAnswer(String step) {
         final String SINGLE = "Select one option from the list";
         final String MULTIPLE = "Select one or more options from the list";
         final String CODE = "Write a program in";
@@ -285,7 +287,7 @@ public class Automation {
         final String MATRIX_ONE = "Choose one option for each row";
 
         WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
-        String page = STEP_PATH + srcPage.replace(".html", "");
+        String page = SITE_LINK + step;
 
         String text = element.getText();
 
@@ -359,8 +361,17 @@ public class Automation {
 
     // Получаем один ответ из теста
     private String getTestSingle() {
-        WebElement element = driver.findElement(By.xpath("//input[@type='radio' and @checked]/following-sibling::label/div"));
-        return element.getText();
+        List<WebElement> elements = driver.findElements(By.xpath("//input[@type='radio']"));
+
+        for (WebElement element : elements) {
+            if (element.getAttribute("checked") != null) {
+                WebElement res = element.findElement(By.xpath("./following-sibling::label/div"));
+
+                return res.getText();
+            }
+        }
+
+        return "";
     }
 
     // Выбираем один ответ в тесте
@@ -380,10 +391,13 @@ public class Automation {
     // Получаем несколько ответов из теста
     private String[] getTestMultiple() {
         List<String> correctAnswers = new ArrayList<>();
-        List<WebElement> input = driver.findElements(By.xpath("//input[@type='checkbox' and @checked]/following-sibling::label/div"));
+        List<WebElement> elements = driver.findElements(By.xpath("//input[@type='checkbox']"));
 
-        for (WebElement answer : input) {
-            correctAnswers.add(answer.getText());
+        for (WebElement element : elements) {
+            if (element.getAttribute("checked") != null) {
+                WebElement res = element.findElement(By.xpath("./following-sibling::label/div"));
+                correctAnswers.add(res.getText());
+            }
         }
 
         return correctAnswers.toArray(new String[0]);
@@ -453,7 +467,7 @@ public class Automation {
     // Получаем ответ из текстового поля
     private String getTextShort() {
         WebElement input = driver.findElement(By.xpath("//textarea"));
-        return input.getText();
+        return input.getAttribute("value");
     }
 
     // Записываем ответ в текстовое поле
@@ -653,8 +667,8 @@ public class Automation {
     }
 
     // Проверяем состояние загрузки страницы
-    private boolean waitDownloadElement(String s) {
+    private void waitDownloadElement(String s) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s))).isDisplayed();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s)));
     }
 }
