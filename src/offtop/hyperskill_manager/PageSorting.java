@@ -13,7 +13,7 @@ public class PageSorting {
 
     private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test";
 
-    public void run() {
+    public void sort() {
         File folder = new File(FOLDER_PATH);
         File[] files = folder.listFiles();
         if (files != null) {

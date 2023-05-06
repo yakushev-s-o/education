@@ -46,7 +46,7 @@ public class Automation {
     public void login() {
         driver.get("https://hyperskill.org/login");
 
-        waitDownloadElement("//input[@type='email']");
+        waitDownloadElement("//input[@type='email']", 10);
 
         WebElement emailField = driver.findElement(By.xpath("//input[@type='email']"));
         WebElement passwordField = driver.findElement(By.xpath("//input[@type='password']"));
@@ -56,7 +56,7 @@ public class Automation {
         passwordField.sendKeys("{yx#e%B9~SGl4@Cr");
         signInButton.click();
 
-        waitDownloadElement("//h1[@data-cy='curriculum-header']");
+        waitDownloadElement("//h1[@data-cy='curriculum-header']", 10);
     }
 
     // Получаем список топиков
@@ -162,9 +162,6 @@ public class Automation {
         }
     }
 
-    // https://hyperskill.org/api/attempts?step=8301&user=446365361
-    // https://hyperskill.org/api/submissions?step=8301&user=446365361
-
     // Получаем все правильные ответы и по очереди сохраняем в файл
     public void getAnswers() {
         // Получаем список шагов из файла
@@ -178,7 +175,10 @@ public class Automation {
                     driver.get(SITE_LINK + step);
 
                     // Проверяем загрузилась ли страница
-                    waitDownloadElement("//div[@class='step-problem']");
+                    waitDownloadElement("//div[@class='step-problem']", 10);
+
+                    // Задержка на 0.5 сек
+                    delay();
 
                     // Проверяем что это страница с тестом
                     WebElement element = driver.findElement(By.cssSelector("[click-event-target='practice']"));
@@ -199,6 +199,43 @@ public class Automation {
         driver.quit();
     }
 
+    // Получаем правильный ответ используя подходящий метод
+    private Answer getCorrectAnswer(String step) {
+        final String SINGLE = "Select one option from the list";
+        final String MULTIPLE = "Select one or more options from the list";
+        final String CODE = "Write a program in";
+        final String TEXT_NUM = "Enter a number";
+        final String TEXT_SHORT = "Enter a short text";
+        final String MATCH = "Match the items from left and right columns";
+        final String SORT = "Put the items in the correct order";
+        final String MATRIX_MORE = "Choose one or more options for each row";
+        final String MATRIX_ONE = "Choose one option for each row";
+
+        WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
+        String page = SITE_LINK + step;
+        String text = element.getText();
+
+        if (text.equals(SINGLE)) {
+            return new Answer(page, 1, getTestSingle());
+        } else if (text.equals(MULTIPLE)) {
+            return new Answer(page, 2, getTestMultiple());
+        } else if (text.contains(CODE)) {
+            return new Answer(page, 3, getCode());
+        } else if (text.equals(TEXT_NUM)) {
+            return new Answer(page, 4, getTextNum());
+        } else if (text.equals(TEXT_SHORT)) {
+            return new Answer(page, 5, getTextShort());
+        } else if (text.equals(MATCH)) {
+            return new Answer(page, 6, getMatch());
+        } else if (text.equals(SORT)) {
+            return new Answer(page, 7, getSort());
+        } else if (text.equals(MATRIX_MORE) || text.equals(MATRIX_ONE)) {
+            return new Answer(page, 8, getMatrix());
+        }
+
+        return new Answer(page, 0, "ANSWER_NOT_FOUND");
+    }
+
     // Заполняем правильные ответы из файла на сайте
     public void sendAnswers() {
         // Получаем список ответов из файла
@@ -210,7 +247,10 @@ public class Automation {
                 driver.get(answer.getUrl());
 
                 // Проверяем загрузилась ли страница
-                waitDownloadElement("//div[@class='step-problem']");
+                waitDownloadElement("//div[@class='step-problem']", 10);
+
+                // Задержка на 0.5 сек
+                delay();
 
                 if (!checkCorrect()) {
                     switch (answer.getMode()) {
@@ -224,10 +264,14 @@ public class Automation {
                         case 8 -> sendMatrix(answer.getMatrixAnswer());
                     }
 
+                    // Нажимаем на кнопку отправить ответ
+                    clickOnButtonSend();
                 }
 
                 // Устанавливаем значение проверенно
-                setChecked(answer);
+                if (waitDownloadElement("//strong[@class='text-success' and text()=' Correct. ']", 30)) {
+                    setChecked(answer);
+                }
 
                 // Задержка между страницами 0.5 секунды
                 delay();
@@ -272,44 +316,6 @@ public class Automation {
         }
 
         return false;
-    }
-
-    // Получаем правильный ответ используя подходящий метод
-    private Answer getCorrectAnswer(String step) {
-        final String SINGLE = "Select one option from the list";
-        final String MULTIPLE = "Select one or more options from the list";
-        final String CODE = "Write a program in";
-        final String TEXT_NUM = "Enter a number";
-        final String TEXT_SHORT = "Enter a short text";
-        final String MATCH = "Match the items from left and right columns";
-        final String SORT = "Put the items in the correct order";
-        final String MATRIX_MORE = "Choose one or more options for each row";
-        final String MATRIX_ONE = "Choose one option for each row";
-
-        WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
-        String page = SITE_LINK + step;
-
-        String text = element.getText();
-
-        if (text.equals(SINGLE)) {
-            return new Answer(page, 1, getTestSingle());
-        } else if (text.equals(MULTIPLE)) {
-            return new Answer(page, 2, getTestMultiple());
-        } else if (text.contains(CODE)) {
-            return new Answer(page, 3, getCode());
-        } else if (text.equals(TEXT_NUM)) {
-            return new Answer(page, 4, getTextNum());
-        } else if (text.equals(TEXT_SHORT)) {
-            return new Answer(page, 5, getTextShort());
-        } else if (text.equals(MATCH)) {
-            return new Answer(page, 6, getMatch());
-        } else if (text.equals(SORT)) {
-            return new Answer(page, 7, getSort());
-        } else if (text.equals(MATRIX_MORE) || text.equals(MATRIX_ONE)) {
-            return new Answer(page, 8, getMatrix());
-        }
-
-        return new Answer(page, 0, "ANSWER_NOT_FOUND");
     }
 
     // Получаем список объектов из файла
@@ -361,13 +367,15 @@ public class Automation {
 
     // Получаем один ответ из теста
     private String getTestSingle() {
+        waitDownloadElement("//input[@type='radio']", 10);
+
         List<WebElement> elements = driver.findElements(By.xpath("//input[@type='radio']"));
 
-        for (WebElement element : elements) {
-            if (element.getAttribute("checked") != null) {
-                WebElement res = element.findElement(By.xpath("./following-sibling::label/div"));
+        for (WebElement answer : elements) {
+            if (answer.getAttribute("checked") != null) {
+                WebElement text = answer.findElement(By.xpath("./following-sibling::label/div"));
 
-                return res.getText();
+                return text.getText();
             }
         }
 
@@ -376,27 +384,29 @@ public class Automation {
 
     // Выбираем один ответ в тесте
     private void sendTestSingle(String answer) {
+        waitDownloadElement("//label[@class='custom-control-label']", 10);
+
         Actions actions = new Actions(driver);
         List<WebElement> elements = driver.findElements(By.xpath("//label[@class='custom-control-label']"));
 
-        for (WebElement element : elements) {
-            if (element.getText().equals(answer)) {
-                actions.moveToElement(element).click().perform();
+        for (WebElement text : elements) {
+            if (text.getText().equals(answer)) {
+                actions.moveToElement(text).click().perform();
             }
         }
-
-//        clickOnButtonSend();
     }
 
     // Получаем несколько ответов из теста
     private String[] getTestMultiple() {
+        waitDownloadElement("//input[@type='checkbox']", 10);
+
         List<String> correctAnswers = new ArrayList<>();
         List<WebElement> elements = driver.findElements(By.xpath("//input[@type='checkbox']"));
 
-        for (WebElement element : elements) {
-            if (element.getAttribute("checked") != null) {
-                WebElement res = element.findElement(By.xpath("./following-sibling::label/div"));
-                correctAnswers.add(res.getText());
+        for (WebElement answer : elements) {
+            if (answer.getAttribute("checked") != null) {
+                WebElement text = answer.findElement(By.xpath("./following-sibling::label/div"));
+                correctAnswers.add(text.getText());
             }
         }
 
@@ -405,13 +415,15 @@ public class Automation {
 
     // Выбираем несколько ответов в тесте
     private void sendTestMultiple(String[] answer) {
-        for (String i : answer) {
+        waitDownloadElement("//label[@class='custom-control-label']", 10);
+
+        for (String text : answer) {
             Actions actions = new Actions(driver);
             WebElement input;
 
-            if (i.contains("\n")) {
-                StringBuilder str = new StringBuilder("//label[@class=\"custom-control-label\"]");
-                String[] textAnswer = i.split("\n");
+            if (text.contains("\n")) {
+                StringBuilder str = new StringBuilder("//label[@class='custom-control-label']");
+                String[] textAnswer = text.split("\n");
 
                 for (String value : textAnswer) {
                     str.append("[contains(normalize-space(),'").append(value).append("')]");
@@ -419,63 +431,67 @@ public class Automation {
 
                 input = driver.findElement(By.xpath(String.valueOf(str)));
             } else {
-                if (i.contains("'")) {
-                    input = driver.findElement(By.xpath("//label[@class=\"custom-control-label\"][normalize-space()=\"" + i + "\"]"));
+                if (text.contains("'")) {
+                    input = driver.findElement(By.xpath("//label[@class='custom-control-label'][normalize-space()=\"" + text + "\"]"));
                 } else {
-                    input = driver.findElement(By.xpath("//label[@class=\"custom-control-label\"][normalize-space()='" + i + "']"));
+                    input = driver.findElement(By.xpath("//label[@class='custom-control-label'][normalize-space()='" + text + "']"));
                 }
             }
 
             actions.moveToElement(input).click().perform();
         }
-
-//        clickOnButtonSend();
     }
 
     // Получаем ответ из поля с кодом
     private String getCode() {
-        WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
-        return input.getText();
+        waitDownloadElement("//div[@class='cm-content']", 10);
+
+        WebElement element = driver.findElement(By.xpath("//div[@class='cm-content']"));
+        return element.getText();
     }
 
     // Записываем ответ в поле с кодом
     private void sendCode(String code) {
-        WebElement input = driver.findElement(By.xpath("//div[@class='cm-content']"));
-        input.clear();
+        waitDownloadElement("//div[@class='cm-content']", 10);
+
+        WebElement element = driver.findElement(By.xpath("//div[@class='cm-content']"));
+        element.clear();
 
         JavascriptExecutor executor = (JavascriptExecutor) driver;
         executor.executeScript("arguments[0].innerText = '" + code.replace("\n", "\\n")
-                .replace("'", "\\'") + "';", input);
-
-//        clickOnButtonSend();
+                .replace("'", "\\'") + "';", element);
     }
 
     // Получаем ответ из текстового поля
     private String getTextNum() {
-        WebElement input = driver.findElement(By.xpath("//input[@type='number']"));
-        return input.getAttribute("value");
+        waitDownloadElement("//input[@type='number']", 10);
+
+        WebElement element = driver.findElement(By.xpath("//input[@type='number']"));
+        return element.getAttribute("value");
     }
 
     // Записываем ответ в текстовое поле
     private void sendTextNum(String answer) {
-        WebElement input = driver.findElement(By.xpath("//input[@type='number']"));
-        input.sendKeys(answer);
+        waitDownloadElement("//input[@type='number']", 10);
 
-//        clickOnButtonSend();
+        WebElement element = driver.findElement(By.xpath("//input[@type='number']"));
+        element.sendKeys(answer);
     }
 
     // Получаем ответ из текстового поля
     private String getTextShort() {
-        WebElement input = driver.findElement(By.xpath("//textarea"));
-        return input.getAttribute("value");
+        waitDownloadElement("//textarea", 10);
+
+        WebElement element = driver.findElement(By.xpath("//textarea"));
+        return element.getAttribute("value");
     }
 
     // Записываем ответ в текстовое поле
     private void sendTextShort(String answer) {
-        WebElement input = driver.findElement(By.xpath("//textarea"));
-        input.sendKeys(answer);
+        waitDownloadElement("//textarea", 10);
 
-//        clickOnButtonSend();
+        WebElement element = driver.findElement(By.xpath("//textarea"));
+        element.sendKeys(answer);
     }
 
     // Получаем список правильных ответов из теста с сопоставлением
@@ -547,8 +563,6 @@ public class Automation {
                 }
             }
         }
-
-        // clickOnButtonSend();
     }
 
     // Получаем список правильных ответов из теста с сортировкой
@@ -590,8 +604,6 @@ public class Automation {
                 }
             }
         }
-
-        // clickOnButtonSend();
     }
 
     // Получить матрицу правильных ответов из теста
@@ -645,8 +657,6 @@ public class Automation {
                 }
             }
         }
-
-//        clickOnButtonSend();
     }
 
     // Проверяем тест на Correct
@@ -662,13 +672,18 @@ public class Automation {
 
     // Нажимаем на кнопку "Send"
     private void clickOnButtonSend() {
-        WebElement signInButton = driver.findElement(By.cssSelector("button[id='sendBtn']"));
-        signInButton.click();
+        Actions actions = new Actions(driver);
+        WebElement signInButton = driver.findElement(By.xpath("//button[@id='sendBtn']"));
+        actions.moveToElement(signInButton).click().perform();
     }
 
     // Проверяем состояние загрузки страницы
-    private void waitDownloadElement(String s) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(s)));
+    private boolean waitDownloadElement(String xpath, int sec) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(sec));
+        return wait.until(ExpectedConditions.and(
+                ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)),
+                ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)),
+                ExpectedConditions.elementToBeClickable(By.xpath(xpath))
+        ));
     }
 }

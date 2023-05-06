@@ -21,7 +21,7 @@ public class Main {
             int mode = sc.nextInt();
 
             if (mode == 1) {
-                pages.run();
+                pages.sort();
             } else if (mode == 2) {
                 test.createDriver(true);
                 test.login();
