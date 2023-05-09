@@ -29,10 +29,10 @@ public class Automation {
     public void createDriver(boolean hide) {
         // Устанавливаем путь к драйверу браузера
         System.setProperty("webdriver.chrome.driver", CHROMEDRIVER_PATH);
+        ChromeOptions options = new ChromeOptions();
 
         // Создаем экземпляр драйвера в фоне если true
         if (hide) {
-            ChromeOptions options = new ChromeOptions();
             options.addArguments("--headless");
             options.addArguments("--disable-gpu");
             driver = new ChromeDriver(options);

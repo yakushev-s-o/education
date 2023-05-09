@@ -5,14 +5,14 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Automation test = new Automation();
-        PageSorting pages = new PageSorting();
+        SavePages save = new SavePages();
 
         Scanner sc = new Scanner(System.in);
 
         while (true) {
             System.out.println("""
                     Выберите режим:
-                    1. Сортировка страниц
+                    1. Сохранить страницы
                     2. Получить правильные ответы
                     3. Ответить на тесты
                     4. Получить список тем и заданий
@@ -21,7 +21,10 @@ public class Main {
             int mode = sc.nextInt();
 
             if (mode == 1) {
-                pages.sort();
+                save.createDriver();
+                save.login();
+                save.saveTopics(save.getKnowledgeMap(12));
+                save.saveSteps(save.getSteps(save.getTopics(12)));
             } else if (mode == 2) {
                 test.createDriver(true);
                 test.login();
