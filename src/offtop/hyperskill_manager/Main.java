@@ -6,6 +6,7 @@ public class Main {
     public static void main(String[] args) {
         Automation test = new Automation();
         SavePages save = new SavePages();
+        Util util = new Util();
 
         Scanner sc = new Scanner(System.in);
 
@@ -21,10 +22,10 @@ public class Main {
             int mode = sc.nextInt();
 
             if (mode == 1) {
-                save.createDriver();
-                save.login();
-                save.saveTopics(save.getKnowledgeMap(12));
-                save.saveSteps(save.getSteps(save.getTopics(12)));
+//                save.createDriver();
+//                save.login();
+//                save.saveTopics(save.getKnowledgeMap(12));
+//                save.saveSteps(save.getSteps(save.getTopics(12)));
             } else if (mode == 2) {
                 test.createDriver(true);
                 test.login();
@@ -34,7 +35,7 @@ public class Main {
                 test.login();
                 test.sendAnswers();
             } else if (mode == 4) {
-                test.getSteps(test.getTopics(12));
+                util.getSteps(util.getTopics(12));
             } else if (mode == 5) {
                 System.exit(0);
             }

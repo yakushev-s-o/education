@@ -1,4 +1,4 @@
-package offtop.hyperskill_manager;
+package offtop;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PageSorting {
+public class HyperSkillSorting {
 
     private static final String FOLDER_PATH = "C:/Users/Admin/Desktop/test";
 
