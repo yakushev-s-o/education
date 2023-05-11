@@ -16,16 +16,17 @@ public class Main {
                     1. Сохранить страницы
                     2. Получить правильные ответы
                     3. Ответить на тесты
-                    4. Получить список тем и заданий
+                    4. Получить данные
                     5. Выйти""");
 
             int mode = sc.nextInt();
 
             if (mode == 1) {
-//                save.createDriver();
-//                save.login();
-//                save.saveTopics(save.getKnowledgeMap(12));
-//                save.saveSteps(save.getSteps(save.getTopics(12)));
+                save.createDriver(false);
+                save.login();
+//                save.saveTopics();
+//                save.saveProjects();
+//                save.saveSteps();
             } else if (mode == 2) {
                 test.createDriver(true);
                 test.login();
@@ -35,7 +36,9 @@ public class Main {
                 test.login();
                 test.sendAnswers();
             } else if (mode == 4) {
-                util.getSteps(util.getTopics(12));
+                util.createDriver(true);
+                util.login();
+                util.getData(12);
             } else if (mode == 5) {
                 System.exit(0);
             }

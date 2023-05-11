@@ -1,7 +1,9 @@
 package offtop.hyperskill_manager;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
+import offtop.hyperskill_manager.data.Data;
+import offtop.hyperskill_manager.data.Step;
+import offtop.hyperskill_manager.data.Topic;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,8 +23,8 @@ public class Util {
     public static WebDriver driver;
     private static final String CHROMEDRIVER_PATH = "C:/tools/chromedriver_win32/chromedriver.exe";
     public static final String SITE_LINK = "https://hyperskill.org/learn/step/";
-    public static final String JSON_PATH = "src/offtop/hyperskill_manager/answer-list.json";
-    public static final String DATA_PATH = "src/offtop/hyperskill_manager/data-list.json";
+    public static final String JSON_PATH = "src/offtop/hyperskill_manager/files/answer-list.json";
+    public static final String DATA_PATH = "src/offtop/hyperskill_manager/files/data-list.json";
     public static final String TOPIC_LINK = "knowledge-map/";
     public static final String STEP_LINK = "learn/step/";
 
@@ -59,9 +61,24 @@ public class Util {
         waitDownloadElement("//h1[@data-cy='curriculum-header']");
     }
 
+    public void getData(int track) {
+        Topic topic = getTopics(track);
+        List<String> projects = getProjects(track);
+        List<Step> steps = getSteps(topic);
+
+        // Записываем JSON-объекта в файл
+        try (FileWriter writer = new FileWriter(DATA_PATH)) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(new Data(topic, projects, steps), writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Получаем список топиков
-    public List<String> getTopics(int track) {
+    public Topic getTopics(int track) {
         List<String> listTopic = new ArrayList<>();
+        List<String> listDescendants = new ArrayList<>();
 
         int i = 1;
         boolean isNext = true;
@@ -88,13 +105,15 @@ public class Util {
                 for (JsonElement element : topicRelationsArr) {
                     JsonObject obj = element.getAsJsonObject();
 
+                    listTopic.add(String.valueOf(obj.get("id")));
+
                     // Проверяем, является ли топик родительским
                     if (obj.get("parent_id").isJsonNull()) {
                         JsonArray descendantsArr = obj.getAsJsonArray("descendants");
 
                         // Получаем массив дочерних топиков
                         for (JsonElement s : descendantsArr) {
-                            listTopic.add(String.valueOf(s));
+                            listDescendants.add(String.valueOf(s));
                         }
                     }
                 }
@@ -103,65 +122,102 @@ public class Util {
             }
         }
 
-        return listTopic;
+        return new Topic(listTopic, listDescendants);
+    }
+
+    // Получаем список проектов
+    public List<String> getProjects(int track) {
+        List<String> listProject = new ArrayList<>();
+
+        String url = "https://hyperskill.org/api/tracks/" + track + "?format=json";
+
+        // Получаем JSON-объект с данными
+        try (InputStream inputStream = new URL(url).openStream()) {
+            JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+            // Получаем массив проектов
+            JsonArray projects = jsonObject.getAsJsonArray("tracks");
+
+            for (JsonElement project : projects) {
+                JsonObject obj = project.getAsJsonObject();
+                JsonArray descendantsArr = obj.getAsJsonArray("projects");
+
+                for (JsonElement s : descendantsArr) {
+                    listProject.add(String.valueOf(s));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return listProject;
     }
 
     // Получаем список тем и заданий и сохраняем в файл
-    public void getSteps(List<String> topics) {
-        for (String topic : topics) {
+    public List<Step> getSteps(Topic topics) {
+        List<Step> steps = new ArrayList<>();
+
+        for (String topic : topics.getDescendants()) {
 
             int i = 1;
             boolean isNext = true;
 
             // Пока есть следующая страница выполняем цикл
             while (isNext) {
-                String url = "https://hyperskill.org/api/steps?format=json&topic=" + topic + "&page_size=100&page=" + i + "";
+                String url = "https://hyperskill.org/api/steps?format=json&topic=" + topic + "&page_size=100&page=" + i++ + "";
+
+                driver.get(url);
+
+                // Получаем содержимое страницы в виде текста
+                String pageSource = driver.findElement(By.tagName("pre")).getText();
 
                 // Получаем JSON-объект с данными
-                try (InputStream inputStream = new URL(url).openStream()) {
-                    JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-                    JsonObject jsonObject = jsonElement.getAsJsonObject();
+                JsonElement jsonElement = JsonParser.parseString(pageSource);
+                JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-                    // Проверяем, есть ли следующая страница с данными
-                    JsonObject meta = jsonObject.getAsJsonObject("meta");
+                // Проверяем, есть ли следующая страница с данными
+                JsonObject meta = jsonObject.getAsJsonObject("meta");
 
-                    if (!meta.get("has_next").getAsBoolean()) {
-                        isNext = false;
-                    }
+                if (!meta.get("has_next").getAsBoolean()) {
+                    isNext = false;
+                }
 
-                    int id = 0;
-                    String title = "";
-                    List<String> listStep = new ArrayList<>();
+                int id = 0;
+                String title = "";
+                List<String> listStepTrue = new ArrayList<>();
+                List<String> listStepFalse = new ArrayList<>();
 
-                    // Получаем массив шагов
-                    JsonArray topicRelationsArr = jsonObject.getAsJsonArray("steps");
+                // Получаем массив шагов
+                JsonArray topicRelationsArr = jsonObject.getAsJsonArray("steps");
 
-                    for (JsonElement element : topicRelationsArr) {
-                        JsonObject obj = element.getAsJsonObject();
+                for (JsonElement element : topicRelationsArr) {
+                    JsonObject obj = element.getAsJsonObject();
 
-                        // Проверяем тип шага (теория или практика)
-                        if (obj.get("type").getAsString().equals("theory")) {
-                            // Если тип - теория, то получаем ID теории и название
-                            id = obj.get("topic_theory").getAsInt();
-                            title = obj.get("title").getAsString();
-                        } else if (obj.get("type").getAsString().equals("practice")) {
+                    // Проверяем тип шага (теория или практика)
+                    if (obj.get("type").getAsString().equals("theory")) {
+                        // Если тип - теория, то получаем ID теории и название
+                        id = obj.get("topic_theory").getAsInt();
+                        title = obj.get("title").getAsString();
+                    } else if (obj.get("type").getAsString().equals("practice")) {
+                        // Разделяем списки на выполненные и не выполненные
+                        if (obj.get("is_completed").getAsBoolean()) {
                             // Если - практика, то добавляем ID практики
-                            listStep.add(obj.get("id").getAsString());
+                            listStepTrue.add(obj.get("id").getAsString());
+                            System.out.println(true);
+                        } else {
+                            listStepFalse.add(obj.get("id").getAsString());
                         }
                     }
-
-                    // Получаем текущий список шагов из файла
-                    List<Data> listData = getFileData(new TypeToken<List<Data>>() {
-                    }.getType(), DATA_PATH);
-                    // Добавляем новый шаг в список и записываем в файл
-                    saveToFile(new Data(id, title, listStep), listData, DATA_PATH);
-
-                    System.out.println(id);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+
+                steps.add(new Step(id, title, listStepTrue, listStepFalse));
             }
         }
+
+        driver.quit();
+
+        return steps;
     }
 
     // Получаем список объектов из файла

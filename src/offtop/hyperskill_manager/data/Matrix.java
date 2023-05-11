@@ -1,4 +1,4 @@
-package offtop.hyperskill_manager;
+package offtop.hyperskill_manager.data;
 
 public class Matrix {
     private final String name_row;

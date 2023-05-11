@@ -2,6 +2,10 @@ package offtop.hyperskill_manager;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
+import offtop.hyperskill_manager.data.Answer;
+import offtop.hyperskill_manager.data.Data;
+import offtop.hyperskill_manager.data.Matrix;
+import offtop.hyperskill_manager.data.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
@@ -14,32 +18,38 @@ import java.util.List;
 public class Automation extends Util {
     // Получаем все правильные ответы и по очереди сохраняем в файл
     public void getAnswers() {
-        // Получаем список шагов из файла
-        List<Data> listData = getFileData(new TypeToken<List<Data>>() {
-        }.getType(), DATA_PATH);
+        Gson gson = new Gson();
+        Data data;
 
-        for (Data steps : listData) {
-            for (String step : steps.getStepList()) {
-                // Пропускаем если есть совпадение ссылки в файле
-                if (!checkMatchLink(step)) {
-                    driver.get(SITE_LINK + step);
+        // Считываем файл с данными
+        try (FileReader reader = new FileReader(DATA_PATH)) {
+            data = gson.fromJson(reader, Data.class);
 
-                    // Проверяем загрузилась ли страница
-                    waitDownloadElement("//div[@class='step-problem']");
+            for (Step steps : data.getSteps()) {
+                for (String step : steps.getStepListTrue()) {
+                    // Пропускаем если есть совпадение ссылки в файле
+                    if (!checkMatchLink(step)) {
+                        driver.get(SITE_LINK + step);
 
-                    // Задержка на 0.5 сек
-                    delay(500);
+                        // Проверяем загрузилась ли страница
+                        waitDownloadElement("//div[@class='step-problem']");
 
-                    // Проверяем что тест решен
-                    if (checkCorrect()) {
-                        // Получаем список ответов из файла
-                        List<Answer> listAnswers = getFileData(new TypeToken<List<Answer>>() {
-                        }.getType(), JSON_PATH);
-                        // Добавляем новый ответ в список и записываем файл
-                        saveToFile(getAnswer(step), listAnswers, JSON_PATH);
+                        // Задержка на 0.5 сек
+                        delay(500);
+
+                        // Проверяем что тест решен
+                        if (checkCorrect()) {
+                            // Получаем список ответов из файла
+                            List<Answer> listAnswers = getFileData(new TypeToken<List<Answer>>() {
+                            }.getType(), JSON_PATH);
+                            // Добавляем новый ответ в список и записываем файл
+                            saveToFile(getAnswer(step), listAnswers, JSON_PATH);
+                        }
                     }
                 }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         driver.quit();
@@ -209,7 +219,7 @@ public class Automation extends Util {
 
     // Получаем один ответ из теста
     private String getTestSingle() {
-        waitDownloadElement("//input[@type='radio']");
+        waitDownloadElement("//div[@class='submission submission-correct']");
 
         List<WebElement> elements = driver.findElements(By.xpath("//input[@type='radio']"));
 
@@ -240,7 +250,7 @@ public class Automation extends Util {
 
     // Получаем несколько ответов из теста
     private String[] getTestMultiple() {
-        waitDownloadElement("//input[@type='checkbox']");
+        waitDownloadElement("//label[@class='custom-control-label']");
 
         List<String> correctAnswers = new ArrayList<>();
         List<WebElement> elements = driver.findElements(By.xpath("//input[@type='checkbox']"));
@@ -309,7 +319,7 @@ public class Automation extends Util {
 
     // Получаем ответ из текстового поля
     private String getTextNum() {
-        waitDownloadElement("//input[@type='number']");
+        waitDownloadElement("//div[@class='submission submission-correct']");
 
         WebElement element = driver.findElement(By.xpath("//input[@type='number']"));
         return element.getAttribute("value");
@@ -325,7 +335,7 @@ public class Automation extends Util {
 
     // Получаем ответ из текстового поля
     private String getTextShort() {
-        waitDownloadElement("//textarea");
+        waitDownloadElement("//div[@class='submission submission-correct']");
 
         WebElement element = driver.findElement(By.xpath("//textarea"));
         return element.getAttribute("value");
