@@ -2,6 +2,7 @@ package offtop.hyperskill_manager;
 
 import com.google.gson.*;
 import offtop.hyperskill_manager.data.Data;
+import offtop.hyperskill_manager.data.Project;
 import offtop.hyperskill_manager.data.Step;
 import offtop.hyperskill_manager.data.Topic;
 import org.openqa.selenium.By;
@@ -22,7 +23,7 @@ import java.util.List;
 public class Util {
     public static WebDriver driver;
     private static final String CHROMEDRIVER_PATH = "C:/tools/chromedriver_win32/chromedriver.exe";
-    public static final String SITE_LINK = "https://hyperskill.org/learn/step/";
+    public static final String SITE_LINK = "https://hyperskill.org/";
     public static final String JSON_PATH = "src/offtop/hyperskill_manager/files/answer-list.json";
     public static final String DATA_PATH = "src/offtop/hyperskill_manager/files/data-list.json";
     public static final String TOPIC_LINK = "knowledge-map/";
@@ -61,9 +62,10 @@ public class Util {
         waitDownloadElement("//h1[@data-cy='curriculum-header']");
     }
 
+    // Получить данные трека и записать в файл
     public void getData(int track) {
         Topic topic = getTopics(track);
-        List<String> projects = getProjects(track);
+        List<Project> projects = getProjects(track);
         List<Step> steps = getSteps(topic);
 
         // Записываем JSON-объекта в файл
@@ -126,35 +128,60 @@ public class Util {
     }
 
     // Получаем список проектов
-    public List<String> getProjects(int track) {
-        List<String> listProject = new ArrayList<>();
+    public List<Project> getProjects(int track) {
+        List<Project> projectList = new ArrayList<>();
 
-        String url = "https://hyperskill.org/api/tracks/" + track + "?format=json";
+        String urlTrack = "https://hyperskill.org/api/tracks/" + track + "?format=json";
 
         // Получаем JSON-объект с данными
-        try (InputStream inputStream = new URL(url).openStream()) {
-            JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
+        try (InputStream trackInputStream = new URL(urlTrack).openStream()) {
+            JsonElement trackJsonElement = JsonParser.parseReader(new InputStreamReader(trackInputStream));
+            JsonObject trackJsonObject = trackJsonElement.getAsJsonObject();
 
             // Получаем массив проектов
-            JsonArray projects = jsonObject.getAsJsonArray("tracks");
+            JsonArray trackProjectsArray = trackJsonObject.getAsJsonArray("tracks");
 
-            for (JsonElement project : projects) {
-                JsonObject obj = project.getAsJsonObject();
-                JsonArray descendantsArr = obj.getAsJsonArray("projects");
+            for (JsonElement projectElement : trackProjectsArray) {
+                JsonObject projectObj = projectElement.getAsJsonObject();
+                JsonArray projectArray = projectObj.getAsJsonArray("projects");
 
-                for (JsonElement s : descendantsArr) {
-                    listProject.add(String.valueOf(s));
+                for (JsonElement projectName : projectArray) {
+                    String urlProject = "https://hyperskill.org/api/projects/" + projectName + "?format=json";
+
+                    // Получаем JSON-объект с данными
+                    try (InputStream projectInputStream = new URL(urlProject).openStream()) {
+                        JsonElement projectJsonElement = JsonParser.parseReader(new InputStreamReader(projectInputStream));
+                        JsonObject projectJsonObject = projectJsonElement.getAsJsonObject();
+
+                        // Получаем массив данных проекта
+                        JsonArray projectDataArray = projectJsonObject.getAsJsonArray("projects");
+
+                        for (JsonElement projectElement1 : projectDataArray) {
+                            JsonObject projectObj1 = projectElement1.getAsJsonObject();
+
+                            int projectId = projectObj1.get("id").getAsInt();
+                            String projectTitle = projectObj1.get("title").getAsString();
+                            List<String> stagesIds = new ArrayList<>();
+
+                            for (JsonElement stageId : projectObj1.getAsJsonArray("stages_ids")) {
+                                stagesIds.add(String.valueOf(stageId));
+                            }
+
+                            projectList.add(new Project(projectId, projectTitle, stagesIds));
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return listProject;
+        return projectList;
     }
 
-    // Получаем список тем и заданий и сохраняем в файл
+    // Получаем список тем и заданий
     public List<Step> getSteps(Topic topics) {
         List<Step> steps = new ArrayList<>();
 
@@ -204,7 +231,6 @@ public class Util {
                         if (obj.get("is_completed").getAsBoolean()) {
                             // Если - практика, то добавляем ID практики
                             listStepTrue.add(obj.get("id").getAsString());
-                            System.out.println(true);
                         } else {
                             listStepFalse.add(obj.get("id").getAsString());
                         }
@@ -221,23 +247,31 @@ public class Util {
     }
 
     // Получаем список объектов из файла
-    public <T> List<T> getFileData(Type type, String path) {
+    public <T> T getFileData(Type type, String path) {
         Gson gson = new Gson();
         File file = new File(path);
-        List<T> list = new ArrayList<>();
+        T result = null;
 
-        // Проверяем, существует ли заполненный файл, и если да, то загружаем его содержимое в память
         if (file.exists() && file.length() != 0) {
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(file));
-                list = gson.fromJson(reader, type);
+                JsonElement jsonElement = gson.fromJson(reader, JsonElement.class);
+
+                if (jsonElement.isJsonArray()) {
+                    // Считываем список объектов
+                    result = gson.fromJson(jsonElement, type);
+                } else {
+                    // Считываем одиночный объект
+                    result = gson.fromJson(jsonElement.getAsJsonObject(), type);
+                }
+
                 reader.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        return list;
+        return result;
     }
 
     // Сохраняем объект в файл в формате JSON

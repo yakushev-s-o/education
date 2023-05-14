@@ -4,13 +4,21 @@ import java.util.List;
 
 public class Data {
     Topic topic_relations;
-    List<String> projects;
+    List<Project> projects;
     List<Step> steps;
 
-    public Data(Topic topic, List<String> projects, List<Step> steps) {
-        this.topic_relations = topic;
+    public Data(Topic topic_relations, List<Project> projects, List<Step> steps) {
+        this.topic_relations = topic_relations;
         this.projects = projects;
         this.steps = steps;
+    }
+
+    public Topic getTopic_relations() {
+        return topic_relations;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
     }
 
     public List<Step> getSteps() {

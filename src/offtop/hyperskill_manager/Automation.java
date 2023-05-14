@@ -29,7 +29,7 @@ public class Automation extends Util {
                 for (String step : steps.getStepListTrue()) {
                     // Пропускаем если есть совпадение ссылки в файле
                     if (!checkMatchLink(step)) {
-                        driver.get(SITE_LINK + step);
+                        driver.get(SITE_LINK + STEP_LINK + step);
 
                         // Проверяем загрузилась ли страница
                         waitDownloadElement("//div[@class='step-problem']");
@@ -78,7 +78,7 @@ public class Automation extends Util {
         final String MATRIX_ONE = "Choose one option for each row";
 
         WebElement element = driver.findElement(By.xpath("//div[@class='mb-1 text-gray']/span"));
-        String page = SITE_LINK + step;
+        String page = SITE_LINK + STEP_LINK + step;
         String text = element.getText();
 
         if (text.equals(SINGLE)) {
@@ -209,7 +209,7 @@ public class Automation extends Util {
         }.getType(), JSON_PATH);
 
         for (Answer answer : answers) {
-            if (answer.getUrl().equals(SITE_LINK + page)) {
+            if (answer.getUrl().equals(SITE_LINK + STEP_LINK + page)) {
                 return true;
             }
         }

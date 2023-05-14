@@ -1,22 +1,26 @@
 package offtop.hyperskill_manager;
 
+import offtop.hyperskill_manager.data.Data;
+import offtop.hyperskill_manager.data.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 public class SavePages extends Util {
     private final String FOLDER_PATH = "C:/Users/Admin/Desktop/test/";
 
-    public void saveTopics(List<String> listTopic) {
-        for (String topic : listTopic) {
+    public void saveTopics() {
+        Data data = getFileData(Data.class, DATA_PATH);
+
+        for (String topic : data.getTopic_relations().getTopics()) {
             if (isFileExists(FOLDER_PATH + TOPIC_LINK, topic)) {
                 driver.get(SITE_LINK + TOPIC_LINK + topic);
 
-                waitDownloadElement("//div[@class='knowledge-map-group']");
+                waitDownloadElement("//ol[@class='breadcrumb mb-4']");
 
                 delay(1000);
 
@@ -27,10 +31,20 @@ public class SavePages extends Util {
         driver.quit();
     }
 
-    public void saveSteps(List<String> listStep) {
-        for (String step : listStep) {
-            if (isFileExists(FOLDER_PATH + STEP_LINK, step)) {
-                driver.get(SITE_LINK + STEP_LINK + step);
+    public void saveProjects() {
+//        Data data = getFileData(Data.class, DATA_PATH);
+//
+//        for (String project : data.getProjects()) {
+//
+//        }
+    }
+
+    public void saveSteps() {
+        Data data = getFileData(Data.class, DATA_PATH);
+
+        for (Step steps : data.getSteps()) {
+            if (isFileExists(FOLDER_PATH + STEP_LINK, String.valueOf(steps.getId()))) {
+                driver.get(SITE_LINK + STEP_LINK + steps.getId());
 
                 waitDownloadElement("//a[@class='text-gray']");
 
@@ -43,7 +57,7 @@ public class SavePages extends Util {
 
                 delay(1000);
 
-                save(STEP_LINK, step);
+                save(STEP_LINK, String.valueOf(steps.getId()));
             }
         }
 
@@ -86,8 +100,17 @@ public class SavePages extends Util {
             }
         }
 
-        // Получить исходный код страницы
-        String pageSource = driver.getPageSource();
+        // Получение HTML и CSS кода страницы
+        String pageSource = ((JavascriptExecutor) driver).executeScript(
+                "var html = new XMLSerializer().serializeToString(document.doctype) + document.documentElement.outerHTML;" +
+                        "var css = Array.from(document.styleSheets).reduce((cssCode, styleSheet) => {" +
+                        "   Array.from(styleSheet.cssRules).forEach(rule => {" +
+                        "       cssCode += rule.cssText + '\\n';" +
+                        "   });" +
+                        "   return cssCode;" +
+                        "}, '');" +
+                        "return html + '\\n\\n<style>\\n' + css + '</style>';"
+        ).toString();
 
         // Сохранение кода страницы в файл и сохранением кодировки
         try {

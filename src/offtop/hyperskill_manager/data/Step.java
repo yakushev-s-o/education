@@ -18,4 +18,8 @@ public class Step {
     public List<String> getStepListTrue() {
         return stepListTrue;
     }
+
+    public int getId() {
+        return id;
+    }
 }

@@ -14,4 +14,8 @@ public class Topic {
     public List<String> getDescendants() {
         return descendants;
     }
+
+    public List<String> getTopics() {
+        return topics;
+    }
 }
