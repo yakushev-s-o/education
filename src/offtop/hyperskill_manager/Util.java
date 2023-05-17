@@ -26,8 +26,6 @@ public class Util {
     public static final String SITE_LINK = "https://hyperskill.org/";
     public static final String JSON_PATH = "src/offtop/hyperskill_manager/files/answer-list.json";
     public static final String DATA_PATH = "src/offtop/hyperskill_manager/files/data-list.json";
-    public static final String TOPIC_LINK = "knowledge-map/";
-    public static final String STEP_LINK = "learn/step/";
 
     public void createDriver(boolean hide) {
         // Устанавливаем путь к драйверу браузера

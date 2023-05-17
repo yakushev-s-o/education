@@ -17,10 +17,6 @@ public class Project {
         return id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public List<String> getStages_ids() {
         return stages_ids;
     }

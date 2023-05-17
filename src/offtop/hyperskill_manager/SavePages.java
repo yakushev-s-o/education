@@ -1,6 +1,7 @@
 package offtop.hyperskill_manager;
 
 import offtop.hyperskill_manager.data.Data;
+import offtop.hyperskill_manager.data.Project;
 import offtop.hyperskill_manager.data.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -17,14 +18,14 @@ public class SavePages extends Util {
         Data data = getFileData(Data.class, DATA_PATH);
 
         for (String topic : data.getTopic_relations().getTopics()) {
-            if (isFileExists(FOLDER_PATH + TOPIC_LINK, topic)) {
-                driver.get(SITE_LINK + TOPIC_LINK + topic);
+            if (isFileExists(FOLDER_PATH + "knowledge-map/", topic)) {
+                driver.get(SITE_LINK + "knowledge-map/" + topic);
 
                 waitDownloadElement("//ol[@class='breadcrumb mb-4']");
 
                 delay(1000);
 
-                save(TOPIC_LINK, topic);
+                save("knowledge-map/", topic);
             }
         }
 
@@ -32,19 +33,43 @@ public class SavePages extends Util {
     }
 
     public void saveProjects() {
-//        Data data = getFileData(Data.class, DATA_PATH);
-//
-//        for (String project : data.getProjects()) {
-//
-//        }
+        Data data = getFileData(Data.class, DATA_PATH);
+
+        for (Project project : data.getProjects()) {
+            if (isFileExists(FOLDER_PATH + "projects/", String.valueOf(project.getId()))) {
+                driver.get(SITE_LINK + "projects/" + project.getId());
+
+                waitDownloadElement("//a[@click-event-target='back_to_projects']");
+
+                delay(1000);
+
+                save("projects/", String.valueOf(project.getId()));
+            }
+        }
+
+        for (Project project : data.getProjects()) {
+            for (String stages : project.getStages_ids()) {
+                if (isFileExists(FOLDER_PATH + "projects/" + project.getId() + "/stages/" + stages, "implement")) {
+                    driver.get(SITE_LINK + "projects/" + project.getId() + "/stages/" + stages + "/implement");
+
+                    waitDownloadElement("//div[@class='tabs']");
+
+                    delay(1000);
+
+                    save("projects/" + project.getId() + "/stages/" + stages + "/", "implement");
+                }
+            }
+        }
+
+        driver.quit();
     }
 
     public void saveSteps() {
         Data data = getFileData(Data.class, DATA_PATH);
 
         for (Step steps : data.getSteps()) {
-            if (isFileExists(FOLDER_PATH + STEP_LINK, String.valueOf(steps.getId()))) {
-                driver.get(SITE_LINK + STEP_LINK + steps.getId());
+            if (isFileExists(FOLDER_PATH + "learn/step/", String.valueOf(steps.getId()))) {
+                driver.get(SITE_LINK + "learn/step/" + steps.getId());
 
                 waitDownloadElement("//a[@class='text-gray']");
 
@@ -57,7 +82,7 @@ public class SavePages extends Util {
 
                 delay(1000);
 
-                save(STEP_LINK, String.valueOf(steps.getId()));
+                save("learn/step/", String.valueOf(steps.getId()));
             }
         }
 
@@ -70,7 +95,7 @@ public class SavePages extends Util {
 
         if (files != null) {
             for (File file : files) {
-                if (file.getName().replace(".html", "").equals(fileName)) {
+                if (file.getName().equals(fileName + ".html")) {
                     return false;
                 }
             }
