@@ -14,10 +14,13 @@ import java.nio.charset.StandardCharsets;
 public class SavePages extends Util {
     private final String FOLDER_PATH = "C:/Users/Admin/Desktop/test/";
 
+    // Сохраняем страницы с топиками
     public void saveTopics() {
+        // Получаем данные из файла
         Data data = getFileData(Data.class, DATA_PATH);
 
         for (String topic : data.getTopic_relations().getTopics()) {
+            // Проверяем, что файл существует
             if (isFileExists(FOLDER_PATH + "knowledge-map/", topic)) {
                 driver.get(SITE_LINK + "knowledge-map/" + topic);
 
@@ -32,9 +35,12 @@ public class SavePages extends Util {
         driver.quit();
     }
 
+    // Сохраняем страницы с проектами
     public void saveProjects() {
+        // Получаем данные из файла
         Data data = getFileData(Data.class, DATA_PATH);
 
+        // Сохраняем главные страницы
         for (Project project : data.getProjects()) {
             if (isFileExists(FOLDER_PATH + "projects/", String.valueOf(project.getId()))) {
                 driver.get(SITE_LINK + "projects/" + project.getId());
@@ -47,6 +53,7 @@ public class SavePages extends Util {
             }
         }
 
+        // Сохраняем этапы проектов
         for (Project project : data.getProjects()) {
             for (String stages : project.getStages_ids()) {
                 if (isFileExists(FOLDER_PATH + "projects/" + project.getId() + "/stages/" + stages, "implement")) {
@@ -64,7 +71,9 @@ public class SavePages extends Util {
         driver.quit();
     }
 
+    // Сохраняем страницы с темами
     public void saveSteps() {
+        // Получаем данные из файла
         Data data = getFileData(Data.class, DATA_PATH);
 
         for (Step steps : data.getSteps()) {
@@ -73,6 +82,7 @@ public class SavePages extends Util {
 
                 waitDownloadElement("//a[@class='text-gray']");
 
+                // Проверяем что теория раскрыта
                 if (isHideTheory()) {
                     Actions actions = new Actions(driver);
                     WebElement element = driver.findElement(By.xpath("//a[@class='ml-3'][text()=' Expand all ']"));
@@ -89,6 +99,7 @@ public class SavePages extends Util {
         driver.quit();
     }
 
+    // Проверяем, что файл существуем
     private boolean isFileExists(String path, String fileName) {
         File dir = new File(path);
         File[] files = dir.listFiles();
@@ -114,6 +125,7 @@ public class SavePages extends Util {
         }
     }
 
+    // Сохранение страниц
     private void save(String path, String page) {
         File file = new File(FOLDER_PATH + path);
 

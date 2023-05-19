@@ -37,14 +37,11 @@ public class Automation extends Util {
                         // Задержка на 0.5 сек
                         delay(500);
 
-                        // Проверяем что тест решен
-                        if (checkCorrect()) {
-                            // Получаем список ответов из файла
-                            List<Answer> listAnswers = getFileData(new TypeToken<List<Answer>>() {
-                            }.getType(), JSON_PATH);
-                            // Добавляем новый ответ в список и записываем файл
-                            saveToFile(getAnswer(step), listAnswers, JSON_PATH);
-                        }
+                        // Получаем список ответов из файла
+                        List<Answer> listAnswers = getFileData(new TypeToken<List<Answer>>() {
+                        }.getType(), JSON_PATH);
+                        // Добавляем новый ответ в список и записываем файл
+                        saveToFile(getAnswer(step), listAnswers, JSON_PATH);
                     }
                 }
             }
@@ -53,16 +50,6 @@ public class Automation extends Util {
         }
 
         driver.quit();
-    }
-
-    // Проверяем что тест решен
-    private boolean checkCorrect() {
-        try {
-            driver.findElement(By.xpath("//strong[@class='text-success'][text()=' Correct. ']"));
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     // Получаем правильный ответ используя подходящий метод

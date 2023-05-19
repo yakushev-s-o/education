@@ -66,7 +66,6 @@ public class Util {
         List<Project> projects = getProjects(track);
         List<Step> steps = getSteps(topic);
 
-        // Записываем JSON-объекта в файл
         try (FileWriter writer = new FileWriter(DATA_PATH)) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(new Data(topic, projects, steps), writer);
@@ -184,7 +183,6 @@ public class Util {
         List<Step> steps = new ArrayList<>();
 
         for (String topic : topics.getDescendants()) {
-
             int i = 1;
             boolean isNext = true;
 
