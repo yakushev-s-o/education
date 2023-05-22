@@ -138,16 +138,20 @@ public class SavePages extends Util {
         }
 
         // Получение HTML и CSS кода страницы
-        String pageSource = ((JavascriptExecutor) driver).executeScript(
+        String pageSource = (String) ((JavascriptExecutor) driver).executeScript(
                 "var html = new XMLSerializer().serializeToString(document.doctype) + document.documentElement.outerHTML;" +
                         "var css = Array.from(document.styleSheets).reduce((cssCode, styleSheet) => {" +
-                        "   Array.from(styleSheet.cssRules).forEach(rule => {" +
-                        "       cssCode += rule.cssText + '\\n';" +
-                        "   });" +
+                        "   try {" +
+                        "       Array.from(styleSheet.cssRules).forEach(rule => {" +
+                        "           cssCode += rule.cssText + '\\n';" +
+                        "       });" +
+                        "   } catch(error) {" +
+                        "       console.warn('Failed to read CSS rules:', error);" +
+                        "   }" +
                         "   return cssCode;" +
                         "}, '');" +
                         "return html + '\\n\\n<style>\\n' + css + '</style>';"
-        ).toString();
+        );
 
         // Сохранение кода страницы в файл и сохранением кодировки
         try {

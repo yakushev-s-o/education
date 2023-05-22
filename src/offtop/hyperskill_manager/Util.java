@@ -36,11 +36,12 @@ public class Util {
         if (hide) {
             options.addArguments("--headless");
             options.addArguments("--disable-gpu");
-            driver = new ChromeDriver(options);
+            options.addArguments("--window-size=1920,1080");
         } else {
-            driver = new ChromeDriver();
-            driver.manage().window().maximize();
+            options.addArguments("--start-maximized");
         }
+
+        driver = new ChromeDriver(options);
     }
 
     // Выполняем авторизацию на сайте
