@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Automation extends Util {
+    public Automation(int track) {
+        super(track);
+    }
+
     // Получаем все правильные ответы и по очереди сохраняем в файл
     public void getAnswers() {
         Gson gson = new Gson();

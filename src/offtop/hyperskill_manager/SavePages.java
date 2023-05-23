@@ -12,7 +12,12 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class SavePages extends Util {
-    private final String FOLDER_PATH = "C:/Users/Admin/Desktop/test/";
+    private final String FOLDER_PATH;
+
+    public SavePages(int track) {
+        super(track);
+        FOLDER_PATH = "C:/Users/Admin/Desktop/track/" + track + "/";
+    }
 
     // Сохраняем страницы с топиками
     public void saveTopics() {
@@ -40,7 +45,6 @@ public class SavePages extends Util {
         // Получаем данные из файла
         Data data = getFileData(Data.class, DATA_PATH);
 
-        // Сохраняем главные страницы
         for (Project project : data.getProjects()) {
             if (isFileExists(FOLDER_PATH + "projects/", String.valueOf(project.getId()))) {
                 driver.get(SITE_LINK + "projects/" + project.getId());
@@ -53,7 +57,14 @@ public class SavePages extends Util {
             }
         }
 
-        // Сохраняем этапы проектов
+        driver.quit();
+    }
+
+    // Сохраняем этапы проектов
+    public void saveStages() {
+        // Получаем данные из файла
+        Data data = getFileData(Data.class, DATA_PATH);
+
         for (Project project : data.getProjects()) {
             for (String stages : project.getStages_ids()) {
                 if (isFileExists(FOLDER_PATH + "projects/" + project.getId() + "/stages/" + stages, "implement")) {

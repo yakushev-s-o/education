@@ -24,8 +24,13 @@ public class Util {
     public static WebDriver driver;
     private static final String CHROMEDRIVER_PATH = "C:/tools/chromedriver_win32/chromedriver.exe";
     public static final String SITE_LINK = "https://hyperskill.org/";
-    public static final String JSON_PATH = "src/offtop/hyperskill_manager/files/answer-list.json";
-    public static final String DATA_PATH = "src/offtop/hyperskill_manager/files/data-list.json";
+    public static String JSON_PATH = null;
+    public static String DATA_PATH = null;
+
+    public Util(int track) {
+        JSON_PATH = "src/offtop/hyperskill_manager/files/answer-list-" + track + ".json";
+        DATA_PATH = "src/offtop/hyperskill_manager/files/data-list-" + track + ".json";
+    }
 
     public void createDriver(boolean hide) {
         // Устанавливаем путь к драйверу браузера

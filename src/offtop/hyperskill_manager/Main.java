@@ -4,11 +4,15 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Automation test = new Automation();
-        SavePages save = new SavePages();
-        Util util = new Util();
-
         try (Scanner sc = new Scanner(System.in)) {
+            System.out.println("Введите номер трека:");
+
+            int track = sc.nextInt();
+
+            Automation test = new Automation(track);
+            SavePages save = new SavePages(track);
+            Util util = new Util(track);
+
             while (true) {
                 System.out.println("""
                         Выберите режим:
@@ -29,8 +33,9 @@ public class Main {
                         Выберите режим:
                         1. Сохранить топики
                         2. Сохранить проекты
-                        3. Сохранить темы
-                        4. Сохранить все""");
+                        3. Сохранить этапы
+                        4. Сохранить темы
+                        5. Сохранить все""");
 
                     int saveMode = sc.nextInt();
 
@@ -42,10 +47,13 @@ public class Main {
                     } else if (saveMode == 2) {
                         save.saveProjects();
                     } else if (saveMode == 3) {
-                        save.saveSteps();
+                        save.saveStages();
                     } else if (saveMode == 4) {
+                        save.saveSteps();
+                    } else if (saveMode == 5) {
                         save.saveTopics();
                         save.saveProjects();
+                        save.saveStages();
                         save.saveSteps();
                     }
                 } else if (mode == 3) {
