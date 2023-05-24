@@ -24,12 +24,14 @@ public class Util {
     public static WebDriver driver;
     private static final String CHROMEDRIVER_PATH = "C:/tools/chromedriver_win32/chromedriver.exe";
     public static final String SITE_LINK = "https://hyperskill.org/";
-    public static String JSON_PATH = null;
-    public static String DATA_PATH = null;
+    public static String JSON_PATH;
+    public static String DATA_PATH;
+    public static String FOLDER_PATH;
 
     public Util(int track) {
         JSON_PATH = "src/offtop/hyperskill_manager/files/answer-list-" + track + ".json";
         DATA_PATH = "src/offtop/hyperskill_manager/files/data-list-" + track + ".json";
+        FOLDER_PATH = "C:/Users/Admin/Desktop/track/" + track + "/";
     }
 
     public void createDriver(boolean hide) {
@@ -81,7 +83,7 @@ public class Util {
     }
 
     // Получаем список топиков
-    public Topic getTopics(int track) {
+    private Topic getTopics(int track) {
         List<String> listTopic = new ArrayList<>();
         List<String> listDescendants = new ArrayList<>();
 
@@ -131,7 +133,7 @@ public class Util {
     }
 
     // Получаем список проектов
-    public List<Project> getProjects(int track) {
+    private List<Project> getProjects(int track) {
         List<Project> projectList = new ArrayList<>();
 
         String urlTrack = "https://hyperskill.org/api/tracks/" + track + "?format=json";
@@ -185,7 +187,7 @@ public class Util {
     }
 
     // Получаем список тем и заданий
-    public List<Step> getSteps(Topic topics) {
+    private List<Step> getSteps(Topic topics) {
         List<Step> steps = new ArrayList<>();
 
         for (String topic : topics.getDescendants()) {
@@ -249,7 +251,7 @@ public class Util {
     }
 
     // Получаем список объектов из файла
-    public <T> T getFileData(Type type, String path) {
+    public static <T> T getFileData(Type type, String path) {
         Gson gson = new Gson();
         File file = new File(path);
         T result = null;
@@ -277,7 +279,7 @@ public class Util {
     }
 
     // Сохраняем объект в файл в формате JSON
-    public <T> void saveToFile(T answer, List<T> list, String path) {
+    public static <T> void saveToFile(T answer, List<T> list, String path) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         File file = new File(path);
 
@@ -295,7 +297,7 @@ public class Util {
     }
 
     // Проверяем состояние загрузки страницы
-    public boolean waitDownloadElement(String xpath) {
+    public static boolean waitDownloadElement(String xpath) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         return wait.until(ExpectedConditions.and(
                 ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)),
@@ -305,7 +307,7 @@ public class Util {
     }
 
     // Задержка между переходами
-    public void delay(int ms) {
+    public static void delay(int ms) {
         try {
             Thread.sleep(ms);
         } catch (InterruptedException e) {

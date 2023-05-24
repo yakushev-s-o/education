@@ -9,8 +9,8 @@ public class Main {
 
             int track = sc.nextInt();
 
-            Automation test = new Automation(track);
-            SavePages save = new SavePages(track);
+            Automation test = new Automation();
+            SavePages save = new SavePages();
             Util util = new Util(track);
 
             while (true) {
@@ -39,8 +39,8 @@ public class Main {
 
                     int saveMode = sc.nextInt();
 
-                    save.createDriver(true);
-                    save.login();
+                    util.createDriver(false);
+                    util.login();
 
                     if (saveMode == 1) {
                         save.saveTopics();
@@ -57,12 +57,12 @@ public class Main {
                         save.saveSteps();
                     }
                 } else if (mode == 3) {
-                    test.createDriver(true);
-                    test.login();
+                    util.createDriver(true);
+                    util.login();
                     test.getAnswers();
                 } else if (mode == 4) {
-                    test.createDriver(false);
-                    test.login();
+                    util.createDriver(false);
+                    util.login();
                     test.sendAnswers();
                 } else if (mode == 5) {
                     System.exit(0);

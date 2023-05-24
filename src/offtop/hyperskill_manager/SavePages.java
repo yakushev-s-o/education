@@ -11,14 +11,9 @@ import org.openqa.selenium.interactions.Actions;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class SavePages extends Util {
-    private final String FOLDER_PATH;
+import static offtop.hyperskill_manager.Util.*;
 
-    public SavePages(int track) {
-        super(track);
-        FOLDER_PATH = "C:/Users/Admin/Desktop/track/" + track + "/";
-    }
-
+public class SavePages {
     // Сохраняем страницы с топиками
     public void saveTopics() {
         // Получаем данные из файла
