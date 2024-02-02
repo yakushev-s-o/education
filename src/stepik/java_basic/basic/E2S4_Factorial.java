@@ -1,4 +1,4 @@
-package stepik.java_basic;
+package stepik.java_basic.basic;
 
 import java.math.BigInteger;
 
